@@ -1,3 +1,5 @@
-# Appendix E: Parameter-efficient Finetuning with LoRA
+# Ek E: LoRA ile Parametre Açısından Verimli İnce Ayar
 
-- [01_main-chapter-code](01_main-chapter-code) contains the main chapter code.
+> 🇹🇷 **Türkçe çeviri.** Orijinal İngilizce sürüm: [README.md](https://github.com/rasbt/LLMs-from-scratch/blob/main/appendix-E/README.md)
+
+- [01_main-chapter-code](01_main-chapter-code) ana bölüm kodunu içerir.

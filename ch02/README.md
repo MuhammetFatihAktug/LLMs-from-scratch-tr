@@ -1,28 +1,30 @@
-# Chapter 2: Working with Text Data
+# Bölüm 2: Metin Verileriyle Çalışmak
+
+> 🇹🇷 **Türkçe çeviri.** Orijinal İngilizce sürüm: [README.md](https://github.com/rasbt/LLMs-from-scratch/blob/main/ch02/README.md)
 
 &nbsp;
-## Main Chapter Code
+## Ana Bölüm Kodu
 
-- [01_main-chapter-code](01_main-chapter-code) contains the main chapter code and exercise solutions
+- [01_main-chapter-code](01_main-chapter-code) ana bölüm kodunu ve alıştırma çözümlerini içerir
 
 &nbsp;
-## Bonus Materials
+## Bonus Materyaller
 
-- [02_bonus_bytepair-encoder](02_bonus_bytepair-encoder) contains optional code to benchmark different byte pair encoder implementations
+- [02_bonus_bytepair-encoder](02_bonus_bytepair-encoder) farklı byte pair encoder (BPE) uygulamalarını karşılaştırmalı olarak ölçmek için isteğe bağlı kod içerir
 
-- [03_bonus_embedding-vs-matmul](03_bonus_embedding-vs-matmul) contains optional (bonus) code to explain that embedding layers and fully connected layers applied to one-hot encoded vectors are equivalent.
+- [03_bonus_embedding-vs-matmul](03_bonus_embedding-vs-matmul) gömme (embedding) katmanlarının, one-hot kodlanmış vektörlere uygulanan tam bağlantılı katmanlarla eşdeğer olduğunu açıklayan isteğe bağlı (bonus) kod içerir.
 
-- [04_bonus_dataloader-intuition](04_bonus_dataloader-intuition) contains optional (bonus) code to explain the data loader more intuitively with simple numbers rather than text.
+- [04_bonus_dataloader-intuition](04_bonus_dataloader-intuition) veri yükleyiciyi (data loader) metin yerine basit sayılarla, daha sezgisel biçimde açıklayan isteğe bağlı (bonus) kod içerir.
 
-- [05_bpe-from-scratch](05_bpe-from-scratch) contains (bonus) code that implements and trains a GPT-2 BPE tokenizer from scratch.
-
-
+- [05_bpe-from-scratch](05_bpe-from-scratch) bir GPT-2 BPE tokenizer'ını sıfırdan uygulayan ve eğiten (bonus) kod içerir.
 
 
 
-In the video below, I provide a code-along session that covers some of the chapter contents as supplementary material.
+
+
+Aşağıdaki videoda, bölüm içeriğinin bir kısmını kapsayan, birlikte kod yazdığımız bir oturum sunuyorum (tamamlayıcı materyal).
 
 <br>
 <br>
 
-[![Link to the video](https://img.youtube.com/vi/341Rb8fJxY0/0.jpg)](https://www.youtube.com/watch?v=341Rb8fJxY0)
+[![Videoya bağlantı](https://img.youtube.com/vi/341Rb8fJxY0/0.jpg)](https://www.youtube.com/watch?v=341Rb8fJxY0)

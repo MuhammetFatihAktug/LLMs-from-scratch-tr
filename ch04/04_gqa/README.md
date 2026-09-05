@@ -1,15 +1,17 @@
-# Grouped-Query Attention (GQA)
+# Gruplanmış Sorgu Dikkati (Grouped-Query Attention, GQA)
 
-This bonus material illustrates the memory savings when using Grouped-Query Attention (GQA) over regular Multi-Head Attention (MHA).
+> 🇹🇷 **Türkçe çeviri.** Orijinal İngilizce sürüm: [README.md](https://github.com/rasbt/LLMs-from-scratch/blob/main/ch04/04_gqa/README.md) · Komut ve çıktı blokları birebir korunmuştur.
+
+Bu bonus materyal, klasik Çok Başlı Dikkat (Multi-Head Attention, MHA) yerine Gruplanmış Sorgu Dikkati (GQA) kullanıldığında elde edilen bellek tasarrufunu gösterir.
 
 &nbsp;
-## Introduction
+## Giriş
 
-Grouped-Query Attention (GQA) has become the new standard replacement for a more compute- and parameter-efficient alternative to Multi-Head Attention (MHA) in recent years. Note that it's not new and goes back to the 2023 [GQA: Training Generalized Multi-Query Transformer Models from Multi-Head Checkpoints](https://arxiv.org/abs/2305.13245). And even the larger variants in the good old Llama 2 series used it.
+Gruplanmış Sorgu Dikkati (GQA), son yıllarda Çok Başlı Dikkat'e (MHA) kıyasla hesaplama ve parametre açısından daha verimli bir alternatif olarak yeni standart hâline geldi. Yeni bir fikir olmadığını, 2023 tarihli [GQA: Training Generalized Multi-Query Transformer Models from Multi-Head Checkpoints](https://arxiv.org/abs/2305.13245) çalışmasına dayandığını belirtelim. Hatta eski dostumuz Llama 2 serisinin daha büyük varyantları bile bunu kullanıyordu.
 
-Here's a brief GQA summary. Unlike MHA, where each head also has its own set of keys and values, to reduce memory usage, GQA groups multiple heads to share the same key and value projections.
+İşte GQA'nın kısa bir özeti. Her başın kendi anahtar ve değer kümesine de sahip olduğu MHA'dan farklı olarak GQA, bellek kullanımını azaltmak için birden fazla başı aynı anahtar ve değer izdüşümlerini (projection) paylaşacak şekilde gruplandırır.
 
-For example, as further illustrated in the figure below, if there are 3 key-value groups and 6 attention heads, then heads 1 and 2 share one set of keys and values, while heads 3 and 4, as well as heads 5 and 6, share another, respectively.
+Örneğin, aşağıdaki şekilde ayrıntılı gösterildiği gibi, 3 anahtar-değer grubu ve 6 dikkat başı varsa, 1. ve 2. başlar bir anahtar-değer kümesini paylaşırken, 3. ve 4. başlar ile 5. ve 6. başlar da sırasıyla başka birer kümeyi paylaşır.
 
 &nbsp;
 
@@ -17,22 +19,22 @@ For example, as further illustrated in the figure below, if there are 3 key-valu
 
 &nbsp;
 
-This sharing of keys and values reduces the total number of key and value computations, which leads to lower memory usage and improved efficiency.
+Anahtar ve değerlerin bu şekilde paylaşılması, toplam anahtar ve değer hesaplama sayısını azaltır; bu da daha düşük bellek kullanımına ve daha yüksek verimliliğe yol açar.
 
-So, to summarize, the core idea behind GQA is to reduce the number of key and value heads by sharing them across multiple query heads. This (1) lowers the model's parameter count and (2) reduces the memory bandwidth usage for key and value tensors during inference since fewer keys and values need to be stored and retrieved from the KV cache.
+Özetle, GQA'nın arkasındaki temel fikir, anahtar ve değer başlarını birden çok sorgu başı arasında paylaştırarak sayılarını azaltmaktır. Bu (1) modelin parametre sayısını düşürür ve (2) çıkarım sırasında KV önbelleğinde daha az anahtar ve değer saklanıp okunması gerektiği için anahtar ve değer tensörlerine ait bellek bant genişliği kullanımını azaltır.
 
-While GQA is mainly a computational-efficiency workaround for MHA, ablation studies (such as those in the [original GQA paper](https://arxiv.org/abs/2305.13245) and the [Llama 2 paper](https://arxiv.org/abs/2307.09288)) show it performs comparably to standard MHA in terms of LLM modeling performance.
+GQA esas olarak MHA için bir hesaplama verimliliği çözümü olsa da, ablasyon çalışmaları ([orijinal GQA makalesi](https://arxiv.org/abs/2305.13245) ve [Llama 2 makalesi](https://arxiv.org/abs/2307.09288) gibi) LLM modelleme performansı açısından standart MHA ile karşılaştırılabilir sonuçlar verdiğini gösterir.
 
-However, this assumes that the number of key-value groups is chosen carefully. In the extreme case where all attention heads share a single key-value group, known as multi-query attention, the memory usage decreases even more drastically but modeling performance can suffer. (And, on the other extreme, if we set the number of key-value groups equal to the number of query heads, we are back at standard multi-head attention.)
+Ancak bu, anahtar-değer grubu sayısının dikkatlice seçildiğini varsayar. Tüm dikkat başlarının tek bir anahtar-değer grubunu paylaştığı ve çok sorgulu dikkat (multi-query attention) olarak bilinen uç durumda, bellek kullanımı çok daha keskin biçimde düşer ancak modelleme performansı zarar görebilir. (Diğer uçta ise, anahtar-değer grubu sayısını sorgu başı sayısına eşitlersek standart çok başlı dikkate geri dönmüş oluruz.)
 
 &nbsp;
-## GQA Memory Savings
+## GQA Bellek Tasarrufu
 
-The memory savings are mostly reflected in the KV storage. We can compute the KV storage size with the following formula:
+Bellek tasarrufu esas olarak KV depolamasına yansır. KV depolama boyutunu şu formülle hesaplayabiliriz:
 
-bytes ≈ batch_size × seqlen × (embed_dim / n_heads) × n_layers × 2 (K,V) × bytes_per_elem × n_kv_heads
+bayt ≈ batch_size × seqlen × (embed_dim / n_heads) × n_layers × 2 (K,V) × eleman_başına_bayt × n_kv_heads
 
-You can use the [memory_estimator_gqa.py](memory_estimator_gqa.py) script in this folder to apply this for different model configs to see how much memory you can save by using GQA over MHA:
+MHA yerine GQA kullanarak ne kadar bellek tasarrufu sağlayabileceğinizi görmek üzere bunu farklı model yapılandırmalarına uygulamak için bu klasördeki [memory_estimator_gqa.py](memory_estimator_gqa.py) betiğini kullanabilirsiniz:
 
 ```bash
 ➜ uv run memory_estimator_gqa.py \
@@ -57,7 +59,7 @@ Ratio (MHA / GQA)   : 4.00x
 Savings (GQA vs MHA): 75.00%
 ```
 
-The savings when using GQA over MHA are further shown in the plot below for different key-value group sizes as a function of the context length:
+MHA yerine GQA kullanıldığındaki tasarruf, aşağıdaki grafikte farklı anahtar-değer grup boyutları için bağlam uzunluğunun bir fonksiyonu olarak ayrıca gösterilmiştir:
 
 &nbsp;
 
@@ -65,18 +67,18 @@ The savings when using GQA over MHA are further shown in the plot below for diff
 
 &nbsp;
 
-You can reproduce the plot via `uv run plot_memory_estimates_gqa.py`.
+Grafiği `uv run plot_memory_estimates_gqa.py` komutuyla yeniden üretebilirsiniz.
 
 &nbsp;
-## GQA Code Examples
+## GQA Kod Örnekleri
 
-The [gpt_with_kv_mha.py](gpt_with_kv_mha.py) and [gpt_with_kv_gqa.py](gpt_with_kv_gqa.py) scripts in this folder provide hands-on examples for comparing the MHA and GQA memory usage in the context of a GPT model implementation.
+Bu klasördeki [gpt_with_kv_mha.py](gpt_with_kv_mha.py) ve [gpt_with_kv_gqa.py](gpt_with_kv_gqa.py) betikleri, bir GPT modeli uygulaması bağlamında MHA ve GQA bellek kullanımını karşılaştırmak için uygulamalı örnekler sunar.
 
-Note that GQA is also used in the [Llama 3](../../ch05/07_gpt_to_llama), [Gemma 3](../../ch05/12_gemma3), and [Qwen3](../../ch05/11_qwen3) bonus materials. However, for simplicity, the code scripts in this folder modify the GPT architecture, which traditionally didn't use GQA.
+GQA'nın [Llama 3](../../ch05/07_gpt_to_llama), [Gemma 3](../../ch05/12_gemma3) ve [Qwen3](../../ch05/11_qwen3) bonus materyallerinde de kullanıldığını belirtelim. Ancak basitlik adına, bu klasördeki kod betikleri geleneksel olarak GQA kullanmayan GPT mimarisini değiştirir.
 
-Note that the model is not trained and thus generates nonsensical text. However, you can use it as a drop-in replacement for the standard GPT model in chapters 5-7 and train it.
+Modelin eğitilmediğini ve dolayısıyla anlamsız metin ürettiğini unutmayın. Yine de 5-7. bölümlerdeki standart GPT modelinin yerine doğrudan kullanabilir ve eğitebilirsiniz.
 
-Also, this implementation uses the KV cache explained in [another bonus section](../03_kv-cache) so the memory savings are more pronounced.
+Ayrıca bu uygulama, [başka bir bonus bölümde](../03_kv-cache) açıklanan KV önbelleğini kullanır; böylece bellek tasarrufu daha belirgin hâle gelir.
 
 ```bash
 uv run gpt_with_kv_mha.py \
@@ -105,7 +107,7 @@ Time: 516.33 sec
 Max memory allocated: 0.63 GB
 ```
 
-The reason why we are not seeing such a big saving as in the plots above is 2-fold:
+Yukarıdaki grafiklerdeki kadar büyük bir tasarruf görmememizin iki nedeni var:
 
-1. I use a smaller configuration to have the model finish the generation in a reasonable time.
-2. More importantly, we are looking at the whole model here, not just the attention mechanism; the fully-connected layers in the model take up most of the memory (but this is a topic for a separate analysis).
+1. Modelin üretimi makul bir sürede bitirmesi için daha küçük bir yapılandırma kullanıyorum.
+2. Daha da önemlisi, burada yalnızca dikkat mekanizmasına değil, modelin tamamına bakıyoruz; belleğin çoğunu modeldeki tam bağlantılı katmanlar kaplıyor (ancak bu ayrı bir analizin konusu).

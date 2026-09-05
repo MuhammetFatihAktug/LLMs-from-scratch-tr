@@ -1,13 +1,15 @@
-# Optional Setup Instructions
+# İsteğe Bağlı Kurulum Talimatları
+
+> 🇹🇷 **Türkçe çeviri.** Orijinal İngilizce sürüm: [README.md](https://github.com/rasbt/LLMs-from-scratch/blob/main/setup/README.md) · Komutlar birebir korunmuştur.
 
 
-This document lists different approaches for setting up your machine and using the code in this repository. I recommend browsing through the different sections from top to bottom and then deciding which approach best suits your needs.
+Bu belge, makinenizi kurmak ve bu depodaki kodu kullanmak için farklı yaklaşımları listeler. Farklı bölümlere yukarıdan aşağıya göz atıp ardından hangi yaklaşımın ihtiyaçlarınıza en uygun olduğuna karar vermenizi öneririm.
 
 &nbsp;
 
-## Quickstart
+## Hızlı Başlangıç
 
-If you already have a Python installation on your machine, the quickest way to get started is to install the package requirements from the [../requirements.txt](../requirements.txt) file by executing the following pip installation command from the root directory of this code repository:
+Makinenizde zaten bir Python kurulumu varsa, başlamanın en hızlı yolu, bu kod deposunun kök dizininde aşağıdaki pip kurulum komutunu çalıştırarak [../requirements.txt](../requirements.txt) dosyasındaki paket gereksinimlerini kurmaktır:
 
 ```bash
 pip install -r requirements.txt
@@ -15,82 +17,82 @@ pip install -r requirements.txt
 
 <br>
 
-> **Note:** If you are running any of the notebooks on Google Colab and want to install the dependencies, simply run the following code in a new cell at the top of the notebook:
+> **Not:** Not defterlerinden herhangi birini Google Colab'da çalıştırıyor ve bağımlılıkları kurmak istiyorsanız, not defterinin en üstüne yeni bir hücre ekleyip şu kodu çalıştırmanız yeterlidir:
 > `pip install uv && uv pip install --system -r https://raw.githubusercontent.com/rasbt/LLMs-from-scratch/refs/heads/main/requirements.txt`
-> Optionally, after cloning the repository, you can install the dependencies for all bonus materials with `uv pip install --group bonus` from the project root. This is useful if you don't want to install them separately as you check out the optional bonus materials later on.
+> İsteğe bağlı olarak, depoyu klonladıktan sonra proje kökünde `uv pip install --group bonus` komutuyla tüm bonus materyallerin bağımlılıklarını kurabilirsiniz. Bu, isteğe bağlı bonus materyallere daha sonra bakarken bunları ayrı ayrı kurmak istemiyorsanız faydalıdır.
 
 
 
-In the video below, I share my personal approach to setting up a Python environment on my computer:
+Aşağıdaki videoda, bilgisayarımda bir Python ortamı kurarken izlediğim kişisel yaklaşımı paylaşıyorum:
 
 <br>
 <br>
 
-[![Link to the video](https://img.youtube.com/vi/yAcWnfsZhzo/0.jpg)](https://www.youtube.com/watch?v=yAcWnfsZhzo)
+[![Videoya bağlantı](https://img.youtube.com/vi/yAcWnfsZhzo/0.jpg)](https://www.youtube.com/watch?v=yAcWnfsZhzo)
 
 
 &nbsp;
-# Local Setup
+# Yerel Kurulum
 
-This section provides recommendations for running the code in this book locally. Note that the code in the main chapters of this book is designed to run on conventional laptops within a reasonable timeframe and does not require specialized hardware. I tested all main chapters on an M3 MacBook Air laptop. Additionally, if your laptop or desktop computer has an NVIDIA GPU, the code will automatically take advantage of it.
+Bu bölüm, bu kitaptaki kodu yerelde çalıştırmaya dair öneriler sunar. Kitabın ana bölümlerindeki kodun, sıradan dizüstü bilgisayarlarda makul bir sürede çalışacak şekilde tasarlandığını ve özel donanım gerektirmediğini unutmayın. Tüm ana bölümleri bir M3 MacBook Air dizüstü bilgisayarda test ettim. Ayrıca, dizüstü veya masaüstü bilgisayarınızda bir NVIDIA GPU varsa kod bundan otomatik olarak yararlanacaktır.
 
 &nbsp;
-## Setting up Python
+## Python'u kurmak
 
-If you don't have Python set up on your machine yet, I have written about my personal Python setup preferences in the following directories:
+Makinenizde Python henüz kurulu değilse, kişisel Python kurulum tercihlerimi şu dizinlerde yazdım:
 
 - [01_optional-python-setup-preferences](./01_optional-python-setup-preferences)
 - [02_installing-python-libraries](./02_installing-python-libraries)
 
-The *Using DevContainers* section below outlines an alternative approach for installing project dependencies on your machine.
+Aşağıdaki *DevContainer Kullanmak* bölümü, proje bağımlılıklarını makinenize kurmak için alternatif bir yaklaşımı özetler.
 
 &nbsp;
 
-## Using Docker DevContainers
+## Docker DevContainer Kullanmak
 
-As an alternative to the *Setting up Python* section above, if you prefer a development setup that isolates a project's dependencies and configurations, using Docker is a highly effective solution. This approach eliminates the need to manually install software packages and libraries and ensures a consistent development environment. You can find more instructions for setting up Docker and using a DevContainer:
+Yukarıdaki *Python'u kurmak* bölümüne alternatif olarak, bir projenin bağımlılıklarını ve yapılandırmalarını yalıtan bir geliştirme kurulumunu tercih ediyorsanız Docker kullanmak son derece etkili bir çözümdür. Bu yaklaşım, yazılım paketlerini ve kütüphaneleri elle kurma ihtiyacını ortadan kaldırır ve tutarlı bir geliştirme ortamı sağlar. Docker kurulumuna ve DevContainer kullanımına dair daha fazla talimatı burada bulabilirsiniz:
 
 - [03_optional-docker-environment](03_optional-docker-environment)
 
 &nbsp;
 
-## Visual Studio Code Editor
+## Visual Studio Code Editörü
 
-There are many good options for code editors. My preferred choice is the popular open-source [Visual Studio Code (VSCode)](https://code.visualstudio.com) editor, which can be easily enhanced with many useful plugins and extensions (see the *VSCode Extensions* section below for more information). Download instructions for macOS, Linux, and Windows can be found on the [main VSCode website](https://code.visualstudio.com).
+Kod editörleri için pek çok iyi seçenek var. Benim tercihim, birçok faydalı eklenti ve uzantıyla kolayca zenginleştirilebilen popüler açık kaynaklı [Visual Studio Code (VSCode)](https://code.visualstudio.com) editörü (daha fazla bilgi için aşağıdaki *VSCode Uzantıları* bölümüne bakın). macOS, Linux ve Windows için indirme talimatları [VSCode ana sitesinde](https://code.visualstudio.com) bulunabilir.
 
 &nbsp;
 
-## VSCode Extensions
+## VSCode Uzantıları
 
-If you are using Visual Studio Code (VSCode) as your primary code editor, you can find recommended extensions in the `.vscode` subfolder. These extensions provide enhanced functionality and tools helpful for this repository.
+Ana kod editörünüz olarak Visual Studio Code (VSCode) kullanıyorsanız, önerilen uzantıları `.vscode` alt klasöründe bulabilirsiniz. Bu uzantılar, bu depo için faydalı olan gelişmiş işlevsellik ve araçlar sunar.
 
-To install these, open this "setup" folder in VSCode (File -> Open Folder...) and then click the "Install" button in the pop-up menu on the lower right.
+Bunları kurmak için bu "setup" klasörünü VSCode'da açın (File -> Open Folder...) ve ardından sağ altta beliren açılır menüdeki "Install" düğmesine tıklayın.
 
 <img src="https://sebastianraschka.com/images/LLMs-from-scratch-images/setup/README/vs-code-extensions.webp?1" alt="1" width="700">
 
-Alternatively, you can move the `.vscode` extension folder into the root directory of this GitHub repository:
+Alternatif olarak, `.vscode` uzantı klasörünü bu GitHub deposunun kök dizinine taşıyabilirsiniz:
 
 ```bash
 mv setup/.vscode ./
 ```
 
-Then, VSCode automatically checks if the recommended extensions are already installed on your system every time you open the `LLMs-from-scratch` main folder.
+Böylece VSCode, `LLMs-from-scratch` ana klasörünü her açtığınızda önerilen uzantıların sisteminizde kurulu olup olmadığını otomatik olarak kontrol eder.
 
 &nbsp;
 
-# Cloud Resources
+# Bulut Kaynakları
 
-This section describes cloud alternatives for running the code presented in this book.
+Bu bölüm, kitapta sunulan kodu çalıştırmak için bulut alternatiflerini açıklar.
 
-While the code can run on conventional laptops and desktop computers without a dedicated GPU, cloud platforms with NVIDIA GPUs can substantially improve the runtime of the code, especially in chapters 5 to 7.
+Kod, özel bir GPU olmadan sıradan dizüstü ve masaüstü bilgisayarlarda çalışabilse de, NVIDIA GPU'lu bulut platformları kodun çalışma süresini özellikle 5 ila 7. bölümlerde kayda değer ölçüde iyileştirebilir.
 
 &nbsp;
 
-## Using Lightning Studio
+## Lightning Studio Kullanmak
 
-For a smooth development experience in the cloud, I recommend the [Lightning AI Studio](https://lightning.ai/) platform, which allows users to set up a persistent environment and use both VSCode and Jupyter Lab on cloud CPUs and GPUs.
+Bulutta sorunsuz bir geliştirme deneyimi için, kullanıcıların kalıcı bir ortam kurmasına ve bulut CPU'ları ile GPU'larında hem VSCode hem de Jupyter Lab kullanmasına olanak tanıyan [Lightning AI Studio](https://lightning.ai/) platformunu öneririm.
 
-Once you start a new Studio, you can open the terminal and execute the following setup steps to clone the repository and install the dependencies:
+Yeni bir Studio başlattıktan sonra terminali açıp depoyu klonlamak ve bağımlılıkları kurmak için şu kurulum adımlarını çalıştırabilirsiniz:
 
 ```bash
 git clone https://github.com/rasbt/LLMs-from-scratch.git
@@ -98,33 +100,33 @@ cd LLMs-from-scratch
 pip install -r requirements.txt
 ```
 
-(In contrast to Google Colab, these only need to be executed once since the Lightning AI Studio environments are persistent, even if you switch between CPU and GPU machines.)
+(Google Colab'ın aksine, Lightning AI Studio ortamları CPU ve GPU makineleri arasında geçiş yapsanız bile kalıcı olduğu için bunların yalnızca bir kez çalıştırılması gerekir.)
 
-Then, navigate to the Python script or Jupyter Notebook you want to run. Optionally, you can also easily connect a GPU to accelerate the code's runtime, for example, when you are pretraining the LLM in chapter 5 or finetuning it in chapters 6 and 7.
+Ardından, çalıştırmak istediğiniz Python betiğine veya Jupyter Notebook'a gidin. İsteğe bağlı olarak, örneğin 5. bölümde LLM'i ön eğitirken ya da 6. ve 7. bölümlerde ince ayar yaparken kodun çalışma süresini hızlandırmak için kolayca bir GPU da bağlayabilirsiniz.
 
 <img src="https://sebastianraschka.com/images/LLMs-from-scratch-images/setup/README/studio.webp" alt="1" width="700">
 
 &nbsp;
 
-## Using Google Colab
+## Google Colab Kullanmak
 
-To use a Google Colab environment in the cloud, head over to [https://colab.research.google.com/](https://colab.research.google.com/) and open the respective chapter notebook from the GitHub menu or by dragging the notebook into the *Upload* field as shown in the figure below.
+Bulutta bir Google Colab ortamı kullanmak için [https://colab.research.google.com/](https://colab.research.google.com/) adresine gidin ve ilgili bölüm not defterini GitHub menüsünden açın ya da aşağıdaki şekilde gösterildiği gibi not defterini *Upload* alanına sürükleyin.
 
 <img src="https://sebastianraschka.com/images/LLMs-from-scratch-images/setup/README/colab_1.webp" alt="1" width="700">
 
 
-Also make sure you upload the relevant files (dataset files and .py files the notebook is importing from) to the Colab environment as well, as shown below.
+Ayrıca, aşağıda gösterildiği gibi ilgili dosyaları (veri kümesi dosyaları ve not defterinin içe aktardığı .py dosyaları) da Colab ortamına yüklediğinizden emin olun.
 
 <img src="https://sebastianraschka.com/images/LLMs-from-scratch-images/setup/README/colab_2.webp" alt="2" width="700">
 
 
-You can optionally run the code on a GPU by changing the *Runtime* as illustrated in the figure below.
+İsteğe bağlı olarak, aşağıdaki şekilde gösterildiği gibi *Runtime* ayarını değiştirerek kodu bir GPU üzerinde çalıştırabilirsiniz.
 
 <img src="https://sebastianraschka.com/images/LLMs-from-scratch-images/setup/README/colab_3.webp" alt="3" width="700">
 
 
 &nbsp;
 
-# Questions?
+# Sorularınız mı var?
 
-If you have any questions, please don't hesitate to reach out via the [Discussions](https://github.com/rasbt/LLMs-from-scratch/discussions) forum in this GitHub repository.
+Herhangi bir sorunuz varsa, lütfen bu GitHub deposundaki [Discussions](https://github.com/rasbt/LLMs-from-scratch/discussions) forumu üzerinden bize ulaşmaktan çekinmeyin.

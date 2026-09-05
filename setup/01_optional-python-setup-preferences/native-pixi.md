@@ -1,29 +1,31 @@
-# Native pixi Python and package management
+# Yerel (native) pixi ile Python ve paket yönetimi
 
-This tutorial is an alternative to the [`./native-uv.md`](native-uv.md) document for those who prefer `pixi`'s native commands over traditional environment and package managers like `conda` and `pip`.
+> 🇹🇷 **Türkçe çeviri.** Orijinal İngilizce sürüm: [native-pixi.md](https://github.com/rasbt/LLMs-from-scratch/blob/main/setup/01_optional-python-setup-preferences/native-pixi.md) · Komutlar birebir korunmuştur.
 
-Note that pixi uses `uv add` under the hood, as described in [`./native-uv.md`](native-uv.md).
+Bu öğretici, `conda` ve `pip` gibi geleneksel ortam ve paket yöneticileri yerine `pixi` aracının yerel komutlarını tercih edenler için [`./native-uv.md`](native-uv.md) belgesine bir alternatiftir.
 
-Pixi and uv are both modern package and environment management tools for Python, but pixi is a polyglot package manager designed for managing not just Python but also other languages (similar to conda), while uv is a Python-specific tool optimized for ultra-fast dependency resolution and package installation.
+[`./native-uv.md`](native-uv.md) belgesinde açıklandığı gibi, pixi'nin arka planda `uv add` kullandığını unutmayın.
 
-Someone might choose pixi over uv if they need a polyglot package manager that supports multiple languages (not just Python) or prefer a declarative environment management approach similar to conda. For more information, please visit the official [pixi documentation](https://pixi.sh/latest/).
+Pixi ve uv, Python için modern paket ve ortam yönetim araçlarıdır; ancak pixi yalnızca Python'u değil, başka dilleri de yönetmek üzere tasarlanmış çok dilli (polyglot) bir paket yöneticisiyken (conda'ya benzer şekilde), uv son derece hızlı bağımlılık çözümlemesi ve paket kurulumu için optimize edilmiş, Python'a özgü bir araçtır.
 
-In this tutorial, I am using a computer running macOS, but this workflow is similar for Linux machines and may work for other operating systems as well.
+Birden çok dili (yalnızca Python'u değil) destekleyen çok dilli bir paket yöneticisine ihtiyaç duyan ya da conda'ya benzer bildirimsel (declarative) bir ortam yönetimi yaklaşımını tercih eden biri, uv yerine pixi'yi seçebilir. Daha fazla bilgi için lütfen resmî [pixi belgelerini](https://pixi.sh/latest/) ziyaret edin.
+
+Bu öğreticide macOS çalıştıran bir bilgisayar kullanıyorum, ancak bu iş akışı Linux makineler için de benzerdir ve diğer işletim sistemlerinde de çalışabilir.
 
 &nbsp;
-## 1. Install pixi
+## 1. pixi'yi kurun
 
-Pixi can be installed as follows, depending on your operating system.
+Pixi, işletim sisteminize bağlı olarak şu şekilde kurulabilir.
 
 <br>
 
-**macOS and Linux**
+**macOS ve Linux**
 
 ```bash
 curl -fsSL https://pixi.sh/install.sh | sh
 ```
 
-or
+veya
 
 ```bash
 wget -qO- https://pixi.sh/install.sh | sh
@@ -33,58 +35,58 @@ wget -qO- https://pixi.sh/install.sh | sh
 
 **Windows**
 
-Download the installer from the official [documentation](https://pixi.sh/latest/installation/#__tabbed_1_2) or run the listed PowerShell command.
+Kurulum dosyasını resmî [belgelerden](https://pixi.sh/latest/installation/#__tabbed_1_2) indirin veya orada listelenen PowerShell komutunu çalıştırın.
 
 
 
-> **Note:**
-> For more installation options, please refer to the official [pixi documentation](https://pixi.sh/latest/).
+> **Not:**
+> Daha fazla kurulum seçeneği için lütfen resmî [pixi belgelerine](https://pixi.sh/latest/) bakın.
 
 
 &nbsp;
-## 1. Install Python
+## 1. Python'u kurun
 
-You can install Python using pixi:
+Python'u pixi ile kurabilirsiniz:
 
 ```bash
 pixi add python=3.10
 ```
 
-> **Note:**
-> I recommend installing a Python version that is at least 2 versions older than the most recent release to ensure PyTorch compatibility. For example, if the most recent version is Python 3.13, I recommend installing version 3.10 or 3.11. You can find out the most recent Python version by visiting [python.org](https://www.python.org).
+> **Not:**
+> PyTorch uyumluluğunu güvence altına almak için, en güncel sürümden en az 2 sürüm eski bir Python sürümü kurmanızı öneririm. Örneğin, en güncel sürüm Python 3.13 ise 3.10 veya 3.11 sürümünü kurmanızı öneririm. En güncel Python sürümünü [python.org](https://www.python.org) adresini ziyaret ederek öğrenebilirsiniz.
 
 &nbsp;
-## 3. Install Python packages and dependencies
+## 3. Python paketlerini ve bağımlılıkları kurun
 
-To install all required packages from a `pixi.toml` file (such as the one located at the top level of this GitHub repository), run the following command, assuming the file is in the same directory as your terminal session:
+Bir `pixi.toml` dosyasındaki (örneğin bu GitHub deposunun en üst düzeyinde bulunan) gerekli tüm paketleri kurmak için, dosyanın terminal oturumunuzla aynı dizinde olduğunu varsayarak şu komutu çalıştırın:
 
 ```bash
 pixi install
 ```
 
-> **Note:**
-> If you encounter issues with dependencies (for example, if you are using Windows), you can always fall back to pip: `pixi run pip install -U -r requirements.txt`
+> **Not:**
+> Bağımlılıklarla ilgili sorun yaşarsanız (örneğin Windows kullanıyorsanız), her zaman pip'e geri dönebilirsiniz: `pixi run pip install -U -r requirements.txt`
 
-By default, `pixi install` will create a separate virtual environment specific to the project.
+Varsayılan olarak `pixi install`, projeye özgü ayrı bir sanal ortam oluşturur.
 
-You can install new packages that are not specified in `pixi.toml` via `pixi add`, for example:
+`pixi.toml` dosyasında belirtilmeyen yeni paketleri `pixi add` ile kurabilirsiniz, örneğin:
 
 ```bash
 pixi add packaging
 ```
 
-And you can remove packages via `pixi remove`, for example,
+Ve paketleri `pixi remove` ile kaldırabilirsiniz, örneğin:
 
 ```bash
 pixi remove packaging
 ```
 
 &nbsp;
-## 4. Run Python code
+## 4. Python kodunu çalıştırın
 
-Your environment should now be ready to run the code in the repository.
+Ortamınız artık depodaki kodu çalıştırmaya hazır olmalı.
 
-Optionally, you can run an environment check by executing the `python_environment_check.py` script in this repository:
+İsteğe bağlı olarak, bu depodaki `python_environment_check.py` betiğini çalıştırarak bir ortam kontrolü yapabilirsiniz:
 
 ```bash
 pixi run python setup/02_installing-python-libraries/python_environment_check.py
@@ -92,9 +94,9 @@ pixi run python setup/02_installing-python-libraries/python_environment_check.py
 
 <br>
 
-**Launching JupyterLab**
+**JupyterLab'ı başlatmak**
 
-You can launch a JupyterLab instance via:
+Bir JupyterLab örneğini şu komutla başlatabilirsiniz:
 
 ```bash
 pixi run jupyter lab
@@ -103,4 +105,4 @@ pixi run jupyter lab
 
 ---
 
-Any questions? Please feel free to reach out in the [Discussion Forum](https://github.com/rasbt/LLMs-from-scratch/discussions).
+Sorularınız mı var? Lütfen [Tartışma Forumu](https://github.com/rasbt/LLMs-from-scratch/discussions) üzerinden bize ulaşmaktan çekinmeyin.

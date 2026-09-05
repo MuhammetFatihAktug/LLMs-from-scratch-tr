@@ -1,66 +1,68 @@
-# Pretraining GPT on the Project Gutenberg Dataset
+# GPT'yi Project Gutenberg Veri Kümesi Üzerinde Ön Eğitmek
 
-The code in this directory contains code for training a small GPT model on the free books provided by Project Gutenberg.
+> 🇹🇷 **Türkçe çeviri.** Orijinal İngilizce sürüm: [README.md](https://github.com/rasbt/LLMs-from-scratch/blob/main/ch05/03_bonus_pretraining_on_gutenberg/README.md) · Komut ve çıktı blokları birebir korunmuştur.
 
-As the Project Gutenberg website states, "the vast majority of Project Gutenberg eBooks are in the public domain in the US."
+Bu dizindeki kod, Project Gutenberg tarafından sunulan ücretsiz kitaplar üzerinde küçük bir GPT modeli eğitmeye yarayan kodu içerir.
 
-Please read the [Project Gutenberg Permissions, Licensing and other Common Requests](https://www.gutenberg.org/policy/permission.html) page for more information about using the resources provided by Project Gutenberg.
+Project Gutenberg web sitesinin belirttiği gibi, "Project Gutenberg e-kitaplarının büyük çoğunluğu ABD'de kamu malıdır (public domain)".
 
-&nbsp;
-## How to Use This Code
-
-&nbsp;
-
-### 1) Download the dataset
-
-In this section, we download books from Project Gutenberg using code from the [`pgcorpus/gutenberg`](https://github.com/pgcorpus/gutenberg) GitHub repository.
-
-As of this writing, this will require approximately 50 GB of disk space and take about 10-15 hours, but it may be more depending on how much Project Gutenberg grew since then.
+Project Gutenberg tarafından sağlanan kaynakların kullanımı hakkında daha fazla bilgi için lütfen [Project Gutenberg Permissions, Licensing and other Common Requests](https://www.gutenberg.org/policy/permission.html) sayfasını okuyun.
 
 &nbsp;
-#### Download instructions for Linux and macOS users
+## Bu Kod Nasıl Kullanılır
+
+&nbsp;
+
+### 1) Veri kümesini indirin
+
+Bu bölümde, [`pgcorpus/gutenberg`](https://github.com/pgcorpus/gutenberg) GitHub deposundaki kodu kullanarak Project Gutenberg'den kitaplar indiriyoruz.
+
+Bu yazının yazıldığı tarihte, bu işlem yaklaşık 50 GB disk alanı gerektirecek ve 10-15 saat sürecektir; ancak Project Gutenberg o zamandan bu yana ne kadar büyüdüyse süre daha da uzayabilir.
+
+&nbsp;
+#### Linux ve macOS kullanıcıları için indirme talimatları
 
 
-Linux and macOS users can follow these steps to download the dataset (if you are a Windows user, please see the note below):
+Linux ve macOS kullanıcıları veri kümesini indirmek için şu adımları izleyebilir (Windows kullanıcısıysanız lütfen aşağıdaki nota bakın):
 
-1. Set the `03_bonus_pretraining_on_gutenberg` folder as working directory to clone the `gutenberg` repository locally in this folder (this is necessary to run the provided scripts `prepare_dataset.py` and `pretraining_simple.py`). For instance, when being in the `LLMs-from-scratch` repository's folder, navigate into the *03_bonus_pretraining_on_gutenberg* folder via:
+1. `gutenberg` deposunu bu klasörün içine yerel olarak klonlamak için `03_bonus_pretraining_on_gutenberg` klasörünü çalışma dizini yapın (sağlanan `prepare_dataset.py` ve `pretraining_simple.py` betiklerini çalıştırmak için bu gereklidir). Örneğin, `LLMs-from-scratch` deposunun klasöründeyken *03_bonus_pretraining_on_gutenberg* klasörüne şu komutla girin:
 ```bash
 cd ch05/03_bonus_pretraining_on_gutenberg
 ```
 
-2. Clone the `gutenberg` repository in there:
+2. `gutenberg` deposunu buraya klonlayın:
 ```bash
 git clone https://github.com/pgcorpus/gutenberg.git
 ```
 
-3. Navigate into the locally cloned `gutenberg` repository's folder:
+3. Yerel olarak klonlanan `gutenberg` deposunun klasörüne girin:
 ```bash
 cd gutenberg
 ```
 
-4. Install the required packages defined in *requirements.txt* from the `gutenberg` repository's folder:
+4. `gutenberg` deposunun klasöründeki *requirements.txt* dosyasında tanımlı gerekli paketleri kurun:
 ```bash
 pip install -r requirements.txt
 ```
 
-5. Download the data:
+5. Veriyi indirin:
 ```bash
 python get_data.py
 ```
 
-6. Go back into the `03_bonus_pretraining_on_gutenberg` folder
+6. `03_bonus_pretraining_on_gutenberg` klasörüne geri dönün
 ```bash
 cd ..
 ```
 
 &nbsp;
-#### Special instructions for Windows users
+#### Windows kullanıcıları için özel talimatlar
 
-The [`pgcorpus/gutenberg`](https://github.com/pgcorpus/gutenberg) code is compatible with both Linux and macOS. However, Windows users would have to make small adjustments, such as adding `shell=True` to the `subprocess` calls and replacing `rsync`.
+[`pgcorpus/gutenberg`](https://github.com/pgcorpus/gutenberg) kodu hem Linux hem de macOS ile uyumludur. Ancak Windows kullanıcılarının küçük ayarlamalar yapması gerekir; örneğin `subprocess` çağrılarına `shell=True` eklemek ve `rsync` yerine başka bir çözüm kullanmak gibi.
 
-Alternatively, an easier way to run this code on Windows is by using the "Windows Subsystem for Linux" (WSL) feature, which allows users to run a Linux environment using Ubuntu in Windows. For more information, please read [Microsoft's official installation instruction](https://learn.microsoft.com/en-us/windows/wsl/install) and [tutorial](https://learn.microsoft.com/en-us/training/modules/wsl-introduction/).
+Alternatif olarak, bu kodu Windows'ta çalıştırmanın daha kolay bir yolu, kullanıcıların Windows içinde Ubuntu kullanarak bir Linux ortamı çalıştırmasına olanak tanıyan "Windows Subsystem for Linux" (WSL) özelliğini kullanmaktır. Daha fazla bilgi için lütfen [Microsoft'un resmî kurulum talimatlarını](https://learn.microsoft.com/en-us/windows/wsl/install) ve [öğreticisini](https://learn.microsoft.com/en-us/training/modules/wsl-introduction/) okuyun.
 
-When using WSL, please make sure you have Python 3 installed (check via `python3 --version`, or install it for instance with `sudo apt-get install -y python3.10` for Python 3.10) and install following packages there:
+WSL kullanırken lütfen Python 3'ün kurulu olduğundan emin olun (`python3 --version` ile kontrol edin veya örneğin Python 3.10 için `sudo apt-get install -y python3.10` ile kurun) ve orada şu paketleri kurun:
 
 ```bash
 sudo apt-get update && \
@@ -70,15 +72,15 @@ sudo apt-get install -y python-is-python3 && \
 sudo apt-get install -y rsync
 ```
 
-> **Note:**
-> Instructions about how to set up Python and installing packages can be found in [Optional Python Setup Preferences](../../setup/01_optional-python-setup-preferences/README.md) and [Installing Python Libraries](../../setup/02_installing-python-libraries/README.md).
+> **Not:**
+> Python kurulumu ve paket yükleme hakkındaki talimatlar [İsteğe Bağlı Python Kurulum Tercihleri](../../setup/01_optional-python-setup-preferences/README.md) ve [Python Kütüphanelerini Kurmak](../../setup/02_installing-python-libraries/README.md) bölümlerinde bulunabilir.
 >
-> Optionally, a Docker image running Ubuntu is provided with this repository. Instructions about how to run a container with the provided Docker image can be found in [Optional Docker Environment](../../setup/03_optional-docker-environment/README.md).
+> İsteğe bağlı olarak, bu depoda Ubuntu çalıştıran bir Docker imajı da sunulmaktadır. Sağlanan Docker imajıyla bir konteynerin nasıl çalıştırılacağına dair talimatlar [İsteğe Bağlı Docker Ortamı](../../setup/03_optional-docker-environment/README.md) bölümünde bulunabilir.
 
 &nbsp;
-### 2) Prepare the dataset
+### 2) Veri kümesini hazırlayın
 
-Next, run the `prepare_dataset.py` script, which concatenates the (as of this writing, 60,173) text files into fewer larger files so that they can be more efficiently transferred and accessed:
+Ardından, (bu yazının yazıldığı tarihte 60.173 olan) metin dosyalarını daha verimli aktarılıp erişilebilmeleri için daha az sayıda ve daha büyük dosyalarda birleştiren `prepare_dataset.py` betiğini çalıştırın:
 
 ```bash
 python prepare_dataset.py \
@@ -94,17 +96,17 @@ Skipping gutenberg/data/raw/PG29836_raw.txt as it does not contain primarily Eng
 ```
 
 
-> **Tip:**
-> Note that the produced files are stored in plaintext format and are not pre-tokenized for simplicity. However, you may want to update the codes to store the dataset in a pre-tokenized form to save computation time if you are planning to use the dataset more often or train for multiple epochs. See the *Design Decisions and Improvements* at the bottom of this page for more information.
+> **İpucu:**
+> Üretilen dosyaların basitlik adına düz metin biçiminde saklandığını ve önceden token'lara ayrılmadığını unutmayın. Ancak veri kümesini daha sık kullanmayı veya birden fazla dönem (epoch) boyunca eğitmeyi planlıyorsanız, hesaplama süresinden tasarruf etmek için kodları veri kümesini önceden token'lara ayrılmış biçimde saklayacak şekilde güncellemek isteyebilirsiniz. Daha fazla bilgi için bu sayfanın altındaki *Tasarım Kararları ve İyileştirmeler* bölümüne bakın.
 
-> **Tip:**
-> You can choose smaller file sizes, for example, 50 MB. This will result in more files but might be useful for quicker pretraining runs on a small number of files for testing purposes.
+> **İpucu:**
+> Örneğin 50 MB gibi daha küçük dosya boyutları seçebilirsiniz. Bu, daha fazla dosya oluşmasına yol açar ancak test amacıyla az sayıda dosya üzerinde daha hızlı ön eğitim koşuları yapmak için faydalı olabilir.
 
 
 &nbsp;
-### 3) Run the pretraining script
+### 3) Ön eğitim betiğini çalıştırın
 
-You can run the pretraining script as follows. Note that the additional command line arguments are shown with the default values for illustration purposes:
+Ön eğitim betiğini şu şekilde çalıştırabilirsiniz. Ek komut satırı argümanlarının gösterim amacıyla varsayılan değerleriyle verildiğini unutmayın:
 
 ```bash
 python pretraining_simple.py \
@@ -114,7 +116,7 @@ python pretraining_simple.py \
   --output_dir model_checkpoints
 ```
 
-The output will be formatted in the following way:
+Çıktı şu şekilde biçimlendirilecektir:
 
 > Total files: 3
 > Tokenizing file 1 of 3: data_small/combined_1.txt
@@ -145,30 +147,30 @@ The output will be formatted in the following way:
 
 
 &nbsp;
-> **Tip:**
-> In practice, if you are using macOS or Linux, I recommend using the `tee` command to save the log outputs to a `log.txt` file in addition to printing them on the terminal:
+> **İpucu:**
+> Pratikte macOS veya Linux kullanıyorsanız, günlük çıktılarını terminalde yazdırmanın yanı sıra bir `log.txt` dosyasına da kaydetmek için `tee` komutunu kullanmanızı öneririm:
 
 ```bash
 python -u pretraining_simple.py | tee log.txt
 ```
 
 &nbsp;
-> **Warning:**
-> Note that training on 1 of the ~500 Mb text files in the `gutenberg_preprocessed` folder will take approximately 4 hours on a V100 GPU.
-> The folder contains 47 files and will take approximately 200 hours (more than 1 week) to complete. You may want to run it on a smaller number of files.
+> **Uyarı:**
+> `gutenberg_preprocessed` klasöründeki ~500 MB'lık metin dosyalarından biri üzerinde eğitim yapmanın bir V100 GPU'da yaklaşık 4 saat süreceğini unutmayın.
+> Klasör 47 dosya içerir ve tamamlanması yaklaşık 200 saat (bir haftadan fazla) sürecektir. Daha az sayıda dosya üzerinde çalıştırmak isteyebilirsiniz.
 
 
 &nbsp;
-## Design Decisions and Improvements
+## Tasarım Kararları ve İyileştirmeler
 
-Note that this code focuses on keeping things simple and minimal for educational purposes. The code could be improved in the following ways to improve modeling performance and training efficiency:
+Bu kodun eğitim amaçlı olarak işleri basit ve asgari düzeyde tutmaya odaklandığını unutmayın. Modelleme performansını ve eğitim verimliliğini artırmak için kod şu şekillerde iyileştirilebilir:
 
-1. Modify the `prepare_dataset.py` script to strip the Gutenberg boilerplate text from each book file.
-2. Update the data preparation and loading utilities to pre-tokenize the dataset and save it in a tokenized form so that it doesn't have to be re-tokenized each time when calling the pretraining script.
-3. Update the `train_model_simple` script by adding the features introduced in [Appendix D: Adding Bells and Whistles to the Training Loop](../../appendix-D/01_main-chapter-code/appendix-D.ipynb), namely, cosine decay, linear warmup, and gradient clipping.
-4. Update the pretraining script to save the optimizer state (see section *5.4 Loading and saving weights in PyTorch* in chapter 5; [ch05.ipynb](../../ch05/01_main-chapter-code/ch05.ipynb)) and add the option to load an existing model and optimizer checkpoint and continue training if the training run was interrupted.
-5. Add a more advanced logger (for example, Weights and Biases) to view the loss and validation curves live
-6. Add distributed data parallelism (DDP) and train the model on multiple GPUs (see section *A.9.3 Training with multiple GPUs* in appendix A; [DDP-script.py](../../appendix-A/01_main-chapter-code/DDP-script.py)).
-7. Swap the from scratch `MultiheadAttention` class in the `previous_chapter.py` script with the efficient `MHAPyTorchScaledDotProduct` class implemented in the [Efficient Multi-Head Attention Implementations](../../ch03/02_bonus_efficient-multihead-attention/mha-implementations.ipynb) bonus section, which uses Flash Attention via PyTorch's `nn.functional.scaled_dot_product_attention` function.
-8. Speeding up the training by optimizing the model via [torch.compile](https://pytorch.org/tutorials/intermediate/torch_compile_tutorial.html) (`model = torch.compile`) or [thunder](https://github.com/Lightning-AI/lightning-thunder) (`model = thunder.jit(model)`).
-9. Implement Gradient Low-Rank Projection (GaLore) to further speed up the pretraining process. This can be achieved by just replacing the `AdamW` optimizer with the provided `GaLoreAdamW` provided in the [GaLore Python library](https://github.com/jiaweizzhao/GaLore).
+1. `prepare_dataset.py` betiğini, her kitap dosyasından Gutenberg standart metinlerini (boilerplate) temizleyecek şekilde değiştirin.
+2. Veri hazırlama ve yükleme yardımcılarını, veri kümesini önceden token'lara ayırıp token'lanmış biçimde kaydedecek şekilde güncelleyin; böylece ön eğitim betiği her çağrıldığında yeniden token'lara ayrılması gerekmez.
+3. `train_model_simple` betiğini, [Ek D: Eğitim Döngüsüne Ek Özellikler Eklemek](../../appendix-D/01_main-chapter-code/appendix-D.ipynb) bölümünde tanıtılan özellikleri (kosinüs sönümleme, doğrusal ısınma ve gradyan kırpma) ekleyerek güncelleyin.
+4. Ön eğitim betiğini, optimize edici durumunu kaydedecek şekilde güncelleyin (5. bölümdeki *5.4 Loading and saving weights in PyTorch* kısmına bakın; [ch05.ipynb](../../ch05/01_main-chapter-code/ch05.ipynb)) ve eğitim koşusu yarıda kesilirse mevcut bir model ile optimize edici kontrol noktasını yükleyip eğitime devam etme seçeneğini ekleyin.
+5. Kayıp ve doğrulama eğrilerini canlı izlemek için daha gelişmiş bir günlükleyici (örneğin Weights and Biases) ekleyin
+6. Dağıtık veri paralelliği (DDP) ekleyip modeli birden çok GPU üzerinde eğitin (Ek A'daki *A.9.3 Training with multiple GPUs* kısmına bakın; [DDP-script.py](../../appendix-A/01_main-chapter-code/DDP-script.py)).
+7. `previous_chapter.py` betiğindeki sıfırdan yazılmış `MultiheadAttention` sınıfını, PyTorch'un `nn.functional.scaled_dot_product_attention` fonksiyonu aracılığıyla Flash Attention kullanan ve [Verimli Çok Başlı Dikkat Uygulamaları](../../ch03/02_bonus_efficient-multihead-attention/mha-implementations.ipynb) bonus bölümünde uygulanan verimli `MHAPyTorchScaledDotProduct` sınıfıyla değiştirin.
+8. Modeli [torch.compile](https://pytorch.org/tutorials/intermediate/torch_compile_tutorial.html) (`model = torch.compile`) veya [thunder](https://github.com/Lightning-AI/lightning-thunder) (`model = thunder.jit(model)`) ile optimize ederek eğitimi hızlandırın.
+9. Ön eğitim sürecini daha da hızlandırmak için Gradient Low-Rank Projection (GaLore) uygulayın. Bu, yalnızca `AdamW` optimize edicisini [GaLore Python kütüphanesinde](https://github.com/jiaweizzhao/GaLore) sunulan `GaLoreAdamW` ile değiştirerek yapılabilir.

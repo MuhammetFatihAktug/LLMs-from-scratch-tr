@@ -1,8 +1,10 @@
-# Qwen3 From Scratch with Chat Interface
+# Sohbet Arayüzüyle Sıfırdan Qwen3
+
+> 🇹🇷 **Türkçe çeviri.** Orijinal İngilizce sürüm: [README.md](https://github.com/rasbt/LLMs-from-scratch/blob/main/ch05/11_qwen3/qwen3-chat-interface/README.md) · Komutlar birebir korunmuştur.
 
 
 
-This bonus folder contains code for running a ChatGPT-like user interface to interact with the pretrained Qwen3 model.
+Bu bonus klasörü, önceden eğitilmiş Qwen3 modeliyle etkileşim kurmak için ChatGPT benzeri bir kullanıcı arayüzü çalıştıran kodu içerir.
 
 
 
@@ -10,18 +12,18 @@ This bonus folder contains code for running a ChatGPT-like user interface to int
 
 
 
-To implement this user interface, we use the open-source [Chainlit Python package](https://github.com/Chainlit/chainlit).
+Bu kullanıcı arayüzünü uygulamak için açık kaynaklı [Chainlit Python paketini](https://github.com/Chainlit/chainlit) kullanıyoruz.
 
 &nbsp;
-## Step 1: Install dependencies
+## Adım 1: Bağımlılıkları kurun
 
-First, we install the `chainlit` package and dependencies from the [requirements-extra.txt](requirements-extra.txt) list via
+Önce `chainlit` paketini ve [requirements-extra.txt](requirements-extra.txt) listesindeki bağımlılıkları şu komutla kuruyoruz:
 
 ```bash
 pip install -r requirements-extra.txt
 ```
 
-Or, if you are using `uv`:
+Veya `uv` kullanıyorsanız:
 
 ```bash
 uv pip install -r requirements-extra.txt
@@ -31,25 +33,25 @@ uv pip install -r requirements-extra.txt
 
 &nbsp;
 
-## Step 2: Run `app` code
+## Adım 2: `app` kodunu çalıştırın
 
-This folder contains 2 files:
+Bu klasör 2 dosya içerir:
 
-1. [`qwen3-chat-interface.py`](qwen3-chat-interface.py): This file loads and uses the Qwen3 0.6B model in thinking mode. 
-2. [`qwen3-chat-interface-multiturn.py`](qwen3-chat-interface-multiturn.py): The same as above, but configured to remember the message history.
+1. [`qwen3-chat-interface.py`](qwen3-chat-interface.py): Bu dosya Qwen3 0.6B modelini düşünme (thinking) modunda yükler ve kullanır.
+2. [`qwen3-chat-interface-multiturn.py`](qwen3-chat-interface-multiturn.py): Yukarıdakinin aynısı, ancak mesaj geçmişini hatırlayacak şekilde yapılandırılmış.
 
-(Open and inspect these files to learn more.)
+(Daha fazlasını öğrenmek için bu dosyaları açıp inceleyin.)
 
-Run one of the following commands from the terminal to start the UI server:
+Arayüz sunucusunu başlatmak için terminalde aşağıdaki komutlardan birini çalıştırın:
 
 ```bash
 chainlit run qwen3-chat-interface.py
 ```
 
-or, if you are using `uv`:
+veya `uv` kullanıyorsanız:
 
 ```bash
 uv run chainlit run qwen3-chat-interface.py
 ```
 
-Running one of the commands above should open a new browser tab where you can interact with the model. If the browser tab does not open automatically, inspect the terminal command and copy the local address into your browser address bar (usually, the address is `http://localhost:8000`).
+Yukarıdaki komutlardan birini çalıştırmak, modelle etkileşim kurabileceğiniz yeni bir tarayıcı sekmesi açmalıdır. Tarayıcı sekmesi otomatik olarak açılmazsa, terminal çıktısını inceleyip yerel adresi tarayıcınızın adres çubuğuna kopyalayın (adres genellikle `http://localhost:8000` şeklindedir).

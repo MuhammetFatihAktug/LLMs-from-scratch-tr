@@ -1,20 +1,22 @@
-# Chapter 7: Finetuning to Follow Instructions
+# Bölüm 7: Talimatları İzlemek İçin İnce Ayar
 
-### Main Chapter Code
+> 🇹🇷 **Türkçe çeviri.** Orijinal İngilizce sürüm: [README.md](https://github.com/rasbt/LLMs-from-scratch/blob/main/ch07/01_main-chapter-code/README.md) · Komut ve çıktı blokları birebir korunmuştur.
 
-- [ch07.ipynb](ch07.ipynb) contains all the code as it appears in the chapter
-- [previous_chapters.py](previous_chapters.py) is a Python module that contains the GPT model we coded and trained in previous chapters, alongside many utility functions, which we reuse in this chapter
-- [gpt_download.py](gpt_download.py) contains the utility functions for downloading the pretrained GPT model weights
-- [exercise-solutions.ipynb](exercise-solutions.ipynb) contains the exercise solutions for this chapter
+### Ana Bölüm Kodu
+
+- [ch07.ipynb](ch07.ipynb) bölümde geçtiği haliyle tüm kodu içerir
+- [previous_chapters.py](previous_chapters.py) önceki bölümlerde kodlayıp eğittiğimiz GPT modelini ve bu bölümde yeniden kullandığımız pek çok yardımcı fonksiyonu içeren bir Python modülüdür
+- [gpt_download.py](gpt_download.py) önceden eğitilmiş GPT model ağırlıklarını indirmek için yardımcı fonksiyonları içerir
+- [exercise-solutions.ipynb](exercise-solutions.ipynb) bu bölüme ait alıştırma çözümlerini içerir
 
 
-### Optional Code
+### İsteğe Bağlı Kod
 
-- [load-finetuned-model.ipynb](load-finetuned-model.ipynb) is a standalone Jupyter notebook to load the instruction finetuned model we created in this chapter
+- [load-finetuned-model.ipynb](load-finetuned-model.ipynb) bu bölümde oluşturduğumuz talimat ince ayarlı modeli yüklemek için bağımsız bir Jupyter not defteridir
 
-- [gpt_instruction_finetuning.py](gpt_instruction_finetuning.py) is a standalone Python script to instruction finetune the model as described in the main chapter (think of it as a chapter summary focused on the finetuning parts)
+- [gpt_instruction_finetuning.py](gpt_instruction_finetuning.py) ana bölümde anlatıldığı gibi modele talimat ince ayarı yapan bağımsız bir Python betiğidir (ince ayar kısımlarına odaklanan bir bölüm özeti olarak düşünün)
 
-Usage:
+Kullanım:
 
 ```bash
 python gpt_instruction_finetuning.py
@@ -58,9 +60,9 @@ Responses saved as instruction-data-with-response-standalone.json
 Model saved as gpt2-medium355M-sft-standalone.pth
 ```
 
-- [ollama_evaluate.py](ollama_evaluate.py) is a standalone Python script to evaluate the responses of the finetuned model as described in the main chapter (think of it as a chapter summary focused on the evaluation parts)
+- [ollama_evaluate.py](ollama_evaluate.py) ana bölümde anlatıldığı gibi ince ayarlı modelin yanıtlarını değerlendiren bağımsız bir Python betiğidir (değerlendirme kısımlarına odaklanan bir bölüm özeti olarak düşünün)
 
-Usage:
+Kullanım:
 
 ```bash
 python ollama_evaluate.py --file_path instruction-data-with-response-standalone.json
@@ -73,4 +75,4 @@ Number of scores: 110 of 110
 Average score: 51.75
 ```
 
-- [exercise_experiments.py](exercise_experiments.py) is an optional scropt that implements the exercise solutions; for more details see [exercise-solutions.ipynb](exercise-solutions.ipynb)
+- [exercise_experiments.py](exercise_experiments.py) alıştırma çözümlerini uygulayan isteğe bağlı bir betiktir; daha fazla ayrıntı için bkz. [exercise-solutions.ipynb](exercise-solutions.ipynb)

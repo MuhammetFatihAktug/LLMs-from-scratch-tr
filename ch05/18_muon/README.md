@@ -1,22 +1,24 @@
-# Muon Optimizer
+# Muon Optimize Edici
 
-This bonus material illustrates how to use PyTorch's Muon optimizer with the GPT model training setup.
+> 🇹🇷 **Türkçe çeviri.** Orijinal İngilizce sürüm: [README.md](https://github.com/rasbt/LLMs-from-scratch/blob/main/ch05/18_muon/README.md) · Komut ve eğitim günlüğü çıktıları birebir korunmuştur.
 
-&nbsp;
-## Introduction
-
-Muon (["Muon is Scalable for LLM Training"](https://arxiv.org/abs/2502.16982)) is a relatively new optimizer for training LLMs' large 2D weight matrices that dominate transformer blocks, such as attention projections, feed-forward projections, and the output head. Parameters that are not good Muon targets, such as embeddings, biases, and normalization parameters, are typically kept on AdamW, though.
-
-Concretely, that means:
-
-1. Use Muon for trainable 2D parameters that do not belong to embedding layers.
-2. Use AdamW for embeddings, biases, normalization parameters, and other non-2D parameters.
-3. Learning rate-wise, e.g., try starting with `lr=1e-4` for Muon, `lr=5e-5` for AdamW, `weight_decay=0.1`, and `adjust_lr_fn="match_rms_adamw"` for Muon.
+Bu bonus materyal, PyTorch'un Muon optimize edicisinin GPT model eğitim kurulumuyla nasıl kullanılacağını gösterir.
 
 &nbsp;
-## Code Examples
+## Giriş
 
-The [gpt_train.py](gpt_train.py) script is the baseline script from chapter 5:
+Muon (["Muon is Scalable for LLM Training"](https://arxiv.org/abs/2502.16982)), LLM'lerin transformer bloklarına hâkim olan büyük 2 boyutlu ağırlık matrislerini (dikkat izdüşümleri, ileri beslemeli izdüşümler ve çıkış başı gibi) eğitmek için nispeten yeni bir optimize edicidir. Gömme katmanları, bias'lar ve normalizasyon parametreleri gibi Muon için iyi hedef olmayan parametreler ise genellikle AdamW üzerinde tutulur.
+
+Somut olarak bu şu anlama gelir:
+
+1. Gömme katmanlarına ait olmayan, eğitilebilir 2 boyutlu parametreler için Muon kullanın.
+2. Gömmeler, bias'lar, normalizasyon parametreleri ve 2 boyutlu olmayan diğer parametreler için AdamW kullanın.
+3. Öğrenme oranı açısından, örneğin Muon için `lr=1e-4`, AdamW için `lr=5e-5`, `weight_decay=0.1` ve Muon için `adjust_lr_fn="match_rms_adamw"` ile başlamayı deneyin.
+
+&nbsp;
+## Kod Örnekleri
+
+[gpt_train.py](gpt_train.py) betiği, 5. bölümden gelen temel çizgi (baseline) betiktir:
 
 ```bash
 uv run gpt_train.py
@@ -53,11 +55,12 @@ Ep 10 (Step 000085): Train loss 0.258, Val loss 6.624
 Every effort moves you?"  "Yes--quite insensible to the irony. She wanted him vindicated--and by me!"  He laughed again, and threw back his head to look up at the sketch of the donkey. "There were days when I
 ```
 
+
 <br>
 
-The alternative [gpt_train_muon.py](gpt_train_muon.py) script starts from the same model implementation but uses Muon (in addition to AdamW).
+Alternatif [gpt_train_muon.py](gpt_train_muon.py) betiği aynı model uygulamasından başlar, ancak (AdamW'ye ek olarak) Muon kullanır.
 
-I recommend looking at a file diff between [gpt_train.py](gpt_train.py) and [gpt_train_muon.py](gpt_train_muon.py) to quickly see how Muon is implemented here.
+Muon'un burada nasıl uygulandığını hızlıca görmek için [gpt_train.py](gpt_train.py) ile [gpt_train_muon.py](gpt_train_muon.py) arasındaki dosya farkına (diff) bakmanızı öneririm.
 
 ```bash
 uv run gpt_train_muon.py
@@ -171,4 +174,4 @@ Ep 10 (Step 000085): Train loss 0.103, Val loss 11.816
 Every effort moves you?"  "Yes--quite insensible to the irony. She wanted him vindicated--and by me!"  He laughed again, and threw back his glory, and my elbow and continued to wander up and down the room, stopping now
 ```
 
-By the way, this is not meant to be a meaningful language-modeling benchmark. The model is randomly initialized and trained for one epoch on a tiny repeated text snippet only so the optimizer path is easy to inspect and quick to run.
+Bu arada, bunun anlamlı bir dil modelleme kıyaslaması (benchmark) olması amaçlanmamıştır. Model rastgele başlatılır ve yalnızca küçük, tekrar eden bir metin parçası üzerinde tek bir dönem (epoch) boyunca eğitilir; böylece optimize edicinin izlediği yol kolayca incelenebilir ve hızlıca çalıştırılabilir.

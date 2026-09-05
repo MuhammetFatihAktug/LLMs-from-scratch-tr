@@ -1,48 +1,50 @@
-# Qwen3 From Scratch
+# Sıfırdan Qwen3
 
-This [standalone-qwen3.ipynb](standalone-qwen3.ipynb) Jupyter notebook in this folder contains a from-scratch implementation of Qwen3 0.6B, 1.7B, 4B, 8B, and 32B.
+> 🇹🇷 **Türkçe çeviri.** Orijinal İngilizce sürüm: [README.md](https://github.com/rasbt/LLMs-from-scratch/blob/main/ch05/11_qwen3/README.md) · Kod, çıktı ve tablo verileri birebir korunmuştur.
+
+Bu klasördeki [standalone-qwen3.ipynb](standalone-qwen3.ipynb) Jupyter not defteri, Qwen3 0.6B, 1.7B, 4B, 8B ve 32B modellerinin sıfırdan bir uygulamasını içerir.
 
 <img src="https://sebastianraschka.com/images/LLMs-from-scratch-images/bonus/qwen/qwen-overview.webp">
 
 
-This [standalone-qwen3-moe.ipynb](standalone-qwen3-moe.ipynb) and [standalone-qwen3-moe-plus-kvcache.ipynb](standalone-qwen3-moe-plus-kvcache.ipynb) Jupyter notebooks in this folder contain a from-scratch implementation of 30B-A3B Mixture-of-Experts (MoE), including the Thinking, Instruct, and Coder model variants.
+Bu klasördeki [standalone-qwen3-moe.ipynb](standalone-qwen3-moe.ipynb) ve [standalone-qwen3-moe-plus-kvcache.ipynb](standalone-qwen3-moe-plus-kvcache.ipynb) Jupyter not defterleri, Thinking, Instruct ve Coder model varyantları dahil olmak üzere 30B-A3B Uzmanlar Karışımı (MoE) modelinin sıfırdan bir uygulamasını içerir.
 
 <img src="https://sebastianraschka.com/images/LLMs-from-scratch-images/bonus/qwen/qwen3-coder-flash-overview.webp?123" width="430px">
 
 &nbsp;
-# Qwen3 from-scratch code
+# Sıfırdan Qwen3 kodu
 
-The standalone notebooks in this folder contain from-scratch codes in linear fashion:
+Bu klasördeki bağımsız not defterleri, sıfırdan yazılmış kodu doğrusal bir akışla içerir:
 
-1. [standalone-qwen3.ipynb](standalone-qwen3.ipynb): The dense Qwen3 model without bells and whistles
-2. [standalone-qwen3-plus-kvcache.ipynb](standalone-qwen3-plus-kvcache.ipynb): Same as above but with KV cache for better inference efficiency
-3. [standalone-qwen3-moe.ipynb](standalone-qwen3-moe.ipynb): Like the first notebook but the Mixture-of-Experts (MoE) variant
-4. [standalone-qwen3-moe-plus-kvcache.ipynb](standalone-qwen3-moe-plus-kvcache.ipynb): Same as above but with KV cache for better inference efficiency
+1. [standalone-qwen3.ipynb](standalone-qwen3.ipynb): Ek özellikler içermeyen yoğun (dense) Qwen3 modeli
+2. [standalone-qwen3-plus-kvcache.ipynb](standalone-qwen3-plus-kvcache.ipynb): Yukarıdakinin aynısı, ancak daha iyi çıkarım verimliliği için KV önbellekli
+3. [standalone-qwen3-moe.ipynb](standalone-qwen3-moe.ipynb): İlk not defteri gibi, ancak Uzmanlar Karışımı (MoE) varyantı
+4. [standalone-qwen3-moe-plus-kvcache.ipynb](standalone-qwen3-moe-plus-kvcache.ipynb): Yukarıdakinin aynısı, ancak daha iyi çıkarım verimliliği için KV önbellekli
 
-Alternatively, I also organized the code into a Python package [here](../../pkg/llms_from_scratch/) (including unit tests and CI), which you can run as described below.
-
-&nbsp;
-# Training
-
-The `Qwen3Model` class is implemented in a similar style as the `GPTModel` class, so it can be used as a drop-in replacement for training in chapter 5 and finetuning in chapters 6 and 7.
-
+Alternatif olarak, kodu [burada](../../pkg/llms_from_scratch/) bir Python paketi hâline de getirdim (birim testleri ve CI dahil); aşağıda açıklandığı gibi çalıştırabilirsiniz.
 
 &nbsp;
-# Using Qwen3 via the `llms-from-scratch` package
+# Eğitim
 
-For an easy way to use the Qwen3 from-scratch implementation, you can also use the `llms-from-scratch` PyPI package based on the source code in this repository at [pkg/llms_from_scratch](../../pkg/llms_from_scratch).
+`Qwen3Model` sınıfı, `GPTModel` sınıfına benzer bir tarzda uygulanmıştır; bu nedenle 5. bölümdeki eğitim ile 6. ve 7. bölümlerdeki ince ayar için doğrudan yerine kullanılabilir.
+
 
 &nbsp;
-#### 1) Installation
+# Qwen3'ü `llms-from-scratch` paketiyle kullanmak
+
+Sıfırdan Qwen3 uygulamasını kolayca kullanmak için, bu depodaki [pkg/llms_from_scratch](../../pkg/llms_from_scratch) kaynak koduna dayanan `llms-from-scratch` PyPI paketini de kullanabilirsiniz.
+
+&nbsp;
+#### 1) Kurulum
 
 ```bash
 pip install llms_from_scratch tokenizers
 ```
 
 &nbsp;
-#### 2) Model and text generation settings
+#### 2) Model ve metin üretimi ayarları
 
-Specify which model to use:
+Hangi modelin kullanılacağını belirtin:
 
 ```python
 USE_REASONING_MODEL = True
@@ -60,7 +62,7 @@ USE_INSTRUCT_MODEL = False
 # For Qwen3 Coder Flash model as well
 ```
 
-Basic text generation settings that can be defined by the user. With 150 tokens, the 0.6B model requires approximately 1.5 GB memory.
+Kullanıcı tarafından tanımlanabilen temel metin üretimi ayarları. 150 token ile 0.6B model yaklaşık 1,5 GB bellek gerektirir.
 
 ```python
 MAX_NEW_TOKENS = 150
@@ -69,9 +71,9 @@ TOP_K = 1
 ```
 
 &nbsp;
-#### 3a) Weight download and loading of the 0.6B model
+#### 3a) 0.6B modelin ağırlıklarının indirilmesi ve yüklenmesi
 
-The following automatically downloads the weight file based on the model choice (reasoning or base) above. Note that this section focuses on the 0.6B model. Skip this section and continue with section 3b) if you want to work with any of the larger models (1.7B, 4B, 8B, or 32B).
+Aşağıdaki kod, yukarıdaki model seçimine (akıl yürütme veya temel model) göre ağırlık dosyasını otomatik olarak indirir. Bu bölümün 0.6B modele odaklandığını unutmayın. Daha büyük modellerden biriyle (1.7B, 4B, 8B veya 32B) çalışmak istiyorsanız bu bölümü atlayıp 3b) ile devam edin.
 
 ```python
 from llms_from_scratch.qwen3 import download_from_huggingface
@@ -92,7 +94,7 @@ download_from_huggingface(
 )
 ```
 
-The model weights are then loaded as follows:
+Model ağırlıkları daha sonra şöyle yüklenir:
 
 ```python
 from pathlib import Path
@@ -114,15 +116,15 @@ model.to(device);
 ```
 
 &nbsp;
-#### 3b) Weight download and loading of the larger Qwen models
+#### 3b) Daha büyük Qwen modellerinin ağırlıklarının indirilmesi ve yüklenmesi
 
-If you are interested in working with any of the larger Qwen models, for instance, 1.7B, 4B, 8B, or 32B, please use the following code below instead of the code under 3a), which requires additional code dependencies:
+Daha büyük Qwen modellerinden biriyle (örneğin 1.7B, 4B, 8B veya 32B) çalışmak istiyorsanız, 3a) altındaki kod yerine aşağıdaki kodu kullanın; bu ek kod bağımlılıkları gerektirir:
 
 ```bash
 pip install safetensors huggingface_hub
 ```
 
-Then use the following code (make appropriate changes to `USE_MODEL` to select the desired model size)
+Ardından aşağıdaki kodu kullanın (istediğiniz model boyutunu seçmek için `USE_MODEL` değerini uygun şekilde değiştirin)
 
 ```python
 USE_MODEL = "1.7B"
@@ -150,7 +152,7 @@ if not USE_REASONING_MODEL:
   local_dir = f"{local_dir}-Base"
 ```
 
-Now, download and load the weights into the `model`:
+Şimdi ağırlıkları indirip `model` içine yükleyin:
 
 ```python
 from llms_from_scratch.qwen3 import (
@@ -180,9 +182,9 @@ del weights_dict  # delete weight dictionary to free up disk space
 
 &nbsp;
 
-#### 4) Initialize tokenizer
+#### 4) Tokenizer'ı başlatmak
 
-The following code downloads and initializes the tokenizer:
+Aşağıdaki kod tokenizer'ı indirir ve başlatır:
 
 ```python
 from llms_from_scratch.qwen3 import Qwen3Tokenizer
@@ -205,9 +207,9 @@ tokenizer = Qwen3Tokenizer(
 
 &nbsp;
 
-#### 5) Generating text
+#### 5) Metin üretmek
 
-Lastly, we can generate text via the following code:
+Son olarak, aşağıdaki kodla metin üretebiliriz:
 
 ```python
 prompt = "Give me a short introduction to large language models."
@@ -249,7 +251,7 @@ output_text = tokenizer.decode(output_token_ids.squeeze(0).tolist())
 print("\n\nOutput text:\n\n", output_text + "...")
 ```
 
-When using the Qwen3 0.6B reasoning model, the output should look similar to the one shown below (this was run on an A100):
+Qwen3 0.6B akıl yürütme modelini kullanırken çıktı aşağıdakine benzer görünmelidir (bu, bir A100 üzerinde çalıştırılmıştır):
 
 ```
 Time: 6.35 sec
@@ -266,7 +268,7 @@ Large language models (LLMs) are advanced artificial intelligence systems design
 
 
 
-For the larger models, you may prefer the streaming variant, which prints each token as soon as it's generated:
+Daha büyük modeller için, her token'ı üretilir üretilmez yazdıran akış (streaming) varyantını tercih edebilirsiniz:
 
 ```python
 from llms_from_scratch.generate import generate_text_simple_stream
@@ -297,36 +299,36 @@ Large language models (LLMs) are advanced artificial intelligence systems design
 
 &nbsp;
 
-#### Pro tip 1: speed up inference with compilation
+#### Uzman ipucu 1: derleme ile çıkarımı hızlandırın
 
 
-For up to a 4× speed-up, replace
+4 kata varan hızlanma için şunu:
 
 ```python
 model.to(device)
 ```
 
-with
+şununla değiştirin:
 
 ```python
 model.to(device)
 model = torch.compile(model)
 ```
 
-Note: There is a significant multi-minute upfront cost when compiling, and the speed-up takes effect after the first `generate` call. 
+Not: Derleme sırasında birkaç dakikalık kayda değer bir başlangıç maliyeti vardır ve hızlanma ilk `generate` çağrısından sonra devreye girer.
 
-The following table shows a performance comparison on an A100 for consequent `generate` calls:
+Aşağıdaki tablo, art arda yapılan `generate` çağrıları için bir A100 üzerindeki performans karşılaştırmasını gösterir:
 
-|                          | Hardware        | Tokens/sec | Memory   |
+|                          | Donanım         | Token/saniye | Bellek   |
 | ------------------------ | ----------------|----------- | -------- |
 | Qwen3Model 0.6B          | Nvidia A100 GPU | 25         | 1.49 GB  |
 | Qwen3Model 0.6B compiled | Nvidia A100 GPU | 107        | 1.99 GB  |
 
 
 &nbsp;
-#### Pro tip 2: speed up inference with KV cache
+#### Uzman ipucu 2: KV önbelleği ile çıkarımı hızlandırın
 
-You can significantly boost inference performance using the KV cache `Qwen3Model` drop-in replacement when running the model on a CPU. (See my [Understanding and Coding the KV Cache in LLMs from Scratch](https://magazine.sebastianraschka.com/p/coding-the-kv-cache-in-llms) article to learn more about KV caches.)
+Modeli bir CPU üzerinde çalıştırırken, doğrudan yerine geçen KV önbellekli `Qwen3Model` sürümünü kullanarak çıkarım performansını kayda değer biçimde artırabilirsiniz. (KV önbellekleri hakkında daha fazla bilgi için [Understanding and Coding the KV Cache in LLMs from Scratch](https://magazine.sebastianraschka.com/p/coding-the-kv-cache-in-llms) yazıma bakın.)
 
 ```python
 from llms_from_scratch.kv_cache.qwen3 import Qwen3Model
@@ -342,9 +344,9 @@ token_ids = generate_text_simple(
 )
 ```
 
-Note that the peak memory usage is only listed for Nvidia CUDA devices, as it is easier to calculate. However, the memory usage on other devices is likely similar as it uses a similar precision format, and the KV cache storage results in even lower memory usage here for the generated 150-token text (however, different devices may implement matrix multiplication differently and may result in different peak memory requirements; and KV-cache memory may increase prohibitively for longer contexts lengths).
+Tepe bellek kullanımının yalnızca Nvidia CUDA cihazları için listelendiğini unutmayın; çünkü hesaplaması daha kolaydır. Ancak diğer cihazlardaki bellek kullanımı benzer bir hassasiyet biçimi kullandığı için muhtemelen benzerdir ve KV önbelleği depolaması, üretilen 150 token'lık metin için burada daha da düşük bellek kullanımına yol açar (yine de farklı cihazlar matris çarpımını farklı uygulayabilir ve farklı tepe bellek gereksinimleri doğurabilir; ayrıca daha uzun bağlam uzunluklarında KV önbelleği belleği karşılanamaz ölçüde artabilir).
 
-| Model           | Mode              | Hardware        | Tokens/sec | GPU Memory (VRAM) |
+| Model           | Mod               | Donanım         | Token/saniye | GPU Belleği (VRAM) |
 | --------------- | ----------------- | --------------- | ---------- | ----------------- |
 | Qwen3Model 0.6B | Regular           | Mac Mini M4 CPU | 1          | -                 |
 | Qwen3Model 0.6B | Regular compiled  | Mac Mini M4 CPU | 1          | -                 |
@@ -361,17 +363,17 @@ Note that the peak memory usage is only listed for Nvidia CUDA devices, as it is
 | Qwen3Model 0.6B | KV cache          | Nvidia A100 GPU | 25         | 1.47 GB           |
 | Qwen3Model 0.6B | KV cache compiled | Nvidia A100 GPU | 90         | 1.48 GB           |
 
-Note that all settings above have been tested to produce the same text outputs.
+Yukarıdaki tüm ayarların aynı metin çıktılarını ürettiğinin test edildiğini unutmayın.
 
 
 
 &nbsp;
 
-#### Pro tip 3: batched inference
+#### Uzman ipucu 3: yığın hâlinde (batched) çıkarım
 
-We can further increase the throughput via batched inference. While it's not an apples-to-apples comparison, as we are now running inference with a higher number of input sequences, this increases the tokens per second throughput while trading it off against increased memory usage.
+Verimi (throughput) yığın hâlinde çıkarımla daha da artırabiliriz. Artık daha fazla girdi dizisiyle çıkarım yaptığımız için bu bire bir karşılaştırma sayılmaz; yine de saniyedeki token verimini artırır, karşılığında bellek kullanımı yükselir.
 
-This only requires a small code modification with respect to preparing the prompt. For example, consider this batched prompt below:
+Bu, yalnızca istemin hazırlanmasıyla ilgili küçük bir kod değişikliği gerektirir. Örneğin, aşağıdaki yığın istemini ele alalım:
 
 ```python
 from llms_from_scratch.ch04 import generate_text_simple
@@ -404,7 +406,7 @@ output_token_ids = generate_text_simple(
 )
 ```
 
-The code for the KV cache version is similar, except that it requires using these drop-in replacements:
+KV önbellekli sürümün kodu da benzerdir; tek fark, doğrudan yerine geçen şu içe aktarmaları kullanmayı gerektirmesidir:
 
 ```python
 from llms_from_scratch.kv_cache_batched.generate import generate_text_simple
@@ -412,9 +414,9 @@ from llms_from_scratch.kv_cache_batched.qwen3 import Qwen3Model
 ```
 
 
-The experiments below are run with a batch size of 8.
+Aşağıdaki deneyler 8'lik bir yığın boyutuyla çalıştırılmıştır.
 
-| Model            | Mode              | Hardware        | Batch size | Tokens/sec | GPU Memory (VRAM) |
+| Model            | Mod               | Donanım         | Yığın boyutu | Token/saniye | GPU Belleği (VRAM) |
 | ---------------- | ----------------- | --------------- | ---------- | ---------- | ----------------- |
 | Qwen3Model  0.6B | Regular           | Mac Mini M4 CPU | 8          | 2          | -                 |
 | Qwen3Model 0.6B  | Regular compiled  | Mac Mini M4 CPU | 8          | -          | -                 |
@@ -430,4 +432,3 @@ The experiments below are run with a batch size of 8.
 | Qwen3Model 0.6B  | Regular compiled  | Nvidia A100 GPU | 8          | 351        | 2.19 GB           |
 | Qwen3Model 0.6B  | KV cache          | Nvidia A100 GPU | 8          | 140        | 3.13 GB           |
 | Qwen3Model 0.6B  | KV cache compiled | Nvidia A100 GPU | 8          | 280        | 1.75 GB           |
-

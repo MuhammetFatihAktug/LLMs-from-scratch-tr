@@ -1,7 +1,7 @@
-# Chapter 7: Finetuning to Follow Instructions
+# Bölüm 7: Talimatları İzlemek İçin İnce Ayar
 
-- [create-preference-data-ollama.ipynb](create-preference-data-ollama.ipynb): A notebook that creates a synthetic dataset for preference finetuning dataset using Llama 3.1 and Ollama
+> 🇹🇷 **Türkçe çeviri.** Orijinal İngilizce sürüm: [README.md](https://github.com/rasbt/LLMs-from-scratch/blob/main/ch07/04_preference-tuning-with-dpo/README.md)
 
-- [dpo-from-scratch.ipynb](dpo-from-scratch.ipynb): This notebook implements Direct Preference Optimization (DPO) for LLM alignment
+- [create-preference-data-ollama.ipynb](create-preference-data-ollama.ipynb): Llama 3.1 ve Ollama kullanarak tercih ince ayarı için sentetik bir veri kümesi oluşturan bir not defteri
 
-
+- [dpo-from-scratch.ipynb](dpo-from-scratch.ipynb): Bu not defteri, LLM hizalaması için Doğrudan Tercih Optimizasyonu'nu (DPO) uygular

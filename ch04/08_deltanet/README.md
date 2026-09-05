@@ -1,8 +1,10 @@
-# Gated DeltaNet for Linear Attention
+# Doğrusal Dikkat İçin Gated DeltaNet
 
-Recently, [Qwen3-Next](https://qwen.ai/blog?id=4074cca80393150c248e508aa62983f9cb7d27cd&from=research.latest-advancements-list) and [Kimi Linear](https://arxiv.org/abs/2510.26692) proposed hybrid transformers that implement alternatives to the attention mechanism that scale linearly instead of quadratically with respect to the context length.
+> 🇹🇷 **Türkçe çeviri.** Orijinal İngilizce sürüm: [README.md](https://github.com/rasbt/LLMs-from-scratch/blob/main/ch04/08_deltanet/README.md) · Kod blokları, gerçek kaynak dosyalarla birebir eşleşmesi için çevrilmeden bırakılmıştır.
 
-Both Qwen3-Next and Kimi Linear use a 3:1 ratio, meaning for every three transformer blocks employing the linear Gated DeltaNet variant, there’s one block that uses full attention, as shown in the figure below.
+Yakın zamanda [Qwen3-Next](https://qwen.ai/blog?id=4074cca80393150c248e508aa62983f9cb7d27cd&from=research.latest-advancements-list) ve [Kimi Linear](https://arxiv.org/abs/2510.26692), dikkat mekanizmasına alternatif olarak bağlam uzunluğuna göre karesel yerine doğrusal ölçeklenen hibrit transformer'lar önerdi.
+
+Hem Qwen3-Next hem de Kimi Linear 3:1 oranını kullanır; yani doğrusal Gated DeltaNet varyantını kullanan her üç transformer bloğuna karşılık, aşağıdaki şekilde gösterildiği gibi tam dikkat kullanan bir blok bulunur.
 
 <img src="https://sebastianraschka.com/images/LLMs-from-scratch-images/bonus/gated_deltanet/01.webp" alt="Qwen3-Next versus Kimi Linear">
 
@@ -10,25 +12,25 @@ Both Qwen3-Next and Kimi Linear use a 3:1 ratio, meaning for every three transfo
 
 &nbsp;
 
-## Introduction and Overview
+## Giriş ve Genel Bakış
 
-Gated DeltaNet is a linear attention variant with inspiration from recurrent neural networks, including a gating mechanism from the [Gated Delta Networks: Improving Mamba2 with Delta Rule](https://arxiv.org/abs/2412.06464) paper. In a sense, Gated DeltaNet is a DeltaNet with Mamba-style gating, and DeltaNet is a linear attention mechanism.
+Gated DeltaNet, [Gated Delta Networks: Improving Mamba2 with Delta Rule](https://arxiv.org/abs/2412.06464) makalesinden gelen bir kapı (gating) mekanizması dahil olmak üzere, yinelemeli sinir ağlarından (RNN) esinlenen bir doğrusal dikkat varyantıdır. Bir bakıma Gated DeltaNet, Mamba tarzı kapılara sahip bir DeltaNet'tir; DeltaNet ise doğrusal bir dikkat mekanizmasıdır.
 
-Kimi Linear modifies the linear attention mechanism of Qwen3-Next by the Kimi Delta Attention (KDA) mechanism, which is essentially a refinement of Gated DeltaNet. Whereas Qwen3-Next applies a scalar gate (one value per attention head) to control the memory decay rate, Kimi Linear replaces it with a channel-wise gating for each feature dimension. According to the authors, this gives more control over the memory, and this, in turn, improves long-context reasoning.
+Kimi Linear, Qwen3-Next'in doğrusal dikkat mekanizmasını, esasen Gated DeltaNet'in bir iyileştirmesi olan Kimi Delta Attention (KDA) mekanizmasıyla değiştirir. Qwen3-Next bellek sönümleme oranını kontrol etmek için skaler bir kapı (dikkat başı başına tek bir değer) uygularken, Kimi Linear bunu her öznitelik boyutu için kanal bazlı bir kapılama ile değiştirir. Yazarlara göre bu, bellek üzerinde daha fazla denetim sağlar ve bu da uzun bağlamlı akıl yürütmeyi iyileştirir.
 
-In addition, for the full attention layers, Kimi Linear replaces Qwen3-Next’s gated attention layers (which are essentially standard multi-head attention layers with output gating) with Multi-Head Latent Attention (MLA). This is the same MLA mechanism we discussed earlier in the DeepSeek V3/R1 section, but with an additional gate. (To recap, MLA compresses the key/value space to reduce the KV cache size.)
+Ayrıca, tam dikkat katmanları için Kimi Linear, Qwen3-Next'in kapılı dikkat katmanlarını (esasen çıkış kapılamalı standart çok başlı dikkat katmanları) Çok Başlı Gizil Dikkat (MLA) ile değiştirir. Bu, daha önce DeepSeek V3/R1 bölümünde ele aldığımız MLA mekanizmasının aynısıdır, ancak ek bir kapı içerir. (Hatırlatma: MLA, KV önbelleği boyutunu azaltmak için anahtar/değer uzayını sıkıştırır.)
 
-The MLA in Kimi Linear does not use the gate, which was intentional so that the authors could compare the architecture more directly to standard MLA, however, they [stated](https://x.com/yzhang_cs/status/1984631714464088563) that they plan to add it in the future.
+Kimi Linear'daki MLA bu kapıyı kullanmaz; bu bilinçli bir tercihti, böylece yazarlar mimariyi standart MLA ile daha doğrudan karşılaştırabildiler. Ancak gelecekte kapıyı eklemeyi planladıklarını [belirttiler](https://x.com/yzhang_cs/status/1984631714464088563).
 
-Since we already implemented MLA in [../05_mla](../05_mla), this bonus material focuses on the Gated DeltaNet aspect.
+MLA'yı zaten [../05_mla](../05_mla) klasöründe uyguladığımız için, bu bonus materyal Gated DeltaNet tarafına odaklanmaktadır.
 
 
 &nbsp;
-## Gated Attention
+## Kapılı Dikkat (Gated Attention)
 
-Before we get to the Gated DeltaNet itself, let's briefly talk about the gate. As you can see in the upper part of the Qwen3-Next architecture in the previous figure, Qwen3-Next uses "gated attention". This is essentially regular full attention with an additional sigmoid gate.
+Gated DeltaNet'in kendisine geçmeden önce kapıdan (gate) kısaca söz edelim. Önceki şekildeki Qwen3-Next mimarisinin üst kısmında görebileceğiniz gibi, Qwen3-Next "kapılı dikkat" kullanır. Bu, esasen ek bir sigmoid kapıya sahip klasik tam dikkattir.
 
-This gating is a simple modification that I added to the `MultiHeadAttention`  code from chapter 3 below for illustration purposes:
+Bu kapılama, aşağıda gösterim amacıyla 3. bölümdeki `MultiHeadAttention` koduna eklediğim basit bir değişikliktir:
 
 ```python
 import torch
@@ -105,36 +107,36 @@ class GatedMultiHeadAttention(nn.Module):
 
 
 
-As we can see, after computing attention as usual, the model uses a separate gating signal from the same input, applies a sigmoid to keep it between 0 and 1, and multiplies it with the attention output. This allows the model to scale up or down certain features dynamically. The Qwen3-Next developers [state](https://qwen.ai/blog?id=4074cca80393150c248e508aa62983f9cb7d27cd&from=research.latest-advancements-list) that this helps with training stability:
+Görüldüğü gibi, dikkat her zamanki gibi hesaplandıktan sonra model aynı girdiden ayrı bir kapılama sinyali üretir, bunu 0 ile 1 arasında tutmak için bir sigmoid uygular ve dikkat çıktısıyla çarpar. Bu, modelin belirli öznitelikleri dinamik olarak büyütmesine veya küçültmesine olanak tanır. Qwen3-Next geliştiricileri bunun eğitim kararlılığına yardımcı olduğunu [belirtiyor](https://qwen.ai/blog?id=4074cca80393150c248e508aa62983f9cb7d27cd&from=research.latest-advancements-list):
 
-> [...] the attention output gating mechanism helps eliminate issues like Attention Sink and Massive Activation, ensuring numerical stability across the model.
+> [...] dikkat çıkışı kapılama mekanizması, Attention Sink ve Massive Activation gibi sorunların giderilmesine yardımcı olur ve model genelinde sayısal kararlılığı güvence altına alır.
 
 
 &nbsp;
 ## Gated DeltaNet
 
-Now, what is Gated DeltaNet? Gated DeltaNet (short for *Gated Delta Network*) is Qwen3-Next's linear-attention layer, which is intended as an alternative to standard softmax attention. It was adopted from the [Gated Delta Networks: Improving Mamba2 with Delta Rule](https://arxiv.org/abs/2412.06464) paper as mentioned earlier.
+Peki Gated DeltaNet nedir? Gated DeltaNet (*Gated Delta Network*'ün kısaltması), Qwen3-Next'in doğrusal dikkat katmanıdır ve standart softmax dikkatine alternatif olarak tasarlanmıştır. Daha önce belirtildiği gibi [Gated Delta Networks: Improving Mamba2 with Delta Rule](https://arxiv.org/abs/2412.06464) makalesinden alınmıştır.
 
-Gated DeltaNet was originally proposed as an improved version of Mamba2, where it combines the gated decay mechanism of Mamba2 with a delta rule.
+Gated DeltaNet, başlangıçta Mamba2'nin geliştirilmiş bir sürümü olarak önerildi; Mamba2'nin kapılı sönümleme mekanizmasını bir delta kuralıyla birleştirir.
 
-Mamba is a state-space model (an alternative to transformers), a big topic that deserves separate coverage in the future.
+Mamba bir durum-uzayı modelidir (transformer'lara bir alternatif); gelecekte ayrıca ele alınmayı hak eden geniş bir konudur.
 
-The delta rule part refers to computing the difference (delta, Δ) between new and predicted values to update a hidden state that is used as a memory state (more on that later).
+Delta kuralı kısmı, bellek durumu olarak kullanılan bir gizli durumu (hidden state) güncellemek için yeni ve öngörülen değerler arasındaki farkın (delta, Δ) hesaplanmasını ifade eder (bu konuya birazdan döneceğiz).
 
-(Side note: Readers with classic machine learning literature can think of this as similar to Hebbian learning inspired by biology: "Cells that fire together wire together." It's basically a precursor of the perceptron update rule and gradient descent-based learning, but without supervision.)
+(Yan not: Klasik makine öğrenmesi literatürüne aşina okuyucular bunu, biyolojiden esinlenen Hebbian öğrenmeye benzer düşünebilir: "Birlikte ateşlenen hücreler birbirine bağlanır." Bu esasen perceptron güncelleme kuralının ve gradyan inişine dayalı öğrenmenin bir öncülüdür, ancak denetim (supervision) içermez.)
 
-Gated DeltaNet has a gate similar to the gate in gated attention discussed earlier, except that it uses a SiLU instead of logistic sigmoid activation, as illustrated below. (The SiLU choice is likely to improve gradient flow and stability over the standard sigmoid.)
+Gated DeltaNet, daha önce ele alınan kapılı dikkattekine benzer bir kapıya sahiptir; tek fark, lojistik sigmoid yerine aşağıda gösterildiği gibi SiLU aktivasyonu kullanmasıdır. (SiLU tercihi muhtemelen standart sigmoid'e kıyasla gradyan akışını ve kararlılığı iyileştirmek içindir.)
 
 <img src="https://sebastianraschka.com/images/LLMs-from-scratch-images/bonus/gated_deltanet/02.webp" alt="Gated DeltaNet" width=500px>
 
-However, as shown in the figure above, the "gated" in the Gated DeltaNet also refers to several additional gates:
+Ancak yukarıdaki şekilde gösterildiği gibi, Gated DeltaNet'teki "gated" ifadesi birkaç ek kapıya da işaret eder:
 
-- `α` (decay gate) controls how fast the memory decays or resets over time,
-- `β` (update gate) controls how strongly new inputs modify the state.
+- `α` (sönümleme kapısı) belleğin zaman içinde ne kadar hızlı söneceğini veya sıfırlanacağını denetler,
+- `β` (güncelleme kapısı) yeni girdilerin durumu ne kadar güçlü değiştireceğini denetler.
 
-In code, a simplified version of the Gated DeltaNet depicted above (without the convolutional mixing) can be implemented as follows (the code is inspired by the [official implementation](https://github.com/huggingface/transformers/blob/0ed6d51ae8ed3f4fafca67a983b8d75bc76cd51b/src/transformers/models/qwen3_next/modular_qwen3_next.py#L835) by the Qwen3 team).
+Kod olarak, yukarıda tasvir edilen Gated DeltaNet'in basitleştirilmiş bir sürümü (evrişimsel karıştırma olmadan) şöyle uygulanabilir (kod, Qwen3 ekibinin [resmî uygulamasından](https://github.com/huggingface/transformers/blob/0ed6d51ae8ed3f4fafca67a983b8d75bc76cd51b/src/transformers/models/qwen3_next/modular_qwen3_next.py#L835) esinlenmiştir).
 
-(Note that some implementations refer to the decay gate as `gk` (gate for step k), where `exp(gk)` matches the paper's $\alpha_t$. To keep this relationship explicit, the snippet below separates the log-space gate `alpha_log` from the exponentiated decay `alpha`.)
+(Bazı uygulamaların sönümleme kapısını `gk` (k adımı için kapı) olarak adlandırdığını ve `exp(gk)` ifadesinin makaledeki $\alpha_t$ değerine karşılık geldiğini unutmayın. Bu ilişkiyi açık tutmak için aşağıdaki kod parçası, logaritmik uzaydaki `alpha_log` kapısını üstel sönümleme `alpha` değerinden ayırır.)
 
 
 ```python
@@ -248,13 +250,13 @@ class GatedDeltaNet(nn.Module):
         return out
 ```
 
-(Note that for simplicity, I omitted the convolutional mixing that Qwen3-Next and Kimi Linear use to keep the code more readable and focus on the recurrent aspects.)
+(Basitlik adına, kodu daha okunabilir tutmak ve yinelemeli (recurrent) yönlere odaklanmak için Qwen3-Next ve Kimi Linear'ın kullandığı evrişimsel karıştırmayı atladığımı unutmayın.)
 
-So, as we can see above, there are lots of differences to standard (or gated) attention.
+Yukarıda görüldüğü gibi, standart (veya kapılı) dikkate kıyasla pek çok fark var.
 
-In gated attention, the model computes normal attention between all tokens (every token attends or looks at every other token). Then, after getting the attention output, a gate (a sigmoid) decides how much of that output to keep. The takeaway is that it's still the the regular scaled-dot product attention that scales quadratically with the context length.
+Kapılı dikkatte model, tüm token'lar arasında normal dikkati hesaplar (her token diğer her token'a dikkat eder, yani bakar). Ardından, dikkat çıktısı elde edildikten sonra bir kapı (bir sigmoid), bu çıktının ne kadarının korunacağına karar verir. Buradaki çıkarım şu: bu hâlâ bağlam uzunluğuna göre karesel ölçeklenen klasik ölçeklenmiş nokta çarpımı dikkatidir.
 
-As a refresher, scaled-dot production attention is computed as softmax(QKᵀ)V, where Q and K are *n*-by-*d* matrices, where *n* is the number of input tokens, and *d* is the embedding dimension. So QKᵀ results in an attention *n*-by-*n* matrix, that is multiplied by a *n*-by-*d* dimensional value matrix V:
+Hatırlatma olarak, ölçeklenmiş nokta çarpımı dikkati softmax(QKᵀ)V şeklinde hesaplanır; burada Q ve K, *n*-çarpı-*d* boyutlu matrislerdir, *n* girdi token'larının sayısı ve *d* gömme boyutudur. Yani QKᵀ, *n*-çarpı-*n* boyutlu bir dikkat matrisi verir; bu da *n*-çarpı-*d* boyutlu değer matrisi V ile çarpılır:
 
 ```
 attn_scores = queries @ keys.transpose(2, 3)
@@ -276,7 +278,7 @@ context = context.reshape(b, num_tokens, self.d_out)
 
 <img src="https://sebastianraschka.com/images/LLMs-from-scratch-images/bonus/gated_deltanet/03.webp" alt="Quadratic attention" width=500px />
 
-In Gated DeltaNet, there's no  *n*-by-*n* attention matrix. Instead, the model processes tokens one by one. It keeps a running memory (a state) that gets updated as each new token comes in. This is what's implemented as, where `S` is the state that gets updated recurrently for each time step *t*.
+Gated DeltaNet'te ise *n*-çarpı-*n* boyutlu bir dikkat matrisi yoktur. Bunun yerine model token'ları tek tek işler. Her yeni token geldiğinde güncellenen, süregelen bir bellek (bir durum) tutar. Aşağıda uygulanan budur; burada `S`, her *t* zaman adımı için yinelemeli olarak güncellenen durumdur.
 
 ```python
 S = x.new_zeros(b, self.num_heads, self.head_dim, self.head_dim)
@@ -296,55 +298,55 @@ for t in range(num_tokens):
     y_t = (S * q_t.unsqueeze(-1)).sum(dim=-2)
 ```
 
-And the gates control how that memory changes:
+Kapılar ise bu belleğin nasıl değiştiğini denetler:
 
-- α (`alpha`) regulates how much of the old memory to forget (decay).
+- α (`alpha`) eski belleğin ne kadarının unutulacağını (sönümleme) düzenler.
 
-- β (`beta`) regulates how much the current token at time step *t* updates the memory.
+- β (`beta`) *t* zaman adımındaki mevcut token'ın belleği ne kadar güncelleyeceğini düzenler.
 
-(And the final output gate, not shown in the snippet above, is similar to gated attention; it controls how much of the output is kept.)
+(Ve yukarıdaki kod parçasında gösterilmeyen son çıkış kapısı, kapılı dikkattekine benzer; çıktının ne kadarının korunacağını denetler.)
 
-So, in a sense, this state update in Gated DeltaNet is similar to how recurrent neural networks (RNNs) work. The advantage is that it scales linearly (via the for-loop) instead of quadratically with context length.
+Yani bir bakıma, Gated DeltaNet'teki bu durum güncellemesi, yinelemeli sinir ağlarının (RNN) çalışma şekline benzer. Avantajı, bağlam uzunluğuna göre karesel yerine (for döngüsü aracılığıyla) doğrusal ölçeklenmesidir.
 
-The downside of this recurrent state update is that, compared to regular (or gated) attention, it sacrifices the global context modeling ability that comes from full pairwise attention.
+Bu yinelemeli durum güncellemesinin dezavantajı ise, klasik (veya kapılı) dikkate kıyasla, tam ikili (pairwise) dikkatten gelen küresel bağlam modelleme yeteneğinden feragat etmesidir.
 
-Gated DeltaNet, can, to some extend, still capture context, but it has to go through the memory (*S*) bottleneck. That memory is a fixed size and thus more efficient, but it compresses past context into a single hidden state similar to RNNs.
+Gated DeltaNet bir ölçüde hâlâ bağlamı yakalayabilir, ancak bunu bellek (*S*) darboğazından geçirmek zorundadır. Bu bellek sabit boyutludur ve dolayısıyla daha verimlidir, ancak RNN'lere benzer şekilde geçmiş bağlamı tek bir gizli durumda sıkıştırır.
 
-That's why the Qwen3-Next and Kimi Linear architectures don't replace all attention layers with DeltaNet layers but use the 3:1 ratio mentioned earlier.
+Bu nedenle Qwen3-Next ve Kimi Linear mimarileri tüm dikkat katmanlarını DeltaNet katmanlarıyla değiştirmez; bunun yerine daha önce bahsedilen 3:1 oranını kullanır.
 
 &nbsp;
-## DeltaNet Memory Savings
+## DeltaNet Bellek Tasarrufu
 
-In the previous section, we discussed the advantage of the DeltaNet over full attention in terms of linear instead of quadratic compute complexity with respect to the context length.
+Önceki bölümde, DeltaNet'in tam dikkate göre avantajını, bağlam uzunluğuna göre karesel yerine doğrusal hesaplama karmaşıklığı açısından ele almıştık.
 
-Next to the linear compute complexity, another big advantage of DeltaNet is the memory savings, as DeltaNet modules don't grow the KV cache. (For more information about KV caching, see [../03_kv-cache](../03_kv-cache)). Instead, as mentioned earlier, they keep a fixed-size recurrent state, so memory stays constant with context length.
+Doğrusal hesaplama karmaşıklığının yanı sıra, DeltaNet'in bir diğer büyük avantajı bellek tasarrufudur; çünkü DeltaNet modülleri KV önbelleğini büyütmez. (KV önbellekleme hakkında daha fazla bilgi için bkz. [../03_kv-cache](../03_kv-cache)). Bunun yerine, daha önce belirtildiği gibi sabit boyutlu bir yinelemeli durum tutarlar; böylece bellek, bağlam uzunluğundan bağımsız olarak sabit kalır.
 
-For a regular multi-head attention (MHA) layer, we can compute the KV cache size as follows:
+Klasik bir çok başlı dikkat (MHA) katmanı için KV önbelleği boyutunu şöyle hesaplayabiliriz:
 
 ```
 KV_cache_MHA ≈ batch_size × n_tokens × n_heads × d_head × 2 × bytes
 ```
 
-(The 2 multiplier is there because we have both keys and values that we store in the cache.)
+(Buradaki 2 çarpanı, önbellekte hem anahtarları hem de değerleri sakladığımız içindir.)
 
-For the simplified DeltaNet version implemented above, we have:
+Yukarıda uygulanan basitleştirilmiş DeltaNet sürümü için ise:
 
 
 ```
 KV_cache_DeltaNet = batch_size × n_heads × d_head × d_head × bytes
 ```
 
-Note that the `KV_cache_DeltaNet` memory size doesn't have a context length (`n_tokens`) dependency. Also, we have only the memory state S that we store instead of separate keys and values, hence `2 × bytes` becomes just `bytes`. However, note that we now have a quadratic `d_head × d_head` in here. This comes from the state :
+`KV_cache_DeltaNet` bellek boyutunun bağlam uzunluğuna (`n_tokens`) bağımlılığı olmadığını unutmayın. Ayrıca ayrı anahtar ve değerler yerine yalnızca S bellek durumunu sakladığımız için `2 × bytes` yerine sadece `bytes` geçerlidir. Ancak burada artık karesel bir `d_head × d_head` terimi olduğunu belirtelim. Bu, durumdan gelir:
 
 ```
 S = x.new_zeros(b, self.num_heads, self.head_dim, self.head_dim)
 ```
 
-But that's usually nothing to worry about, as the head dimension is usually relatively small. For instance, it's 128 in Qwen3-Next.
+Ama bu genellikle endişelenecek bir şey değildir; çünkü baş boyutu (head dimension) genelde nispeten küçüktür. Örneğin Qwen3-Next'te 128'dir.
 
-The full version with the convolutional mixing is a bit more complex, including the kernel size and so on, but the formulas above should illustrate the main trend and motivation behind the Gated DeltaNet.
+Evrişimsel karıştırma içeren tam sürüm, çekirdek boyutu (kernel size) vb. dahil biraz daha karmaşıktır, ancak yukarıdaki formüller Gated DeltaNet'in arkasındaki ana eğilimi ve gerekçeyi göstermeye yeter.
 
-We can visualize the memory estimates and savings for different context lengths via the following helper script:
+Farklı bağlam uzunlukları için bellek tahminlerini ve tasarrufları aşağıdaki yardımcı betikle görselleştirebiliriz:
 
 ```bash
 uv run plot_memory_estimates_gated_deltanet.py \
@@ -354,6 +356,6 @@ uv run plot_memory_estimates_gated_deltanet.py \
   --dtype "bf16"
 ```
 
-Note that the above computes the `head_dim` as `emb_dim / n_heads`. I.e., 2048 / 16  = 128.
+Yukarıdakinin `head_dim` değerini `emb_dim / n_heads` olarak hesapladığını unutmayın. Yani 2048 / 16 = 128.
 
 <img src="https://sebastianraschka.com/images/LLMs-from-scratch-images/bonus/gated_deltanet/plot.webp" alt="Gated DeltaNet scaling" width=500px>

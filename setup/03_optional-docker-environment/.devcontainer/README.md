@@ -1,3 +1,3 @@
-# Optional Docker Environment
+# İsteğe Bağlı Docker Ortamı
 
-This is an optional Docker environment for those users who prefer Docker. In case you are interested in using this Docker DevContainer, please see the *Using Docker DevContainers* section in the [../../README.md](../../README.md) for more information.
+> 🇹🇷 **Türkçe çeviri.** Orijinal İngilizce sürüm: [README.md](https://github.com/rasbt/LLMs-from-scratch/blob/main/setup/03_optional-docker-environment/.devcontainer/README.md) · Bu, Docker'ı tercih eden kullanıcılar için isteğe bağlı bir Docker ortamıdır. Bu Docker DevContainer'ı kullanmakla ilgileniyorsanız, daha fazla bilgi için lütfen [../../README.md](../../README.md) dosyasındaki *Using Docker DevContainers* bölümüne bakın.

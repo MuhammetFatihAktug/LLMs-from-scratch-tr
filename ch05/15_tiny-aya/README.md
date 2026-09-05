@@ -1,59 +1,53 @@
-# Tiny Aya 3.35B From Scratch
+# Sıfırdan Tiny Aya 3.35B
 
-Tiny Aya is a new, "small" LLM by Cohere that is said to be the "most capable multi-lingual open-weight model" at the 3B parameter size class. (Tiny Aya outperforms Qwen3-4B, Gemma 3 4B, and Ministral 3 3B according to the [announcement post](https://cohere.com/blog/cohere-labs-tiny-aya)).
+> 🇹🇷 **Türkçe çeviri.** Orijinal İngilizce sürüm: [README.md](https://github.com/rasbt/LLMs-from-scratch/blob/main/ch05/15_tiny-aya/README.md) · Tiny Aya, Cohere tarafından geliştirilen yeni ve "küçük" bir LLM'dir; 3B parametre sınıfında "en yetenekli çok dilli açık ağırlıklı model" olduğu söylenmektedir. ([Duyuru gönderisine](https://cohere.com/blog/cohere-labs-tiny-aya) göre Tiny Aya, Qwen3-4B, Gemma 3 4B ve Ministral 3 3B modellerini geride bırakıyor.)
 
 <img src="https://sebastianraschka.com/images/LLMs-from-scratch-images/bonus/tiny-aya/01.webp">
 
 
 
-This is a great model to run and experiment with locally. The only caveat is that while it's an open-weight model, its licensing terms are relatively restricted and only allow non-commercial use.
+Yerelde çalıştırıp denemek için harika bir model. Tek çekince, açık ağırlıklı bir model olmasına rağmen lisans koşullarının nispeten kısıtlı olması ve yalnızca ticari olmayan kullanıma izin vermesidir.
 
-That aside, Arya is a 3.35B parameter model that comes in several flavors that are useful for
-personal and (non-commercial) research use:
+Bunun dışında Arya, kişisel ve (ticari olmayan) araştırma kullanımı için faydalı olan birkaç türde gelen 3,35 milyar parametreli bir modeldir:
 
-  - [tiny-aya-base](https://huggingface.co/CohereLabs/tiny-aya-base) (base model)
-  - [tiny-aya-global](https://huggingface.co/CohereLabs/tiny-aya-global) (best balance across languages and regions; notebook default)
-  - [tiny-aya-fire](https://huggingface.co/CohereLabs/tiny-aya-fire) (optimized for South Asian languages)
-  - [tiny-aya-water](https://huggingface.co/CohereLabs/tiny-aya-water) (optimized for European and Asia Pacific languages)
-  - [tiny-aya-earth](https://huggingface.co/CohereLabs/tiny-aya-earth) (optimized for West Asian and African languages)
-
+  - [tiny-aya-base](https://huggingface.co/CohereLabs/tiny-aya-base) (temel model)
+  - [tiny-aya-global](https://huggingface.co/CohereLabs/tiny-aya-global) (diller ve bölgeler arasında en iyi denge; not defterinin varsayılanı)
+  - [tiny-aya-fire](https://huggingface.co/CohereLabs/tiny-aya-fire) (Güney Asya dilleri için optimize edilmiş)
+  - [tiny-aya-water](https://huggingface.co/CohereLabs/tiny-aya-water) (Avrupa ve Asya Pasifik dilleri için optimize edilmiş)
+  - [tiny-aya-earth](https://huggingface.co/CohereLabs/tiny-aya-earth) (Batı Asya ve Afrika dilleri için optimize edilmiş)
 
 
-More specifically, here's a list of languages the models are optimized for:
 
-| Region           | Languages                                                    | Optimized Model |
+Daha ayrıntılı olarak, modellerin optimize edildiği dillerin listesi şöyledir:
+
+| Bölge            | Diller                                                       | Optimize Edilmiş Model |
 | ---------------- | ------------------------------------------------------------ | --------------- |
-| **Asia Pacific** | Traditional Chinese, Cantonese, Vietnamese, Tagalog, Javanese, Khmer, Thai, Burmese, Malay, Korean, Lao, Indonesian, Simplified Chinese, Japanese | tiny-aya-water  |
-| **Africa**       | Zulu, Amharic, Hausa, Igbo, Swahili, Xhosa, Wolof, Shona, Yoruba, Nigerian Pidgin, Malagasy | tiny-aya-earth  |
-| **South Asia**   | Telugu, Marathi, Bengali, Tamil, Hindi, Punjabi, Gujarati, Urdu, Nepali | tiny-aya-fire   |
-| **Europe**       | Catalan, Galician, Dutch, Danish, Finnish, Czech, Portuguese, French, Lithuanian, Slovak, Basque, English, Swedish, Polish, Spanish, Slovenian, Ukrainian, Greek, Bokmål, Romanian, Serbian, German, Italian, Russian, Irish, Hungarian, Bulgarian, Croatian, Estonian, Latvian, Welsh | tiny-aya-water  |
-| **West Asia**    | Arabic, Maltese, Turkish, Hebrew, Persian                    | tiny-aya-earth  |
+| **Asya Pasifik** | Geleneksel Çince, Kantonca, Vietnamca, Tagalogca, Cavaca, Khmerce, Tayca, Birmanca, Malayca, Korece, Laoca, Endonezce, Basitleştirilmiş Çince, Japonca | tiny-aya-water  |
+| **Afrika**       | Zuluca, Amharca, Hausaca, İgboca, Svahilice, Xhosaca, Wolofça, Shonaca, Yorubaca, Nijerya Pidgin dili, Malgaşça | tiny-aya-earth  |
+| **Güney Asya**   | Teluguca, Marathice, Bengalce, Tamilce, Hintçe, Pencapça, Guceratça, Urduca, Nepalce | tiny-aya-fire   |
+| **Avrupa**       | Katalanca, Galiçyaca, Felemenkçe, Danca, Fince, Çekçe, Portekizce, Fransızca, Litvanca, Slovakça, Baskça, İngilizce, İsveççe, Lehçe, İspanyolca, Slovence, Ukraynaca, Yunanca, Bokmål, Rumence, Sırpça, Almanca, İtalyanca, Rusça, İrlandaca, Macarca, Bulgarca, Hırvatça, Estonca, Letonca, Galce | tiny-aya-water  |
+| **Batı Asya**    | Arapça, Maltaca, Türkçe, İbranice, Farsça                    | tiny-aya-earth  |
 
 
-Architecture-wise, Tiny Aya is a classic decoder-style transformer with a few noteworthy modifications (besides the obvious ones like SwiGLU and Grouped Query Attention):
+Mimari açıdan Tiny Aya, birkaç dikkate değer değişiklik dışında (SwiGLU ve Gruplanmış Sorgu Dikkati gibi bariz olanların yanı sıra) klasik bir kod çözücü (decoder) tarzı transformer'dır:
 
-1. **Parallel transformer blocks.** A parallel transformer block computes attention and MLP from the same normalized input, then adds both to the residual in one step. I assume this is to reduce serial dependencies inside a layer to improve computational throughput.
+1. **Paralel transformer blokları.** Paralel bir transformer bloğu, dikkat ve MLP'yi aynı normalize edilmiş girdiden hesaplar, ardından her ikisini tek adımda artık bağlantıya (residual) ekler. Bunun, hesaplama verimini artırmak için bir katman içindeki sıralı bağımlılıkları azaltmaya yönelik olduğunu tahmin ediyorum.
 
-2. **Sliding window attention.** Specifically, it uses a 3:1 local:global ratio similar to Arcee Trinity and Olmo 3. The window size is also 4096. Also, similar to Arcee, the sliding window layers use RoPE whereas the full attention layers use NoPE.
+2. **Kayan pencere dikkati.** Özellikle, Arcee Trinity ve Olmo 3'e benzer şekilde 3:1 yerel:küresel oranı kullanır. Pencere boyutu da 4096'dır. Ayrıca Arcee'ye benzer şekilde, kayan pencere katmanları RoPE kullanırken tam dikkat katmanları NoPE kullanır.
 
-3. **LayerNorm.** Most architectures moved to RMSNorm as it's computationally a bit cheaper and performs well. Tiny Aya is keeping it more classic with a modified version of LayerNorm (the implementation here is like standard LayerNorm but without shift, i.e., bias, parameter).
+3. **LayerNorm.** Çoğu mimari, hesaplama açısından biraz daha ucuz olduğu ve iyi performans gösterdiği için RMSNorm'a geçti. Tiny Aya ise LayerNorm'un değiştirilmiş bir sürümüyle daha klasik kalıyor (buradaki uygulama standart LayerNorm gibidir, ancak kaydırma (shift), yani bias parametresi yoktur).
 
 
 
 &nbsp;
-## Files
+## Dosyalar
 
-The [standalone-tiny-aya.ipynb](standalone-tiny-aya.ipynb) is a standalone Jupyter notebook that implements the Tiny Aya architecture and loads the pre-trained weights.
+[standalone-tiny-aya.ipynb](standalone-tiny-aya.ipynb), Tiny Aya mimarisini uygulayan ve önceden eğitilmiş ağırlıkları yükleyen bağımsız bir Jupyter not defteridir.
 
 
-The alternative [standalone-tiny-aya-plus-kvcache.ipynb](standalone-tiny-aya-plus-kv-cache.ipynb) notebook adds a KV cache for better runtime performance (but adds more code complexity). To learn more about KV caching, see my [Understanding and Coding the KV Cache in LLMs from Scratch](https://magazine.sebastianraschka.com/p/coding-the-kv-cache-in-llms) article.
+Alternatif [standalone-tiny-aya-plus-kvcache.ipynb](standalone-tiny-aya-plus-kv-cache.ipynb) not defteri, daha iyi çalışma zamanı performansı için bir KV önbelleği ekler (ancak koda daha fazla karmaşıklık katar). KV önbellekleme hakkında daha fazla bilgi için [Understanding and Coding the KV Cache in LLMs from Scratch](https://magazine.sebastianraschka.com/p/coding-the-kv-cache-in-llms) yazıma bakın.
 
 
 <br>
 
-To learn more about the architecture differences and read about comparisons with other architectures, see my [The Big LLM Architecture Comparison: From DeepSeek-V3 to Kimi K2: A Look At Modern LLM Architecture Design](https://magazine.sebastianraschka.com/p/the-big-llm-architecture-comparison) article.
-
-
-
-
-
+Mimari farkları hakkında daha fazla bilgi edinmek ve diğer mimarilerle karşılaştırmaları okumak için [The Big LLM Architecture Comparison: From DeepSeek-V3 to Kimi K2: A Look At Modern LLM Architecture Design](https://magazine.sebastianraschka.com/p/the-big-llm-architecture-comparison) yazıma bakın.

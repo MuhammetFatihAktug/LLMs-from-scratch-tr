@@ -1,5 +1,7 @@
-# Appendix B: References and Further Reading
+# Ek B: Kaynaklar ve İleri Okuma
+
+> 🇹🇷 **Türkçe çeviri.** Orijinal İngilizce sürüm: [README.md](https://github.com/rasbt/LLMs-from-scratch/blob/main/appendix-B/README.md)
 
 
 
-- No code in this appendix
+- Bu ekte kod yoktur

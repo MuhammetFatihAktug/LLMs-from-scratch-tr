@@ -1,10 +1,10 @@
-# Additional Experiments Classifying the Sentiment of 50k IMDb Movie Reviews
+# 50 Bin IMDb Film Yorumunun Duygusunu Sınıflandıran Ek Deneyler
 
-## Overview
+> 🇹🇷 **Türkçe çeviri.** Orijinal İngilizce sürüm: [README.md](https://github.com/rasbt/LLMs-from-scratch/blob/main/ch06/03_bonus_imdb-classification/README.md) · Komut, tablo ve çıktı blokları birebir korunmuştur.
 
-This folder contains additional experiments to compare the (decoder-style) GPT-2 (2018) model from chapter 6 to encoder-style LLMs like [BERT (2018)](https://arxiv.org/abs/1810.04805), [RoBERTa (2019)](https://arxiv.org/abs/1907.11692), and [ModernBERT (2024)](https://arxiv.org/abs/2412.13663). Instead of using the small SPAM dataset from Chapter 6, we are using the 50k movie review dataset from IMDb ([dataset source](https://ai.stanford.edu/~amaas/data/sentiment/)) with a binary classification objective, predicting whether a reviewer liked the movie or not. This is a balanced dataset, so a random prediction should yield 50% accuracy.
+## Genel Bakış
 
-
+Bu klasör, 6. bölümdeki (kod çözücü tarzı) GPT-2 (2018) modelini [BERT (2018)](https://arxiv.org/abs/1810.04805), [RoBERTa (2019)](https://arxiv.org/abs/1907.11692) ve [ModernBERT (2024)](https://arxiv.org/abs/2412.13663) gibi kodlayıcı (encoder) tarzı LLM'lerle karşılaştırmak için ek deneyler içerir. 6. bölümdeki küçük SPAM veri kümesi yerine, IMDb'den 50 bin film yorumundan oluşan veri kümesini ([veri kümesi kaynağı](https://ai.stanford.edu/~amaas/data/sentiment/)) ikili sınıflandırma hedefiyle kullanıyor ve yorumu yazanın filmi beğenip beğenmediğini tahmin ediyoruz. Bu dengeli bir veri kümesidir; dolayısıyla rastgele bir tahmin %50 doğruluk vermelidir.
 
 
 
@@ -23,36 +23,33 @@ This folder contains additional experiments to compare the (decoder-style) GPT-2
 
 
 
-
-
 &nbsp;
-## Step 1: Install Dependencies
+## Adım 1: Bağımlılıkları Kurun
 
-Install the extra dependencies via
+Ek bağımlılıkları şu komutla kurun:
 
 ```bash
 pip install -r requirements-extra.txt
 ```
 
 &nbsp;
-## Step 2: Download Dataset
+## Adım 2: Veri Kümesini İndirin
 
-The codes are using the 50k movie reviews from IMDb ([dataset source](https://ai.stanford.edu/~amaas/data/sentiment/)) to predict whether a movie review is positive or negative.
+Kodlar, bir film yorumunun olumlu mu olumsuz mu olduğunu tahmin etmek için IMDb'den 50 bin film yorumunu ([veri kümesi kaynağı](https://ai.stanford.edu/~amaas/data/sentiment/)) kullanır.
 
-Run the following code to create the `train.csv`, `validation.csv`, and `test.csv` datasets:
+`train.csv`, `validation.csv` ve `test.csv` veri kümelerini oluşturmak için aşağıdaki kodu çalıştırın:
 
 ```bash
 python download_prepare_dataset.py
 ```
 
+&nbsp;
+## Adım 3: Modelleri Çalıştırın
 
 &nbsp;
-## Step 3: Run Models
+### 1) 124M GPT-2 Temel Çizgi
 
-&nbsp;
-### 1) 124M GPT-2 Baseline
-
-The 124M GPT-2 model used in chapter 6, starting with pretrained weights, and finetuning all weights:
+6. bölümde kullanılan 124M GPT-2 modeli; önceden eğitilmiş ağırlıklarla başlar ve tüm ağırlıklara ince ayar yapar:
 
 ```bash
 python train_gpt.py --trainable_layers "all" --num_epochs 1
@@ -76,7 +73,7 @@ Test accuracy: 91.88%
 
 <br>
 
-The alternative [train_gpt_muon.py](train_gpt_muon.py) script runs the same code using PyTorch's new Muon optimizer for non-embedding layers. For more information on Muon, see the original [paper](https://arxiv.org/abs/2502.16982) and [../../ch05/18_muon](../../ch05/18_muon).
+Alternatif [train_gpt_muon.py](train_gpt_muon.py) betiği, aynı kodu gömme dışındaki katmanlar için PyTorch'un yeni Muon optimize edicisiyle çalıştırır. Muon hakkında daha fazla bilgi için orijinal [makaleye](https://arxiv.org/abs/2502.16982) ve [../../ch05/18_muon](../../ch05/18_muon) klasörüne bakın.
 
 
 ```bash
@@ -97,10 +94,9 @@ Validation accuracy: 92.52%
 Test accuracy: 92.40%
 ```
 
+Gözlem: Muon daha iyi/daha hızlı optimize ediyor gibi görünüyor, ancak bu burada eğitim kümesinde daha fazla aşırı öğrenmeye (overfitting) de yol açıyor.
 
-Observation: Muon seems to optimize better/faster but this also leads to more overfitting on the training set here.
-
-PS: the training times is not directly comparable as this was run on a different GPU.
+Not: Bu farklı bir GPU'da çalıştırıldığı için eğitim süreleri doğrudan karşılaştırılabilir değildir.
 
 <br>
 
@@ -112,7 +108,7 @@ PS: the training times is not directly comparable as this was run on a different
 ### 2) 340M BERT
 
 
-A 340M parameter encoder-style [BERT](https://arxiv.org/abs/1810.04805) model:
+340 milyon parametreli, kodlayıcı tarzı bir [BERT](https://arxiv.org/abs/1810.04805) modeli:
 
 ```bash
 python train_bert_hf.py --trainable_layers "all" --num_epochs 1 --model "bert"
@@ -143,7 +139,7 @@ Test accuracy: 90.89%
 &nbsp;
 ### 3) 66M DistilBERT
 
-A 66M parameter encoder-style [DistilBERT](https://arxiv.org/abs/1910.01108) model (distilled down from a 340M parameter BERT model), starting for the pretrained weights and only training the last transformer block plus output layers:
+66 milyon parametreli, kodlayıcı tarzı bir [DistilBERT](https://arxiv.org/abs/1910.01108) modeli (340 milyon parametreli BERT modelinden damıtılmıştır); önceden eğitilmiş ağırlıklarla başlar ve yalnızca son transformer bloğu ile çıkış katmanlarını eğitir:
 
 
 
@@ -175,7 +171,7 @@ Test accuracy: 91.40%
 &nbsp;
 ### 4) 355M RoBERTa
 
-A 355M parameter encoder-style [RoBERTa](https://arxiv.org/abs/1907.11692) model, starting for the pretrained weights and only training the last transformer block plus output layers:
+355 milyon parametreli, kodlayıcı tarzı bir [RoBERTa](https://arxiv.org/abs/1907.11692) modeli; önceden eğitilmiş ağırlıklarla başlar ve yalnızca son transformer bloğu ile çıkış katmanlarını eğitir:
 
 
 ```bash
@@ -207,7 +203,7 @@ Test accuracy: 94.69%
 &nbsp;
 ### 5) 304M DeBERTa-v3
 
-A 304M parameter encoder-style [DeBERTa-v3](https://arxiv.org/abs/2111.09543) model. DeBERTa-v3 improves upon earlier versions with disentangled attention and improved position encoding.
+304 milyon parametreli, kodlayıcı tarzı bir [DeBERTa-v3](https://arxiv.org/abs/2111.09543) modeli. DeBERTa-v3, ayrıştırılmış (disentangled) dikkat ve geliştirilmiş konum kodlamasıyla önceki sürümlerin üzerine çıkar.
 
 
 ```bash
@@ -241,7 +237,7 @@ Test accuracy: 92.95%
 &nbsp;
 ### 6) 149M ModernBERT Base
 
-[ModernBERT (2024)](https://arxiv.org/abs/2412.13663) is an optimized reimplementation of BERT that incorporates architectural improvements like parallel residual connections and gated linear units (GLUs) to boost efficiency and performance. It maintains BERT’s original pretraining objectives while achieving faster inference and better scalability on modern hardware.
+[ModernBERT (2024)](https://arxiv.org/abs/2412.13663), verimliliği ve performansı artırmak için paralel artık bağlantılar (residual connections) ve kapılı doğrusal birimler (GLU) gibi mimari iyileştirmeler içeren, optimize edilmiş bir BERT yeniden uygulamasıdır. BERT'in orijinal ön eğitim hedeflerini korurken modern donanımda daha hızlı çıkarım ve daha iyi ölçeklenebilirlik sağlar.
 
 ```bash
 python train_bert_hf.py --trainable_layers "all" --num_epochs 1 --model "modernbert-base"
@@ -275,7 +271,7 @@ Test accuracy: 93.79%
 &nbsp;
 ### 7) 395M ModernBERT Large
 
-Same as above but using the larger ModernBERT variant.
+Yukarıdakiyle aynı, ancak daha büyük ModernBERT varyantı kullanılıyor.
 
 ```bash
 python train_bert_hf.py --trainable_layers "all" --num_epochs 1 --model "modernbert-large"
@@ -302,7 +298,6 @@ Test accuracy: 95.07%
 
 
 
-
 <br>
 
 ---
@@ -310,9 +305,9 @@ Test accuracy: 95.07%
 <br>
 
 &nbsp;
-### 8) Logistic Regression Baseline
+### 8) Lojistik Regresyon Temel Çizgisi
 
-A scikit-learn [logistic regression](https://sebastianraschka.com/blog/2022/losses-learned-part1.html) classifier as a baseline:
+Temel çizgi olarak scikit-learn tabanlı bir [lojistik regresyon](https://sebastianraschka.com/blog/2022/losses-learned-part1.html) sınıflandırıcısı:
 
 
 ```bash

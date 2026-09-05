@@ -1,63 +1,65 @@
-# Python Setup Tips
+# Python Kurulum İpuçları
+
+> 🇹🇷 **Türkçe çeviri.** Orijinal İngilizce sürüm: [README.md](https://github.com/rasbt/LLMs-from-scratch/blob/main/setup/01_optional-python-setup-preferences/README.md) · Komutlar birebir korunmuştur.
 
 
 
-There are several ways to install Python and set up your computing environment. Here, I share my personal preferences.
+Python'u kurmanın ve bilgi işlem ortamınızı ayarlamanın birkaç yolu vardır. Burada kişisel tercihlerimi paylaşıyorum.
 
 <br>
 
-> **Note:**
-> If you are running any of the notebooks on Google Colab and want to install the dependencies, simply run the following code in a new cell at the top of the notebook and skip the rest of this tutorial:
+> **Not:**
+> Not defterlerinden herhangi birini Google Colab'da çalıştırıyor ve bağımlılıkları kurmak istiyorsanız, not defterinin en üstüne yeni bir hücre ekleyip şu kodu çalıştırmanız ve bu öğreticinin geri kalanını atlamanız yeterlidir:
 > `pip install uv && uv pip install --system -r https://raw.githubusercontent.com/rasbt/LLMs-from-scratch/refs/heads/main/requirements.txt`
 
-The remaining sections below describe how you can manage your Python environment and packages on your local machine.
+Aşağıdaki bölümler, Python ortamınızı ve paketlerinizi yerel makinenizde nasıl yönetebileceğinizi açıklar.
 
-I have been a long-time user of [Conda](https://anaconda.org/anaconda/conda) and [pip](https://pypi.org/project/pip/), but recently, the [uv](https://github.com/astral-sh/uv) package has gained significant traction as it provides a faster and more efficient way to install packages and resolve dependencies.
+Uzun süredir [Conda](https://anaconda.org/anaconda/conda) ve [pip](https://pypi.org/project/pip/) kullanıcısıyım; ancak son zamanlarda [uv](https://github.com/astral-sh/uv) paketi, paketleri kurmanın ve bağımlılıkları çözmenin daha hızlı ve verimli bir yolunu sunduğu için kayda değer bir ilgi görüyor.
 
-I recommend starting with *Option 1: Using uv* as it is the more modern approach in 2025. If you encounter problems with *Option 1*, consider *Option 2: Using Conda*.
+2025'te daha modern yaklaşım olduğu için *Seçenek 1: uv Kullanmak* ile başlamanızı öneririm. *Seçenek 1* ile ilgili sorun yaşarsanız *Seçenek 2: Conda Kullanmak* seçeneğini değerlendirin.
 
-In this tutorial, I am using a computer running macOS, but this workflow is similar for Linux machines and may work for other operating systems as well.
-
-
-&nbsp;
-# Option 1: Using uv
-
-This section guides you through the Python setup and package installation procedure using `uv` via its `uv pip` interface. The `uv pip` interface may feel more familiar to most Python users who have used pip before than the native `uv` commands.
-
-&nbsp;
-> **Note:**
-> There are alternative ways to install Python and use `uv`. For example, you can install Python directly via `uv` and use `uv add` instead of `uv pip install` for even faster package management.
->
-> If you are a macOS or Linux user and prefer the native `uv` commands, refer to the [./native-uv.md tutorial](./native-uv.md). I also recommend checking the official [`uv` documentation](https://docs.astral.sh/uv/).
->
-> The `uv add` syntax also applies to Windows users. However, I found that some dependencies in the `pyproject.toml` cause problems on Windows. So, for Windows users, I recommend `pixi` instead, which has a similar `pixi add` workflow like `uv add`. For more information, see the [./native-pixi.md tutorial](./native-pixi.md).
->
-> While `uv add` and `pixi add` offer additional speed advantages, I think that `uv pip` is slightly more user-friendly, making it a good starting point for beginners. However, if you're new to Python package management, the native `uv` interface is also a great opportunity to learn it from the start. It's also how I use `uv` now, but I realize it the barrier to entry is a bit higher if you are coming from `pip` and `conda`.
-
-
+Bu öğreticide macOS çalıştıran bir bilgisayar kullanıyorum, ancak bu iş akışı Linux makineler için de benzerdir ve diğer işletim sistemlerinde de çalışabilir.
 
 
 &nbsp;
-## 1. Install Python (if not installed)
+# Seçenek 1: uv Kullanmak
 
-If you haven't manually installed Python on your system before, I highly recommend doing so. This helps prevent potential conflicts with your operating system's built-in Python installation, which could lead to issues.
+Bu bölüm, `uv` aracını `uv pip` arayüzü üzerinden kullanarak Python kurulumu ve paket yükleme sürecinde size rehberlik eder. `uv pip` arayüzü, daha önce pip kullanmış çoğu Python kullanıcısına yerel `uv` komutlarından daha tanıdık gelebilir.
 
-However, even if you have installed Python on your system before, check if you have a modern version of Python installed (I recommend 3.10 or newer) by executing the following code in the terminal:
+&nbsp;
+> **Not:**
+> Python'u kurmanın ve `uv` kullanmanın alternatif yolları vardır. Örneğin, Python'u doğrudan `uv` ile kurabilir ve daha da hızlı paket yönetimi için `uv pip install` yerine `uv add` kullanabilirsiniz.
+>
+> macOS veya Linux kullanıcısıysanız ve yerel `uv` komutlarını tercih ediyorsanız [./native-uv.md öğreticisine](./native-uv.md) bakın. Ayrıca resmî [`uv` belgelerini](https://docs.astral.sh/uv/) incelemenizi öneririm.
+>
+> `uv add` söz dizimi Windows kullanıcıları için de geçerlidir. Ancak `pyproject.toml` içindeki bazı bağımlılıkların Windows'ta sorun çıkardığını gördüm. Bu nedenle Windows kullanıcılarına, `uv add` ile benzer bir `pixi add` iş akışına sahip olan `pixi` aracını öneriyorum. Daha fazla bilgi için [./native-pixi.md öğreticisine](./native-pixi.md) bakın.
+>
+> `uv add` ve `pixi add` ek hız avantajları sunsa da, `uv pip` bence biraz daha kullanıcı dostu; bu da onu yeni başlayanlar için iyi bir başlangıç noktası yapıyor. Yine de Python paket yönetimine yeniyseniz, yerel `uv` arayüzü baştan öğrenmek için harika bir fırsat. Ben de `uv` aracını artık böyle kullanıyorum, ancak `pip` ve `conda` alışkanlığıyla geliyorsanız giriş engelinin biraz daha yüksek olduğunun farkındayım.
+
+
+
+
+&nbsp;
+## 1. Python'u kurun (kurulu değilse)
+
+Sisteminize daha önce elle Python kurmadıysanız, bunu yapmanızı şiddetle öneririm. Bu, işletim sisteminizin yerleşik Python kurulumuyla olası çakışmaları ve bunların yol açabileceği sorunları önlemeye yardımcı olur.
+
+Ancak sisteminize daha önce Python kurmuş olsanız bile, terminalde aşağıdaki kodu çalıştırarak güncel bir Python sürümünüz olup olmadığını kontrol edin (3.10 veya daha yenisini öneririm):
 
 ```bash
 python --version
 ```
-If it returns 3.10 or newer, no further action is required.
+3.10 veya daha yenisini döndürüyorsa başka bir işlem yapmanıza gerek yoktur.
 
 &nbsp;
-> **Note:**
-> If `python --version` indicates that no Python version is installed, you may also want to check `python3 --version` since your system might be configured to use the `python3` command instead.
+> **Not:**
+> `python --version` komutu hiçbir Python sürümünün kurulu olmadığını gösteriyorsa, sisteminiz `python3` komutunu kullanacak şekilde yapılandırılmış olabileceğinden `python3 --version` komutunu da kontrol etmek isteyebilirsiniz.
 
 &nbsp;
-> **Note:**
-> I recommend installing a Python version that is at least 2 versions older than the most recent release to ensure PyTorch compatibility. For example, if the most recent version is Python 3.13, I recommend installing version 3.10 or 3.11.
+> **Not:**
+> PyTorch uyumluluğunu güvence altına almak için, en güncel sürümden en az 2 sürüm eski bir Python sürümü kurmanızı öneririm. Örneğin, en güncel sürüm Python 3.13 ise 3.10 veya 3.11 sürümünü kurmanızı öneririm.
 
-Otherwise, if Python is not installed or is an older version, you can install it for your operating system as described below.
+Aksi hâlde, Python kurulu değilse veya eski bir sürümse, aşağıda açıklandığı gibi işletim sisteminize kurabilirsiniz.
 
 <img src="https://sebastianraschka.com/images/LLMs-from-scratch-images/setup/uv-setup/python-not-found.png" width="500" height="auto" alt="No Python Found">
 
@@ -74,13 +76,13 @@ sudo apt install python3.10 python3.10-venv python3.10-dev
 
 **macOS**
 
-If you use Homebrew, install Python with:
+Homebrew kullanıyorsanız Python'u şu komutla kurun:
 
 ```bash
 brew install python@3.10
 ```
 
-Alternatively, download and run the installer from the official website: [https://www.python.org/downloads/](https://www.python.org/downloads/).
+Alternatif olarak, kurulum dosyasını resmî web sitesinden indirip çalıştırın: [https://www.python.org/downloads/](https://www.python.org/downloads/).
 
 
 <img src="https://sebastianraschka.com/images/LLMs-from-scratch-images/setup/uv-setup/python-version.png" width="700" height="auto" alt="Python version">
@@ -89,18 +91,18 @@ Alternatively, download and run the installer from the official website: [https:
 
 **Windows**
 
-Download and run the installer from the official website: [https://www.python.org/downloads/](https://www.python.org/downloads/).
+Kurulum dosyasını resmî web sitesinden indirip çalıştırın: [https://www.python.org/downloads/](https://www.python.org/downloads/).
 
 
 &nbsp;
 
-## 2. Create a virtual environment
+## 2. Sanal ortam oluşturun
 
-I highly recommend installing Python packages in a separate virtual environment to avoid modifying system-wide packages that your OS may depend on. To create a virtual environment in the current folder, follow the three steps below.
+İşletim sisteminizin bağımlı olabileceği sistem genelindeki paketleri değiştirmemek için Python paketlerini ayrı bir sanal ortama kurmanızı şiddetle öneririm. Mevcut klasörde bir sanal ortam oluşturmak için aşağıdaki üç adımı izleyin.
 
 <br>
 
-**1. Install uv**
+**1. uv'yi kurun**
 
 ```bash
 pip install uv
@@ -108,7 +110,7 @@ pip install uv
 
 <br>
 
-**2. Create the virtual environment**
+**2. Sanal ortamı oluşturun**
 
 ```bash
 uv venv --python=python3.10
@@ -116,43 +118,43 @@ uv venv --python=python3.10
 
 <br>
 
-**3. Activate the virtual environment**
+**3. Sanal ortamı etkinleştirin**
 
 ```bash
 source .venv/bin/activate
 ```
 
 &nbsp;
-> **Note:**
-> If you are using Windows, you may have to replace the command above by `source .venv/Scripts/activate` or `.venv/Scripts/activate`.
+> **Not:**
+> Windows kullanıyorsanız, yukarıdaki komutu `source .venv/Scripts/activate` veya `.venv/Scripts/activate` ile değiştirmeniz gerekebilir.
 
 
 
-Note that you need to activate the virtual environment each time you start a new terminal session. For example, if you restart your terminal or computer and want to continue working on the project the next day, simply run `source .venv/bin/activate` in the project folder to reactivate your virtual environment.
+Yeni bir terminal oturumu başlattığınız her seferde sanal ortamı etkinleştirmeniz gerektiğini unutmayın. Örneğin, terminalinizi veya bilgisayarınızı yeniden başlattıysanız ve ertesi gün projeye devam etmek istiyorsanız, sanal ortamınızı yeniden etkinleştirmek için proje klasöründe `source .venv/bin/activate` komutunu çalıştırmanız yeterlidir.
 
 <img src="https://sebastianraschka.com/images/LLMs-from-scratch-images/setup/uv-setup/venv-activate-1.png" width="600" height="auto" alt="Venv activated">
 
-Optionally, you can deactivate the environment it by executing the command `deactivate`.
+İsteğe bağlı olarak, `deactivate` komutunu çalıştırarak ortamı devre dışı bırakabilirsiniz.
 
 <img src="https://sebastianraschka.com/images/LLMs-from-scratch-images/setup/uv-setup/venv-activate-2.png" width="800" height="auto" alt="Venv deactivated">
 
 &nbsp;
-## 3. Install packages
+## 3. Paketleri kurun
 
-After activating your virtual environment, you can install Python packages using `uv`. For example:
+Sanal ortamınızı etkinleştirdikten sonra Python paketlerini `uv` ile kurabilirsiniz. Örneğin:
 
 ```bash
 uv pip install packaging
 ```
 
-To install all required packages from a `requirements.txt` file (such as the one located at the top level of this GitHub repository) run the following command, assuming the file is in the same directory as your terminal session:
+Bir `requirements.txt` dosyasındaki (örneğin bu GitHub deposunun en üst düzeyinde bulunan) gerekli tüm paketleri kurmak için, dosyanın terminal oturumunuzla aynı dizinde olduğunu varsayarak şu komutu çalıştırın:
 
 ```bash
 uv pip install -r requirements.txt
 ```
 
 
-Alternatively, install the latest dependencies directly from the repository:
+Alternatif olarak, en güncel bağımlılıkları doğrudan depodan kurun:
 
 ```bash
 uv pip install -r https://raw.githubusercontent.com/rasbt/LLMs-from-scratch/refs/heads/main/requirements.txt
@@ -163,26 +165,26 @@ uv pip install -r https://raw.githubusercontent.com/rasbt/LLMs-from-scratch/refs
 
 &nbsp;
 
-> **Note:**
-> If you have problems with the following commands above due to certain dependencies (for example, if you are using Windows), you can always fall back to using regular pip:
+> **Not:**
+> Yukarıdaki komutlarda bazı bağımlılıklar nedeniyle sorun yaşarsanız (örneğin Windows kullanıyorsanız), her zaman klasik pip'e geri dönebilirsiniz:
 > `pip install -r requirements.txt`
-> or
+> veya
 > `pip install -U -r https://raw.githubusercontent.com/rasbt/LLMs-from-scratch/refs/heads/main/requirements.txt`
 
 &nbsp;
 
-> **Optional dependencies for bonus materials:**
-> To include the optional dependencies used throughout the bonus materials, install the `bonus` dependency group from the project root:
+> **Bonus materyaller için isteğe bağlı bağımlılıklar:**
+> Bonus materyaller boyunca kullanılan isteğe bağlı bağımlılıkları dahil etmek için proje kökünden `bonus` bağımlılık grubunu kurun:
 >  `uv pip install --group bonus`
-> This is useful if you don't want to install them separately as you check out the optional bonus materials later on.
+> Bu, isteğe bağlı bonus materyallere daha sonra bakarken bunları ayrı ayrı kurmak istemiyorsanız faydalıdır.
 
 <br>
 
-**Finalizing the setup**
+**Kurulumu tamamlamak**
 
-That’s it! Your environment should now be ready for running the code in the repository.
+Hepsi bu kadar! Ortamınız artık depodaki kodu çalıştırmaya hazır olmalı.
 
-Optionally, you can run an environment check by executing the `python_environment_check.py` script in this repostiory:
+İsteğe bağlı olarak, bu depodaki `python_environment_check.py` betiğini çalıştırarak bir ortam kontrolü yapabilirsiniz:
 
 ```bash
 python setup/02_installing-python-libraries/python_environment_check.py
@@ -190,29 +192,29 @@ python setup/02_installing-python-libraries/python_environment_check.py
 
 <img src="https://sebastianraschka.com/images/LLMs-from-scratch-images/setup/uv-setup/env-check.png" width="700" height="auto" alt="Environment check">
 
-If you encounter any issues with specific packages, try reinstalling them using:
+Belirli paketlerle ilgili sorun yaşarsanız, bunları şu komutla yeniden kurmayı deneyin:
 
 ```bash
 uv pip install packagename
 ```
 
-(Here, `packagename` is a placeholder name that needs to be replaced with the package name you are having problems with.)
+(Buradaki `packagename`, sorun yaşadığınız paketin adıyla değiştirilmesi gereken bir yer tutucudur.)
 
-If problems persist, consider [opening a discussion](https://github.com/rasbt/LLMs-from-scratch/discussions) on GitHub or working through the *Option 2: Using Conda* section below.
+Sorunlar devam ederse, GitHub'da [bir tartışma açmayı](https://github.com/rasbt/LLMs-from-scratch/discussions) ya da aşağıdaki *Seçenek 2: Conda Kullanmak* bölümünü uygulamayı değerlendirin.
 
 <br>
 
-**Start working with the code**
+**Kodla çalışmaya başlamak**
 
-Once everything is set up, you can start working with the code files. For instance, launch [JupyterLab](https://jupyterlab.readthedocs.io/en/latest/) by running:
+Her şey hazır olduğunda kod dosyalarıyla çalışmaya başlayabilirsiniz. Örneğin, [JupyterLab](https://jupyterlab.readthedocs.io/en/latest/) uygulamasını şu komutla başlatın:
 
 ```bash
 jupyter lab
 ```
 
 &nbsp;
-> **Note:**
-> If you encounter problems with the jupyter lab command, you can also start it using the full path inside your virtual environment. For example, use `.venv/bin/jupyter lab` on Linux/macOS or `.venv\Scripts\jupyter-lab` on Windows.
+> **Not:**
+> jupyter lab komutuyla ilgili sorun yaşarsanız, sanal ortamınızın içindeki tam yolu kullanarak da başlatabilirsiniz. Örneğin, Linux/macOS'ta `.venv/bin/jupyter lab`, Windows'ta ise `.venv\Scripts\jupyter-lab` kullanın.
 
 &nbsp;
 
@@ -223,41 +225,41 @@ jupyter lab
 <br>
 &nbsp;
 
-# Option 2: Using Conda
+# Seçenek 2: Conda Kullanmak
 
 
 
-This section guides you through the Python setup and package installation procedure using [`conda`](https://www.google.com/search?client=safari&rls=en&q=conda&ie=UTF-8&oe=UTF-8) via [miniforge](https://github.com/conda-forge/miniforge).
+Bu bölüm, [miniforge](https://github.com/conda-forge/miniforge) aracılığıyla [`conda`](https://www.google.com/search?client=safari&rls=en&q=conda&ie=UTF-8&oe=UTF-8) kullanarak Python kurulumu ve paket yükleme sürecinde size rehberlik eder.
 
-In this tutorial, I am using a computer running macOS, but this workflow is similar for Linux machines and may work for other operating systems as well.
+Bu öğreticide macOS çalıştıran bir bilgisayar kullanıyorum, ancak bu iş akışı Linux makineler için de benzerdir ve diğer işletim sistemlerinde de çalışabilir.
 
 
 &nbsp;
-## 1. Download and install Miniforge
+## 1. Miniforge'u indirin ve kurun
 
-Download miniforge from the GitHub repository [here](https://github.com/conda-forge/miniforge).
+Miniforge'u [buradaki](https://github.com/conda-forge/miniforge) GitHub deposundan indirin.
 
 <img src="https://sebastianraschka.com/images/LLMs-from-scratch-images/setup/01_optional-python-setup-preferences/download.png" alt="download" width="600px">
 
-Depending on your operating system, this should download either an `.sh` (macOS, Linux) or `.exe` file (Windows).
+İşletim sisteminize bağlı olarak bu, ya bir `.sh` (macOS, Linux) ya da bir `.exe` (Windows) dosyası indirmelidir.
 
-For the `.sh` file, open your command line terminal and execute the following command
+`.sh` dosyası için komut satırı terminalinizi açın ve şu komutu çalıştırın:
 
 ```bash
 sh ~/Desktop/Miniforge3-MacOSX-arm64.sh
 ```
 
-where `Desktop/` is the folder where the Miniforge installer was downloaded to. On your computer, you may have to replace it with `Downloads/`.
+Burada `Desktop/`, Miniforge kurulum dosyasının indirildiği klasördür. Kendi bilgisayarınızda bunu `Downloads/` ile değiştirmeniz gerekebilir.
 
 <img src="https://sebastianraschka.com/images/LLMs-from-scratch-images/setup/01_optional-python-setup-preferences/miniforge-install.png" alt="miniforge-install" width="600px">
 
-Next, step through the download instructions, confirming with "Enter".
+Ardından, "Enter" ile onaylayarak indirme talimatlarını adım adım izleyin.
 
 
 &nbsp;
-## 2. Create a new virtual environment
+## 2. Yeni bir sanal ortam oluşturun
 
-After the installation was successfully completed, I recommend creating a new virtual environment called `LLMs`, which you can do by executing
+Kurulum başarıyla tamamlandıktan sonra `LLMs` adında yeni bir sanal ortam oluşturmanızı öneririm; bunu şu komutla yapabilirsiniz:
 
 ```bash
 conda create -n LLMs python=3.10
@@ -265,9 +267,9 @@ conda create -n LLMs python=3.10
 
 <img src="https://sebastianraschka.com/images/LLMs-from-scratch-images/setup/01_optional-python-setup-preferences/new-env.png" alt="new-env" width="600px">
 
-> Many scientific computing libraries do not immediately support the newest version of Python. Therefore, when installing PyTorch, it's advisable to use a version of Python that is one or two releases older. For instance, if the latest version of Python is 3.13, using Python 3.10 or 3.11 is recommended.
+> Birçok bilimsel hesaplama kütüphanesi Python'un en yeni sürümünü hemen desteklemez. Bu nedenle PyTorch kurarken bir veya iki sürüm daha eski bir Python sürümü kullanmanız tavsiye edilir. Örneğin, Python'un en son sürümü 3.13 ise Python 3.10 veya 3.11 kullanmanız önerilir.
 
-Next, activate your new virtual environment (you have to do it every time you open a new terminal window or tab):
+Ardından yeni sanal ortamınızı etkinleştirin (yeni bir terminal penceresi veya sekmesi açtığınız her seferde bunu yapmanız gerekir):
 
 ```bash
 conda activate LLMs
@@ -277,16 +279,16 @@ conda activate LLMs
 
 
 &nbsp;
-## Optional: styling your terminal
+## İsteğe bağlı: terminalinizi biçimlendirmek
 
-If you want to style your terminal similar to mine so that you can see which virtual environment is active,  check out the [Oh My Zsh](https://github.com/ohmyzsh/ohmyzsh) project.
+Hangi sanal ortamın etkin olduğunu görebilmek için terminalinizi benimkine benzer şekilde biçimlendirmek isterseniz, [Oh My Zsh](https://github.com/ohmyzsh/ohmyzsh) projesine göz atın.
 
 &nbsp;
-## 3. Install new Python libraries
+## 3. Yeni Python kütüphaneleri kurun
 
 
 
-To install new Python libraries, you can now use the `conda` package installer. For example, you can install [JupyterLab](https://jupyter.org/install) and [watermark](https://github.com/rasbt/watermark) as follows:
+Yeni Python kütüphaneleri kurmak için artık `conda` paket yükleyicisini kullanabilirsiniz. Örneğin, [JupyterLab](https://jupyter.org/install) ve [watermark](https://github.com/rasbt/watermark) paketlerini şöyle kurabilirsiniz:
 
 ```bash
 conda install jupyterlab watermark
@@ -296,29 +298,29 @@ conda install jupyterlab watermark
 
 
 
-You can also still use `pip` to install libraries. By default, `pip` should be linked to your new `LLms` conda environment:
+Kütüphane kurmak için `pip` kullanmaya da devam edebilirsiniz. Varsayılan olarak `pip`, yeni `LLms` conda ortamınıza bağlı olmalıdır:
 
 <img src="https://sebastianraschka.com/images/LLMs-from-scratch-images/setup/01_optional-python-setup-preferences/check-pip.png" alt="check-pip" width="600px">
 
 &nbsp;
-## 4. Install PyTorch
+## 4. PyTorch'u kurun
 
-PyTorch can be installed just like any other Python library or package using pip. For example:
+PyTorch, diğer Python kütüphaneleri veya paketleri gibi pip ile kurulabilir. Örneğin:
 
 ```bash
 pip install torch
 ```
 
-However, since PyTorch is a comprehensive library featuring CPU- and GPU-compatible codes, the installation may require additional settings and explanation (see the *A.1.3 Installing PyTorch in the book for more information*).
+Ancak PyTorch, CPU ve GPU uyumlu kodlar içeren kapsamlı bir kütüphane olduğundan kurulumu ek ayarlar ve açıklama gerektirebilir (daha fazla bilgi için kitaptaki *A.1.3 Installing PyTorch* kısmına bakın).
 
-It's also highly recommended to consult the installation guide menu on the official PyTorch website at [https://pytorch.org](https://pytorch.org).
+Ayrıca [https://pytorch.org](https://pytorch.org) adresindeki resmî PyTorch web sitesinde yer alan kurulum kılavuzu menüsüne başvurmanız şiddetle önerilir.
 
 <img src="https://sebastianraschka.com/images/LLMs-from-scratch-images/setup/01_optional-python-setup-preferences/pytorch-installer.jpg" width="600px">
 
 &nbsp;
-## 5. Installing Python packages and libraries used in this book
+## 5. Bu kitapta kullanılan Python paketlerini ve kütüphanelerini kurmak
 
-Please refer to the [Installing Python packages and libraries used in this book](../02_installing-python-libraries/README.md) document for instructions on how to install the required libraries.
+Gerekli kütüphaneleri kurma talimatları için lütfen [Bu kitapta kullanılan Python paketlerini ve kütüphanelerini kurmak](../02_installing-python-libraries/README.md) belgesine bakın.
 
 <br>
 
@@ -327,4 +329,4 @@ Please refer to the [Installing Python packages and libraries used in this book]
 
 
 
-Any questions? Please feel free to reach out in the [Discussion Forum](https://github.com/rasbt/LLMs-from-scratch/discussions).
+Sorularınız mı var? Lütfen [Tartışma Forumu](https://github.com/rasbt/LLMs-from-scratch/discussions) üzerinden bize ulaşmaktan çekinmeyin.

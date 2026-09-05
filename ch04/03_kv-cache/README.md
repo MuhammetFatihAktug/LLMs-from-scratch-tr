@@ -1,61 +1,63 @@
-# Bonus Material: KV Cache
+# Bonus Materyal: KV Önbelleği (KV Cache)
+
+> 🇹🇷 **Türkçe çeviri.** Orijinal İngilizce sürüm: [README.md](https://github.com/rasbt/LLMs-from-scratch/blob/main/ch04/03_kv-cache/README.md) · Kod blokları, gerçek kaynak dosyalarla birebir eşleşmesi için çevrilmeden bırakılmıştır.
 
 
 
-**This folder implements the addition of a KV cache to the GPT model.** 
-
-&nbsp;
-## Overview
-
-In short, a KV cache stores intermediate key (K) and value (V) computations for reuse during inference, which results in a substantial speed-up when generating responses. The downside is that it adds some complexity to the code, increases memory usage, and can't be used during training. However, the inference speed-ups are often well worth the trade-offs in code complexity and memory when deploying LLMs.
+**Bu klasör, GPT modeline bir KV önbelleği eklenmesini uygular.**
 
 &nbsp;
-## How it works
+## Genel Bakış
 
-Imagine the LLM is generating some text. Concretely, suppose the LLM is given the following prompt: "Time flies".
+Kısaca, bir KV önbelleği, çıkarım (inference) sırasında yeniden kullanılmak üzere ara anahtar (key, K) ve değer (value, V) hesaplamalarını saklar; bu da yanıt üretirken kayda değer bir hızlanma sağlar. Dezavantajı ise koda biraz karmaşıklık eklemesi, bellek kullanımını artırması ve eğitim sırasında kullanılamamasıdır. Yine de, LLM'leri dağıtıma alırken (deploy) elde edilen çıkarım hızlanmaları, kod karmaşıklığı ve bellek açısından yapılan bu takasa çoğunlukla fazlasıyla değer.
 
-The figure below shows an excerpt of the underlying attention score computation using a modified graphic from Chapter 3 with the key and value vectors highlighted:
+&nbsp;
+## Nasıl çalışır
+
+LLM'in bir metin ürettiğini düşünün. Somut olarak, LLM'e şu istemin (prompt) verildiğini varsayalım: "Time flies".
+
+Aşağıdaki şekil, 3. bölümden alınan ve anahtar ile değer vektörlerinin vurgulandığı değiştirilmiş bir grafikle, arka plandaki dikkat skoru hesaplamasından bir kesit gösterir:
 
 <img src="https://sebastianraschka.com/images/LLMs-from-scratch-images/bonus/kv-cache/kv-cache-attn-1.png?3" width=800>
 
-Now, as we learned in Chapters 2 and 4, LLMs generate one word (or token) at a time. Suppose the LLM generated the word "fast" so that the prompt for the next round becomes "Time flies fast". This is illustrated in the next figure below:
+Şimdi, 2. ve 4. bölümlerde öğrendiğimiz gibi, LLM'ler her seferinde bir kelime (veya token) üretir. LLM'in "fast" kelimesini ürettiğini ve böylece bir sonraki turun isteminin "Time flies fast" hâline geldiğini varsayalım. Bu, aşağıdaki bir sonraki şekilde gösterilmiştir:
 
 <img src="https://sebastianraschka.com/images/LLMs-from-scratch-images/bonus/kv-cache/kv-cache-attn-2.png?3" width=800>
 
-As we can see, based on comparing the previous 2 figures, the keys, and value vectors for the first two tokens are exactly the same, and it would be wasteful to recompute them in each next-token text generation round.
+Önceki 2 şekli karşılaştırdığımızda görebileceğimiz gibi, ilk iki token'a ait anahtar ve değer vektörleri tamamen aynıdır; bunları her yeni token üretim turunda yeniden hesaplamak israf olurdu.
 
-So, the idea of the KV cache is to implement a caching mechanism that stores the previously generated key and value vectors for reuse, which helps us to avoid unnecessary recomputations.
+Dolayısıyla KV önbelleğinin fikri, daha önce üretilmiş anahtar ve değer vektörlerini yeniden kullanılmak üzere saklayan bir önbellekleme mekanizması uygulamaktır; bu da gereksiz yeniden hesaplamalardan kaçınmamızı sağlar.
 
 &nbsp;
 
-## KV cache implementation
+## KV önbelleği uygulaması
 
-There are many ways to implement a KV cache, with the main idea being that we only compute the key and value tensors for the newly generated tokens in each generation step.
+Bir KV önbelleğini uygulamanın birçok yolu vardır; ana fikir, her üretim adımında yalnızca yeni üretilen token'lar için anahtar ve değer tensörlerini hesaplamamızdır.
 
-I opted for a simple one that emphasizes code readability. I think it's easiest to just scroll through the code changes to see how it's implemented.
+Ben kod okunabilirliğini ön plana çıkaran basit bir yaklaşım tercih ettim. Nasıl uygulandığını görmek için kod değişikliklerini baştan sona incelemenin en kolay yol olduğunu düşünüyorum.
 
-There are two files in this folder:
+Bu klasörde iki dosya bulunur:
 
-1. [`gpt_ch04.py`](gpt_ch04.py): Self-contained code taken from Chapter 3 and 4 to implement the LLM and run the simple text generation function
-2. [`gpt_with_kv_cache.py`](gpt_with_kv_cache.py): The same as above, but with the necessary changes made to implement the KV cache. 
+1. [`gpt_ch04.py`](gpt_ch04.py): LLM'i uygulamak ve basit metin üretme fonksiyonunu çalıştırmak için 3. ve 4. bölümlerden alınmış, kendi kendine yeten (self-contained) kod
+2. [`gpt_with_kv_cache.py`](gpt_with_kv_cache.py): Yukarıdakinin aynısı, ancak KV önbelleğini uygulamak için gerekli değişiklikler yapılmış hâli.
 
-You can either 
+Şunlardan birini yapabilirsiniz:
 
-a. Open the [`gpt_with_kv_cache.py`](gpt_with_kv_cache.py) file and look out for the `# NEW` sections that mark the new changes:
+a. [`gpt_with_kv_cache.py`](gpt_with_kv_cache.py) dosyasını açıp yeni değişiklikleri işaretleyen `# NEW` bölümlerine bakın:
 
 <img src="https://sebastianraschka.com/images/LLMs-from-scratch-images/bonus/kv-cache/new-sections.png?3" width=800>
 
-b. Check out the two code files via a file diff tool of your choice to compare the changes:
+b. Değişiklikleri karşılaştırmak için iki kod dosyasını tercih ettiğiniz bir dosya karşılaştırma (diff) aracıyla inceleyin:
 
 <img src="https://sebastianraschka.com/images/LLMs-from-scratch-images/bonus/kv-cache/file-diff.png?3" width=800>
 
-To summarize the implementation details, here's a short walkthrough.
+Uygulama ayrıntılarını özetlemek için kısa bir gezinti:
 
 &nbsp;
 
-### 1. Registering the cache buffers
+### 1. Önbellek buffer'larını kaydetmek
 
-Inside the `MultiHeadAttention` constructor we add two buffers, `cache_k` and `cache_v`, which will hold concatenated keys and values across steps:
+`MultiHeadAttention` yapıcısının (constructor) içine, adımlar boyunca birleştirilmiş anahtar ve değerleri tutacak olan `cache_k` ve `cache_v` adlı iki buffer ekliyoruz:
 
 ```python
 self.register_buffer("cache_k", None)
@@ -64,9 +66,9 @@ self.register_buffer("cache_v", None)
 
 &nbsp;
 
-### 2. Forward pass with `use_cache` flag
+### 2. `use_cache` bayrağıyla ileri geçiş
 
-Next, we extend the `forward` method of the `MultiHeadAttention` class to accept `use_cache` argument. After projecting the new chunk of tokens into `keys_new`, `values_new` and `queries`, we either initialize the kv cache or append to our cache:
+Ardından, `MultiHeadAttention` sınıfının `forward` metodunu `use_cache` argümanını kabul edecek şekilde genişletiyoruz. Yeni token yığınını `keys_new`, `values_new` ve `queries` üzerine izdüşürdükten sonra ya kv önbelleğini başlatırız ya da önbelleğimize ekleme yaparız:
 
 ```python
 def forward(self, x, use_cache=False):
@@ -103,9 +105,9 @@ def forward(self, x, use_cache=False):
 &nbsp;
 
 
-### 3. Clearing the cache
+### 3. Önbelleği temizlemek
 
-When generating texts, between independent sequences (for instance to text generation calls) we must reset both buffers, so we also add a cache resetting method the to the `MultiHeadAttention` class:
+Metin üretirken, birbirinden bağımsız diziler arasında (örneğin ayrı metin üretme çağrıları arasında) her iki buffer'ı da sıfırlamamız gerekir; bu nedenle `MultiHeadAttention` sınıfına bir önbellek sıfırlama metodu da ekliyoruz:
 
 ```python
 def reset_cache(self):
@@ -115,15 +117,15 @@ def reset_cache(self):
 
 &nbsp;
 
-### 4. Propagating `use_cache` in the full model
+### 4. `use_cache` bayrağını modelin tamamına yaymak
 
-With the changes to the `MultiHeadAttention` class in place, we now modify the  `GPTModel` class. First, we add a position tracking for the token indices to the instructor:
+`MultiHeadAttention` sınıfındaki değişiklikler yerine oturduğuna göre, şimdi `GPTModel` sınıfını değiştiriyoruz. Önce, yapıcıya token indeksleri için bir konum takibi ekliyoruz:
 
 ```python
 self.current_pos = 0
 ```
 
-Then, we replace the one-liner block call with an explicit loop, passing `use_cache` through each transformer block:
+Ardından, tek satırlık blok çağrısını açık bir döngüyle değiştirip `use_cache` bayrağını her transformer bloğuna aktarıyoruz:
 
 ```python
 def forward(self, in_idx, use_cache=False):
@@ -147,14 +149,14 @@ def forward(self, in_idx, use_cache=False):
         x = blk(x, use_cache=use_cache)
 ```
 
-The above change then also requires a small modification to the `TransformerBlock` class to accept the `use_cache` argument:
+Yukarıdaki değişiklik, `TransformerBlock` sınıfının da `use_cache` argümanını kabul etmesi için küçük bir değişiklik gerektirir:
 ```python
     def forward(self, x, use_cache=False):
         # ...
         self.att(x, use_cache=use_cache)
 ```
 
-Lastly, we add a model-level reset to `GPTModel` to clear all block caches at once for our convenience:
+Son olarak, kolaylık olsun diye tüm blok önbelleklerini tek seferde temizleyen model düzeyinde bir sıfırlama metodunu `GPTModel` sınıfına ekliyoruz:
 
 ```python
 def reset_kv_cache(self):
@@ -165,9 +167,9 @@ def reset_kv_cache(self):
 
 &nbsp;
 
-### 5. Using the cache in generation
+### 5. Önbelleği üretimde kullanmak
 
-With the changes to the `GPTModel`, `TransformerBlock`, and `MultiHeadAttention`, finally, here's how we use the KV cache in a simple text generation function:
+`GPTModel`, `TransformerBlock` ve `MultiHeadAttention` sınıflarındaki değişikliklerle birlikte, KV önbelleğini basit bir metin üretme fonksiyonunda şöyle kullanıyoruz:
 
 ```python
 def generate_text_simple_cached(model, idx, max_new_tokens, 
@@ -197,13 +199,13 @@ def generate_text_simple_cached(model, idx, max_new_tokens,
     return idx
 ```
 
-Note that we only feed the model the new token in c) via `logits = model(next_idx, use_cache=True)`. Without caching, we feed the model the whole input `logits = model(idx[:, -ctx_len:], use_cache=False)` as it has no stored keys and values to reuse.
+Dikkat edin: c) adımında `logits = model(next_idx, use_cache=True)` ile modele yalnızca yeni token'ı veriyoruz. Önbellekleme olmadan ise modele tüm girdiyi veririz (`logits = model(idx[:, -ctx_len:], use_cache=False)`), çünkü yeniden kullanabileceği saklanmış anahtar ve değerler yoktur.
 
 &nbsp;
 
-## Simple performance comparison
+## Basit bir performans karşılaştırması
 
-After covering the KV cache on a conceptual level, the big question is how well it actually performs in practice on a small example. To give the implementation a try, we can run the two aforementioned code files as Python scripts, which will run the small 124 M parameter LLM to generate 200 new tokens (given a 4-token prompt "Hello, I am" to start with):
+KV önbelleğini kavramsal düzeyde ele aldıktan sonra, akla gelen büyük soru şu: küçük bir örnekte pratikte gerçekten ne kadar iyi çalışıyor? Uygulamayı denemek için yukarıda bahsedilen iki kod dosyasını Python betiği olarak çalıştırabiliriz; bu, 124 milyon parametreli küçük LLM'i çalıştırarak 200 yeni token üretecektir (başlangıç olarak 4 token'lık "Hello, I am" istemi verilir):
 
 ```bash
 pip install -r https://raw.githubusercontent.com/rasbt/LLMs-from-scratch/refs/heads/main/requirements.txt
@@ -213,52 +215,52 @@ python gpt_ch04.py
 python gpt_with_kv_cache.py
 ```
 
-On a Mac Mini with M4 chip (CPU), the results are as follows:
+M4 çipli bir Mac Mini'de (CPU) sonuçlar şöyledir:
 
-|                        | Tokens/sec |
+|                        | Token/saniye |
 | ---------------------- | ---------- |
 | `gpt_ch04.py`          | 27         |
 | `gpt_with_kv_cache.py` | 144        |
 
-So, as we can see, we already get a ~5x speed-up with a small 124 M parameter model and a short 200-token sequence length. (Note that this implementation is optimized for code readability and not optimized for CUDA or MPS runtime speed, which would require pre-allocating tensors instead of reinstating and concatenating them.)
+Görüldüğü gibi, 124 milyon parametreli küçük bir model ve 200 token'lık kısa bir dizi uzunluğuyla bile yaklaşık 5 kat hızlanma elde ediyoruz. (Bu uygulamanın kod okunabilirliği için optimize edildiğini, CUDA veya MPS çalışma zamanı hızı için optimize edilmediğini unutmayın; bunun için tensörleri yeniden oluşturup birleştirmek yerine önceden ayırmak gerekirdi.)
 
-**Note:** The model generates "gibberish" in both cases, i.e., text that looks like this: 
+**Not:** Model her iki durumda da "anlamsız" metin üretir, yani şuna benzer bir çıktı verir:
 
 > Output text: Hello, I am Featureiman Byeswickattribute argue logger Normandy Compton analogous bore ITVEGIN ministriesysics Kle functional recountrictionchangingVirgin embarrassedgl ...
 
-This is because we haven't trained the model, yet. The next chapter trains the model, and you can use the KV-cache on the trained model (however, the KV cache is only meant to be used during inference) to generate coherent text. Here, we are using the untrained model to keep the code simple(r).
+Bunun nedeni modeli henüz eğitmemiş olmamızdır. Sonraki bölüm modeli eğitir ve tutarlı metin üretmek için KV önbelleğini eğitilmiş model üzerinde kullanabilirsiniz (yine de KV önbelleği yalnızca çıkarım sırasında kullanılmak üzere tasarlanmıştır). Burada kodu (daha) basit tutmak için eğitilmemiş modeli kullanıyoruz.
 
-What's more important, though, is that both the `gpt_ch04.py` and `gpt_with_kv_cache.py` implementations produce exactly the same text. This tells us that the KV cache is implemented correctly -- it is easy to make indexing mistakes that can lead to divergent results.
-
-
-&nbsp;
-
-## KV cache advantages and disadvantages 
-
-As sequence length increases, the benefits and downsides of a KV cache become more pronounced in the following ways:
-
-- [Good] **Computational efficiency increases**: Without caching, the attention at step *t* must compare the new query with *t* previous keys, so the cumulative work scales quadratically, O(n²). With a cache, each key and value is computed once and then reused, reducing the total per-step complexity to linear, O(n).
-
-- [Bad] **Memory usage increases linearly**: Each new token appends to the KV cache. For long sequences and larger LLMs, the cumulative KV cache grows larger, which can consume a significant or even prohibitive amount of (GPU) memory. As a workaround, we can truncate the KV cache, but this adds even more complexity (but again, it may well be worth it when deploying LLMs.)
-
+Ancak daha önemlisi, `gpt_ch04.py` ve `gpt_with_kv_cache.py` uygulamalarının tamamen aynı metni üretmesidir. Bu bize KV önbelleğinin doğru uygulandığını söyler; birbirinden farklı sonuçlara yol açabilecek indeksleme hataları yapmak oldukça kolaydır.
 
 
 &nbsp;
-## Optimizing the KV Cache Implementation
 
-While my conceptual implementation of a KV cache above helps with clarity and is mainly geared towards code readability and educational purposes, deploying it in real-world scenarios (especially with larger models and longer sequence lengths) requires more careful optimization.
+## KV önbelleğinin avantajları ve dezavantajları
+
+Dizi uzunluğu arttıkça, bir KV önbelleğinin faydaları ve sakıncaları aşağıdaki şekillerde daha belirgin hâle gelir:
+
+- [İyi] **Hesaplama verimliliği artar**: Önbellekleme olmadan, *t* adımındaki dikkat mekanizması yeni sorguyu *t* adet önceki anahtarla karşılaştırmak zorundadır; dolayısıyla toplam iş yükü karesel olarak, O(n²) büyür. Önbellekle birlikte her anahtar ve değer bir kez hesaplanıp sonra yeniden kullanılır ve adım başına toplam karmaşıklık doğrusala, O(n)'e iner.
+
+- [Kötü] **Bellek kullanımı doğrusal olarak artar**: Her yeni token KV önbelleğine eklenir. Uzun diziler ve daha büyük LLM'ler için biriken KV önbelleği büyür ve ciddi, hatta karşılanamaz miktarda (GPU) bellek tüketebilir. Geçici çözüm olarak KV önbelleğini kırpabiliriz, ancak bu daha da fazla karmaşıklık ekler (yine de, LLM'leri dağıtıma alırken buna değebilir).
+
+
 
 &nbsp;
-### Common pitfalls when scaling the cache
+## KV Önbelleği Uygulamasını Optimize Etmek
 
-- **Memory fragmentation and repeated allocations**: Continuously concatenating tensors via `torch.cat` as shown earlier, leads to performance bottlenecks due to frequent memory allocation and reallocation.
-
-- **Linear growth in memory usage**: Without proper handling, the KV cache size becomes impractical for very long sequences.
+Yukarıdaki kavramsal KV önbelleği uygulamam anlaşılırlığa yardımcı olsa ve esas olarak kod okunabilirliği ile eğitim amaçlarına yönelik olsa da, gerçek dünya senaryolarında (özellikle daha büyük modeller ve daha uzun dizi uzunluklarıyla) dağıtıma almak daha dikkatli bir optimizasyon gerektirir.
 
 &nbsp;
-#### Tip 1: Pre-allocate Memory
+### Önbelleği ölçeklerken sık karşılaşılan tuzaklar
 
-Rather than concatenating tensors repeatedly, we could pre-allocate a sufficiently large tensor based on the expected maximum sequence length. This ensures consistent memory use and reduces overhead. In pseudo-code, this may look like as follows:
+- **Bellek parçalanması ve tekrar eden tahsisler**: Daha önce gösterildiği gibi `torch.cat` ile sürekli tensör birleştirmek, sık bellek tahsisi ve yeniden tahsisi nedeniyle performans darboğazlarına yol açar.
+
+- **Bellek kullanımında doğrusal büyüme**: Uygun şekilde ele alınmazsa, çok uzun diziler için KV önbelleği boyutu pratik olmaktan çıkar.
+
+&nbsp;
+#### İpucu 1: Belleği önceden tahsis edin
+
+Tensörleri tekrar tekrar birleştirmek yerine, beklenen maksimum dizi uzunluğuna göre yeterince büyük bir tensörü önceden tahsis edebiliriz. Bu, tutarlı bellek kullanımı sağlar ve ek yükü azaltır. Sözde kod (pseudo-code) olarak şöyle görünebilir:
 
 ```python
 # Example pre-allocation for keys and values
@@ -267,12 +269,12 @@ cache_k = torch.zeros((batch_size, num_heads, max_seq_len, head_dim), device=dev
 cache_v = torch.zeros((batch_size, num_heads, max_seq_len, head_dim), device=device)
 ```
 
-During inference, we can then simply write into slices of these pre-allocated tensors.
+Çıkarım sırasında ise bu önceden tahsis edilmiş tensörlerin dilimlerine (slice) yazabiliriz.
 
 &nbsp;
-#### Tip 2: Truncate Cache via Sliding Window
+#### İpucu 2: Önbelleği kayan pencere ile kırpın
 
-To avoid blowing up our GPU memory, we can implement a sliding window approach with dynamic truncation. Via the sliding window, we maintain only the last `window_size` tokens in the cache:
+GPU belleğimizi patlatmamak için dinamik kırpmalı bir kayan pencere (sliding window) yaklaşımı uygulayabiliriz. Kayan pencere sayesinde önbellekte yalnızca son `window_size` kadar token'ı tutarız:
 
 
 ```python
@@ -283,25 +285,25 @@ cache_v = cache_v[:, :, -window_size:, :]
 ```
 
 &nbsp;
-#### Optimizations in practice
+#### Pratikte optimizasyonlar
 
-You can find these optimizations in the [`gpt_with_kv_cache_optimized.py`](gpt_with_kv_cache_optimized.py) file. 
+Bu optimizasyonları [`gpt_with_kv_cache_optimized.py`](gpt_with_kv_cache_optimized.py) dosyasında bulabilirsiniz.
 
 
-On a Mac Mini with an M4 chip (CPU), with a 200-token generation and a window size equal to the context length (to guarantee same results) below, the code runtimes compare as follows:
+M4 çipli bir Mac Mini'de (CPU), 200 token üretimi ve bağlam uzunluğuna eşit bir pencere boyutuyla (aynı sonuçları garantilemek için) kodların çalışma süreleri şöyle karşılaştırılır:
 
-|                                  | Tokens/sec |
+|                                  | Token/saniye |
 | -------------------------------- | ---------- |
 | `gpt_ch04.py`                    | 27         |
 | `gpt_with_kv_cache.py`           | 144        |
 | `gpt_with_kv_cache_optimized.py` | 166        |
 
-Unfortunately, the speed advantages disappear on CUDA devices as this is a tiny model, and the device transfer and communication outweigh the benefits of a KV cache for this small model. 
+Ne yazık ki, bu çok küçük bir model olduğu için CUDA cihazlarında hız avantajları ortadan kalkar; bu küçük modelde cihaz aktarımı ve iletişim maliyeti, KV önbelleğinin faydalarına ağır basar.
 
 
 &nbsp;
-## Additional Resources
+## Ek Kaynaklar
 
-1. [Qwen3 from-scratch KV cache benchmarks](../../ch05/11_qwen3#pro-tip-2-speed-up-inference-with-compilation)
-2. [Llama 3 from-scratch KV cache benchmarks](../../ch05/07_gpt_to_llama/README.md#pro-tip-3-speed-up-inference-with-compilation)
-3. [Understanding and Coding the KV Cache in LLMs from Scratch](https://magazine.sebastianraschka.com/p/coding-the-kv-cache-in-llms) -- A more detailed write-up of this README
+1. [Sıfırdan Qwen3 KV önbelleği ölçümleri](../../ch05/11_qwen3#pro-tip-2-speed-up-inference-with-compilation)
+2. [Sıfırdan Llama 3 KV önbelleği ölçümleri](../../ch05/07_gpt_to_llama/README.md#pro-tip-3-speed-up-inference-with-compilation)
+3. [Understanding and Coding the KV Cache in LLMs from Scratch](https://magazine.sebastianraschka.com/p/coding-the-kv-cache-in-llms) -- Bu README'nin daha ayrıntılı bir yazılı hâli

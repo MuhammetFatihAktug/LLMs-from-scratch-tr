@@ -1,6 +1,17 @@
-# Build a Large Language Model (From Scratch)
+# Build a Large Language Model (From Scratch) — Türkçe
 
-This repository contains the code for developing, pretraining, and finetuning a GPT-like LLM and is the official code repository for the book [Build a Large Language Model (From Scratch)](https://amzn.to/4fqvn0D).
+> ### 🇹🇷 Bu, resmî olmayan bir Türkçe çeviridir
+>
+> Özgün eser **Sebastian Raschka**'ya aittir: [rasbt/LLMs-from-scratch](https://github.com/rasbt/LLMs-from-scratch) · Apache License 2.0 · *Copyright 2023-2026 Sebastian Raschka*
+>
+> **Bu depodaki dosyalar değiştirilmiştir** (Apache 2.0 §4(b) bildirimi): metinler Türkçeye çevrilmiştir. Çalıştırılabilir kod, hücre çıktıları ve ölçüm tabloları değiştirilmemiştir. Ayrıntı: [NOTICE](NOTICE)
+>
+> Özgün İngilizce sürüm bu deponun `main` dalında dokunulmadan durur. Bu çeviri `tr` dalındadır.
+> Kitabın yazarı veya Manning tarafından incelenmemiş / onaylanmamıştır.
+>
+> 📖 [Okuma sırası ve depo haritası](OKUMA_SIRASI.md) · 📗 [Terim sözlüğü](SOZLUK.md)
+
+Bu depo, GPT benzeri bir LLM'in geliştirilmesi, ön eğitimi ve ince ayarı için gerekli kodu içerir ve [Build a Large Language Model (From Scratch)](https://amzn.to/4fqvn0D) kitabının resmî kod deposudur.
 
 <br>
 <br>
@@ -9,13 +20,13 @@ This repository contains the code for developing, pretraining, and finetuning a 
 
 <br>
 
-In [*Build a Large Language Model (From Scratch)*](http://mng.bz/orYv), you'll learn and understand how large language models (LLMs) work from the inside out by coding them from the ground up, step by step. In this book, I'll guide you through creating your own LLM, explaining each stage with clear text, diagrams, and examples.
+[*Build a Large Language Model (From Scratch)*](http://mng.bz/orYv) kitabında, büyük dil modellerinin (LLM) nasıl çalıştığını sıfırdan, adım adım kodlayarak içeriden öğrenip anlayacaksınız. Bu kitapta size kendi LLM'inizi oluşturma sürecinde rehberlik ediyor, her aşamayı anlaşılır metin, şema ve örneklerle açıklıyorum.
 
-The method described in this book for training and developing your own small-but-functional model for educational purposes mirrors the approach used in creating large-scale foundational models such as those behind ChatGPT. In addition, this book includes code for loading the weights of larger pretrained models for finetuning.
+Bu kitapta eğitim amaçlı, küçük ama işlevsel kendi modelinizi eğitmek ve geliştirmek için anlatılan yöntem, ChatGPT'nin arkasındakiler gibi büyük ölçekli temel modellerin (foundation model) oluşturulmasında kullanılan yaklaşımın bir yansımasıdır. Ayrıca bu kitap, daha büyük önceden eğitilmiş modellerin ağırlıklarını ince ayar için yükleyen kodu da içerir.
 
-- Link to the official [source code repository](https://github.com/rasbt/LLMs-from-scratch)
-- [Link to the book at Manning (the publisher's website)](http://mng.bz/orYv)
-- [Link to the book page on Amazon.com](https://www.amazon.com/gp/product/1633437167)
+- [Kaynak kod deposunun resmî bağlantısı](https://github.com/rasbt/LLMs-from-scratch)
+- [Kitabın Manning'deki (yayıncının web sitesi) bağlantısı](http://mng.bz/orYv)
+- [Kitabın Amazon.com sayfası](https://www.amazon.com/gp/product/1633437167)
 - ISBN 9781633437166
 
 <a href="http://mng.bz/orYv#reviews"><img src="https://sebastianraschka.com//images/LLMs-from-scratch-images/other/reviews.png" width="220px"></a>
@@ -24,7 +35,7 @@ The method described in this book for training and developing your own small-but
 <br>
 <br>
 
-To download a copy of this repository, click on the [Download ZIP](https://github.com/rasbt/LLMs-from-scratch/archive/refs/heads/main.zip) button or execute the following command in your terminal:
+Bu deponun bir kopyasını indirmek için [Download ZIP](https://github.com/rasbt/LLMs-from-scratch/archive/refs/heads/main.zip) düğmesine tıklayın veya terminalinizde şu komutu çalıştırın:
 
 ```bash
 git clone --depth 1 https://github.com/rasbt/LLMs-from-scratch.git
@@ -32,24 +43,24 @@ git clone --depth 1 https://github.com/rasbt/LLMs-from-scratch.git
 
 <br>
 
-(If you downloaded the code bundle from the Manning website, please consider visiting the official code repository on GitHub at [https://github.com/rasbt/LLMs-from-scratch](https://github.com/rasbt/LLMs-from-scratch) for the latest updates.)
+(Kod paketini Manning web sitesinden indirdiyseniz, en güncel değişiklikler için lütfen GitHub'daki resmî kod deposunu ziyaret etmeyi düşünün: [https://github.com/rasbt/LLMs-from-scratch](https://github.com/rasbt/LLMs-from-scratch))
 
 <br>
 <br>
 
 
-# Table of Contents
+# İçindekiler
 
-Please note that this `README.md` file is a Markdown (`.md`) file. If you have downloaded this code bundle from the Manning website and are viewing it on your local computer, I recommend using a Markdown editor or previewer for proper viewing. If you haven't installed a Markdown editor yet, [Ghostwriter](https://ghostwriter.kde.org) is a good free option.
+Bu `README.md` dosyasının bir Markdown (`.md`) dosyası olduğunu lütfen unutmayın. Bu kod paketini Manning web sitesinden indirdiyseniz ve yerel bilgisayarınızda görüntülüyorsanız, düzgün görüntüleme için bir Markdown editörü veya önizleyicisi kullanmanızı öneririm. Henüz bir Markdown editörü kurmadıysanız, [Ghostwriter](https://ghostwriter.kde.org) iyi ve ücretsiz bir seçenektir.
 
-You can alternatively view this and other files on GitHub at [https://github.com/rasbt/LLMs-from-scratch](https://github.com/rasbt/LLMs-from-scratch) in your browser, which renders Markdown automatically.
+Alternatif olarak bu ve diğer dosyaları GitHub'da tarayıcınızdan görüntüleyebilirsiniz ([https://github.com/rasbt/LLMs-from-scratch](https://github.com/rasbt/LLMs-from-scratch)); GitHub Markdown'ı otomatik olarak işler.
 
 <br>
 <br>
 
 
-> **Tip:**
-> If you're seeking guidance on installing Python and Python packages and setting up your code environment, I suggest reading the [README.md](setup/README.md) file located in the [setup](setup) directory.
+> **İpucu:**
+> Python ve Python paketlerini kurma ile kod ortamınızı ayarlama konusunda rehberlik arıyorsanız, [setup](setup) dizinindeki [README.md](setup/README.md) dosyasını okumanızı öneririm.
 
 <br>
 <br>
@@ -58,29 +69,29 @@ You can alternatively view this and other files on GitHub at [https://github.com
 [![Code tests Windows](https://github.com/rasbt/LLMs-from-scratch/actions/workflows/basic-tests-windows-uv-pip.yml/badge.svg)](https://github.com/rasbt/LLMs-from-scratch/actions/workflows/basic-tests-windows-uv-pip.yml)
 [![Code tests macOS](https://github.com/rasbt/LLMs-from-scratch/actions/workflows/basic-tests-macos-uv.yml/badge.svg)](https://github.com/rasbt/LLMs-from-scratch/actions/workflows/basic-tests-macos-uv.yml)
 
-- [Troubleshooting Guide](./troubleshooting.md)
+- [Sorun Giderme Rehberi](./troubleshooting.md)
 
 
-| Chapter Title                                              | Main Code (for Quick Access)                                                                                                    | All Code + Supplementary      |
+| Bölüm Başlığı                                              | Ana Kod (Hızlı Erişim İçin)                                                                                                    | Tüm Kod + Ek Materyaller      |
 |------------------------------------------------------------|---------------------------------------------------------------------------------------------------------------------------------|-------------------------------|
-| [Setup recommendations](setup) <br/>[How to best read this book](https://sebastianraschka.com/blog/2025/reading-books.html)                            | -                                                                                                                               | -                             |
-| Ch 1: Understanding Large Language Models                  | No code                                                                                                                         | -                             |
-| Ch 2: Working with Text Data                               | - [ch02.ipynb](ch02/01_main-chapter-code/ch02.ipynb)<br/>- [dataloader.ipynb](ch02/01_main-chapter-code/dataloader.ipynb) (summary)<br/>- [exercise-solutions.ipynb](ch02/01_main-chapter-code/exercise-solutions.ipynb)               | [./ch02](./ch02)            |
-| Ch 3: Coding Attention Mechanisms                          | - [ch03.ipynb](ch03/01_main-chapter-code/ch03.ipynb)<br/>- [multihead-attention.ipynb](ch03/01_main-chapter-code/multihead-attention.ipynb) (summary) <br/>- [exercise-solutions.ipynb](ch03/01_main-chapter-code/exercise-solutions.ipynb)| [./ch03](./ch03)             |
-| Ch 4: Implementing a GPT Model from Scratch                | - [ch04.ipynb](ch04/01_main-chapter-code/ch04.ipynb)<br/>- [gpt.py](ch04/01_main-chapter-code/gpt.py) (summary)<br/>- [exercise-solutions.ipynb](ch04/01_main-chapter-code/exercise-solutions.ipynb) | [./ch04](./ch04)           |
-| Ch 5: Pretraining on Unlabeled Data                        | - [ch05.ipynb](ch05/01_main-chapter-code/ch05.ipynb)<br/>- [gpt_train.py](ch05/01_main-chapter-code/gpt_train.py) (summary) <br/>- [gpt_generate.py](ch05/01_main-chapter-code/gpt_generate.py) (summary) <br/>- [exercise-solutions.ipynb](ch05/01_main-chapter-code/exercise-solutions.ipynb) | [./ch05](./ch05)              |
-| Ch 6: Finetuning for Text Classification                   | - [ch06.ipynb](ch06/01_main-chapter-code/ch06.ipynb)  <br/>- [gpt_class_finetune.py](ch06/01_main-chapter-code/gpt_class_finetune.py)  <br/>- [exercise-solutions.ipynb](ch06/01_main-chapter-code/exercise-solutions.ipynb) | [./ch06](./ch06)              |
-| Ch 7: Finetuning to Follow Instructions                    | - [ch07.ipynb](ch07/01_main-chapter-code/ch07.ipynb)<br/>- [gpt_instruction_finetuning.py](ch07/01_main-chapter-code/gpt_instruction_finetuning.py) (summary)<br/>- [ollama_evaluate.py](ch07/01_main-chapter-code/ollama_evaluate.py) (summary)<br/>- [exercise-solutions.ipynb](ch07/01_main-chapter-code/exercise-solutions.ipynb) | [./ch07](./ch07)  |
-| Appendix A: Introduction to PyTorch                        | - [code-part1.ipynb](appendix-A/01_main-chapter-code/code-part1.ipynb)<br/>- [code-part2.ipynb](appendix-A/01_main-chapter-code/code-part2.ipynb)<br/>- [DDP-script.py](appendix-A/01_main-chapter-code/DDP-script.py)<br/>- [exercise-solutions.ipynb](appendix-A/01_main-chapter-code/exercise-solutions.ipynb) | [./appendix-A](./appendix-A) |
-| Appendix B: References and Further Reading                 | No code                                                                                                                         | [./appendix-B](./appendix-B) |
-| Appendix C: Exercise Solutions                             | - [list of exercise solutions](appendix-C)                                                                 | [./appendix-C](./appendix-C) |
-| Appendix D: Adding Bells and Whistles to the Training Loop | - [appendix-D.ipynb](appendix-D/01_main-chapter-code/appendix-D.ipynb)                                                          | [./appendix-D](./appendix-D)  |
-| Appendix E: Parameter-efficient Finetuning with LoRA       | - [appendix-E.ipynb](appendix-E/01_main-chapter-code/appendix-E.ipynb)                                                          | [./appendix-E](./appendix-E) |
+| [Kurulum önerileri](setup) <br/>[Bu kitap en iyi nasıl okunur](https://sebastianraschka.com/blog/2025/reading-books.html)                            | -                                                                                                                               | -                             |
+| Böl. 1: Büyük Dil Modellerini Anlamak                  | Kod yok                                                                                                                         | -                             |
+| Böl. 2: Metin Verileriyle Çalışmak                               | - [ch02.ipynb](ch02/01_main-chapter-code/ch02.ipynb)<br/>- [dataloader.ipynb](ch02/01_main-chapter-code/dataloader.ipynb) (özet)<br/>- [exercise-solutions.ipynb](ch02/01_main-chapter-code/exercise-solutions.ipynb)               | [./ch02](./ch02)            |
+| Böl. 3: Dikkat Mekanizmalarını Kodlamak                          | - [ch03.ipynb](ch03/01_main-chapter-code/ch03.ipynb)<br/>- [multihead-attention.ipynb](ch03/01_main-chapter-code/multihead-attention.ipynb) (özet) <br/>- [exercise-solutions.ipynb](ch03/01_main-chapter-code/exercise-solutions.ipynb)| [./ch03](./ch03)             |
+| Böl. 4: Sıfırdan Bir GPT Modeli Uygulamak                | - [ch04.ipynb](ch04/01_main-chapter-code/ch04.ipynb)<br/>- [gpt.py](ch04/01_main-chapter-code/gpt.py) (özet)<br/>- [exercise-solutions.ipynb](ch04/01_main-chapter-code/exercise-solutions.ipynb) | [./ch04](./ch04)           |
+| Böl. 5: Etiketlenmemiş Veri Üzerinde Ön Eğitim                        | - [ch05.ipynb](ch05/01_main-chapter-code/ch05.ipynb)<br/>- [gpt_train.py](ch05/01_main-chapter-code/gpt_train.py) (özet) <br/>- [gpt_generate.py](ch05/01_main-chapter-code/gpt_generate.py) (özet) <br/>- [exercise-solutions.ipynb](ch05/01_main-chapter-code/exercise-solutions.ipynb) | [./ch05](./ch05)              |
+| Böl. 6: Metin Sınıflandırma İçin İnce Ayar                   | - [ch06.ipynb](ch06/01_main-chapter-code/ch06.ipynb)  <br/>- [gpt_class_finetune.py](ch06/01_main-chapter-code/gpt_class_finetune.py)  <br/>- [exercise-solutions.ipynb](ch06/01_main-chapter-code/exercise-solutions.ipynb) | [./ch06](./ch06)              |
+| Böl. 7: Talimatları İzlemek İçin İnce Ayar                    | - [ch07.ipynb](ch07/01_main-chapter-code/ch07.ipynb)<br/>- [gpt_instruction_finetuning.py](ch07/01_main-chapter-code/gpt_instruction_finetuning.py) (özet)<br/>- [ollama_evaluate.py](ch07/01_main-chapter-code/ollama_evaluate.py) (özet)<br/>- [exercise-solutions.ipynb](ch07/01_main-chapter-code/exercise-solutions.ipynb) | [./ch07](./ch07)  |
+| Ek A: PyTorch'a Giriş                        | - [code-part1.ipynb](appendix-A/01_main-chapter-code/code-part1.ipynb)<br/>- [code-part2.ipynb](appendix-A/01_main-chapter-code/code-part2.ipynb)<br/>- [DDP-script.py](appendix-A/01_main-chapter-code/DDP-script.py)<br/>- [exercise-solutions.ipynb](appendix-A/01_main-chapter-code/exercise-solutions.ipynb) | [./appendix-A](./appendix-A) |
+| Ek B: Kaynaklar ve İleri Okuma                 | Kod yok                                                                                                                         | [./appendix-B](./appendix-B) |
+| Ek C: Alıştırma Çözümleri                             | - [alıştırma çözümlerinin listesi](appendix-C)                                                                 | [./appendix-C](./appendix-C) |
+| Ek D: Eğitim Döngüsüne Ek Özellikler Eklemek | - [appendix-D.ipynb](appendix-D/01_main-chapter-code/appendix-D.ipynb)                                                          | [./appendix-D](./appendix-D)  |
+| Ek E: LoRA ile Parametre Açısından Verimli İnce Ayar       | - [appendix-E.ipynb](appendix-E/01_main-chapter-code/appendix-E.ipynb)                                                          | [./appendix-E](./appendix-E) |
 
 <br>
 &nbsp;
 
-The mental model below summarizes the contents covered in this book.
+Aşağıdaki zihinsel model, bu kitapta ele alınan içeriği özetler.
 
 <img src="https://sebastianraschka.com/images/LLMs-from-scratch-images/mental-model.jpg" width="650px">
 
@@ -88,30 +99,29 @@ The mental model below summarizes the contents covered in this book.
 <br>
 &nbsp;
 
-## Prerequisites
+## Ön Koşullar
 
-The most important prerequisite is a strong foundation in Python programming.
-With this knowledge, you will be well prepared to explore the fascinating world of LLMs
-and understand the concepts and code examples presented in this book.
+En önemli ön koşul, Python programlamada sağlam bir temeldir.
+Bu bilgiyle, LLM'lerin büyüleyici dünyasını keşfetmeye ve bu kitapta sunulan kavramlar ile kod örneklerini anlamaya hazır olacaksınız.
 
-If you have some experience with deep neural networks, you may find certain concepts more familiar, as LLMs are built upon these architectures.
+Derin sinir ağlarıyla biraz deneyiminiz varsa, LLM'ler bu mimariler üzerine kurulduğu için bazı kavramları daha tanıdık bulabilirsiniz.
 
-This book uses PyTorch to implement the code from scratch without using any external LLM libraries. While proficiency in PyTorch is not a prerequisite, familiarity with PyTorch basics is certainly useful. If you are new to PyTorch, Appendix A provides a concise introduction to PyTorch. Alternatively, you may find my book, [PyTorch in One Hour: From Tensors to Training Neural Networks on Multiple GPUs](https://sebastianraschka.com/teaching/pytorch-1h/), helpful for learning about the essentials.
+Bu kitap, kodu herhangi bir harici LLM kütüphanesi kullanmadan sıfırdan uygulamak için PyTorch'u kullanır. PyTorch'ta uzmanlık bir ön koşul olmasa da, PyTorch temellerine aşinalık kesinlikle faydalıdır. PyTorch'a yeniyseniz, Ek A kısa bir PyTorch girişi sunar. Alternatif olarak, temelleri öğrenmek için [PyTorch in One Hour: From Tensors to Training Neural Networks on Multiple GPUs](https://sebastianraschka.com/teaching/pytorch-1h/) adlı kitabımı faydalı bulabilirsiniz.
 
 
 
 <br>
 &nbsp;
 
-## Hardware Requirements
+## Donanım Gereksinimleri
 
-The code in the main chapters of this book is designed to run on conventional laptops within a reasonable timeframe and does not require specialized hardware. This approach ensures that a wide audience can engage with the material. Additionally, the code automatically utilizes GPUs if they are available. (Please see the [setup](https://github.com/rasbt/LLMs-from-scratch/blob/main/setup/README.md) doc for additional recommendations.)
+Bu kitabın ana bölümlerindeki kod, sıradan dizüstü bilgisayarlarda makul bir sürede çalışacak şekilde tasarlanmıştır ve özel donanım gerektirmez. Bu yaklaşım, geniş bir kitlenin materyalle etkileşim kurabilmesini sağlar. Ayrıca kod, mevcutsa GPU'ları otomatik olarak kullanır. (Ek öneriler için lütfen [setup](https://github.com/rasbt/LLMs-from-scratch/blob/main/setup/README.md) belgesine bakın.)
 
 
 &nbsp;
-## Video Course
+## Video Kursu
 
-[A 17-hour and 15-minute companion video course](https://www.manning.com/livevideo/master-and-build-large-language-models) where I code through each chapter of the book. The course is organized into chapters and sections that mirror the book's structure so that it can be used as a standalone alternative to the book or complementary code-along resource.
+[17 saat 15 dakikalık eşlik eden bir video kursunda](https://www.manning.com/livevideo/master-and-build-large-language-models) kitabın her bölümünü kodlayarak anlatıyorum. Kurs, kitabın yapısını yansıtan bölümler ve kısımlar hâlinde düzenlenmiştir; böylece kitaba bağımsız bir alternatif olarak ya da tamamlayıcı bir kodlama kaynağı olarak kullanılabilir.
 
 <a href="https://www.manning.com/livevideo/master-and-build-large-language-models"><img src="https://sebastianraschka.com/images/LLMs-from-scratch-images/video-screenshot.webp?123" width="350px"></a>
 
@@ -119,136 +129,138 @@ The code in the main chapters of this book is designed to run on conventional la
 &nbsp;
 
 
-## Companion Book / Sequel
+## Eşlik Eden Kitap / Devamı
 
-[*Build A Reasoning Model (From Scratch)*](https://mng.bz/lZ5B), while a standalone book, can be considered as a sequel to *Build A Large Language Model (From Scratch)*.
+[*Build A Reasoning Model (From Scratch)*](https://mng.bz/lZ5B) bağımsız bir kitap olmakla birlikte, *Build A Large Language Model (From Scratch)* kitabının devamı olarak değerlendirilebilir.
 
-It starts with a pretrained model and implements different reasoning approaches, including inference-time scaling, reinforcement learning, and distillation, to improve the model's reasoning capabilities.
+Önceden eğitilmiş bir modelle başlar ve modelin akıl yürütme yeteneklerini geliştirmek için çıkarım zamanı ölçeklendirme (inference-time scaling), pekiştirmeli öğrenme ve damıtma (distillation) dahil farklı akıl yürütme yaklaşımlarını uygular.
 
-Similar to *Build A Large Language Model (From Scratch)*, [*Build A Reasoning Model (From Scratch)*](https://mng.bz/lZ5B) takes a hands-on approach implementing these methods from scratch.
+*Build A Large Language Model (From Scratch)* kitabına benzer şekilde, [*Build A Reasoning Model (From Scratch)*](https://mng.bz/lZ5B) de bu yöntemleri sıfırdan uygulayan uygulamalı bir yaklaşım benimser.
 
 <a href="https://mng.bz/lZ5B"><img src="https://sebastianraschka.com/images/reasoning-from-scratch-images/cover.webp?123" width="120px"></a>
 
-- [Amazon link](https://amzn.to/4aAKiFY)
-- [Manning link](https://mng.bz/lZ5B)
-- [GitHub repository](https://github.com/rasbt/reasoning-from-scratch)
+- [Amazon bağlantısı](https://amzn.to/4aAKiFY)
+- [Manning bağlantısı](https://mng.bz/lZ5B)
+- [GitHub deposu](https://github.com/rasbt/reasoning-from-scratch)
+
+> ℹ️ Bu deponun içindeki [reasoning-from-scratch](./reasoning-from-scratch) klasörü, yukarıdaki deponun bir git submodule'üdür ve bu çalışma kopyasında sabitlenmiş sürüme (commit `0acaa28`) göre doldurulmuştur.
 
 <br>
 
 &nbsp;
-## Exercises
+## Alıştırmalar
 
-Each chapter of the book includes several exercises. The solutions are summarized in Appendix C, and the corresponding code notebooks are available in the main chapter folders of this repository (for example,  [./ch02/01_main-chapter-code/exercise-solutions.ipynb](./ch02/01_main-chapter-code/exercise-solutions.ipynb).
+Kitabın her bölümü birkaç alıştırma içerir. Çözümler Ek C'de özetlenmiştir ve ilgili kod not defterleri bu deponun ana bölüm klasörlerinde mevcuttur (örneğin, [./ch02/01_main-chapter-code/exercise-solutions.ipynb](./ch02/01_main-chapter-code/exercise-solutions.ipynb)).
 
-In addition to the code exercises, you can download a free 170-page PDF titled  [Test Yourself On Build a Large Language Model (From Scratch)](https://www.manning.com/books/test-yourself-on-build-a-large-language-model-from-scratch) from the Manning website. It contains approximately 30 quiz questions and solutions per chapter to help you test your understanding.
+Kod alıştırmalarına ek olarak, Manning web sitesinden [Test Yourself On Build a Large Language Model (From Scratch)](https://www.manning.com/books/test-yourself-on-build-a-large-language-model-from-scratch) başlıklı 170 sayfalık ücretsiz bir PDF indirebilirsiniz. Anlayışınızı test etmenize yardımcı olmak için bölüm başına yaklaşık 30 sınav sorusu ve çözümü içerir.
 
 <a href="https://www.manning.com/books/test-yourself-on-build-a-large-language-model-from-scratch"><img src="https://sebastianraschka.com/images/LLMs-from-scratch-images/test-yourself-cover.jpg?123" width="150px"></a>
 
 &nbsp;
-## Bonus Material
+## Bonus Materyaller
 
-Several folders contain optional materials as a bonus for interested readers:
-- **Setup**
-  - [Python Setup Tips](setup/01_optional-python-setup-preferences)
-  - [Installing Python Packages and Libraries Used in This Book](setup/02_installing-python-libraries)
-  - [Docker Environment Setup Guide](setup/03_optional-docker-environment)
+Birkaç klasör, ilgilenen okuyucular için bonus niteliğinde isteğe bağlı materyaller içerir:
+- **Kurulum**
+  - [Python Kurulum İpuçları](setup/01_optional-python-setup-preferences)
+  - [Bu Kitapta Kullanılan Python Paketlerini ve Kütüphanelerini Kurmak](setup/02_installing-python-libraries)
+  - [Docker Ortamı Kurulum Rehberi](setup/03_optional-docker-environment)
 
-- **Chapter 2: Working With Text Data**
-  - [Byte Pair Encoding (BPE) Tokenizer From Scratch](ch02/05_bpe-from-scratch/bpe-from-scratch-simple.ipynb)
-  - [Comparing Various Byte Pair Encoding (BPE) Implementations](ch02/02_bonus_bytepair-encoder)
-  - [Understanding the Difference Between Embedding Layers and Linear Layers](ch02/03_bonus_embedding-vs-matmul)
-  - [Dataloader Intuition With Simple Numbers](ch02/04_bonus_dataloader-intuition)
-  - [BPE From Scratch](ch02/05_bpe-from-scratch)
-  - [SimpleTokenizerV3 variant](ch02/06_bonus_simple-tokenizer-v3)
+- **Bölüm 2: Metin Verileriyle Çalışmak**
+  - [Sıfırdan Byte Pair Encoding (BPE) Tokenizer](ch02/05_bpe-from-scratch/bpe-from-scratch-simple.ipynb)
+  - [Çeşitli Byte Pair Encoding (BPE) Uygulamalarının Karşılaştırılması](ch02/02_bonus_bytepair-encoder)
+  - [Gömme Katmanları ile Doğrusal Katmanlar Arasındaki Farkı Anlamak](ch02/03_bonus_embedding-vs-matmul)
+  - [Basit Sayılarla Veri Yükleyici Sezgisi](ch02/04_bonus_dataloader-intuition)
+  - [Sıfırdan BPE](ch02/05_bpe-from-scratch)
+  - [SimpleTokenizerV3 varyantı](ch02/06_bonus_simple-tokenizer-v3)
 
-- **Chapter 3: Coding Attention Mechanisms**
-  - [Comparing Efficient Multi-Head Attention Implementations](ch03/02_bonus_efficient-multihead-attention/mha-implementations.ipynb)
-  - [Understanding PyTorch Buffers](ch03/03_understanding-buffers/understanding-buffers.ipynb)
+- **Bölüm 3: Dikkat Mekanizmalarını Kodlamak**
+  - [Verimli Çok Başlı Dikkat Uygulamalarının Karşılaştırılması](ch03/02_bonus_efficient-multihead-attention/mha-implementations.ipynb)
+  - [PyTorch Buffer'larını Anlamak](ch03/03_understanding-buffers/understanding-buffers.ipynb)
 
-- **Chapter 4: Implementing a GPT Model From Scratch**
-  - [FLOPs Analysis](ch04/02_performance-analysis/flops-analysis.ipynb)
-  - [KV Cache](ch04/03_kv-cache)
-  - [Attention Alternatives](ch04/#attention-alternatives)
-    - [Grouped-Query Attention](ch04/04_gqa)
-    - [Multi-Head Latent Attention](ch04/05_mla)
-    - [Sliding Window Attention](ch04/06_swa)
+- **Bölüm 4: Sıfırdan Bir GPT Modeli Uygulamak**
+  - [FLOPs Analizi](ch04/02_performance-analysis/flops-analysis.ipynb)
+  - [KV Önbelleği](ch04/03_kv-cache)
+  - [Dikkat Mekanizmasına Alternatifler](ch04/#attention-alternatives)
+    - [Gruplanmış Sorgu Dikkati (GQA)](ch04/04_gqa)
+    - [Çok Başlı Gizil Dikkat (MLA)](ch04/05_mla)
+    - [Kayan Pencere Dikkati (SWA)](ch04/06_swa)
     - [Gated DeltaNet](ch04/08_deltanet)
-    - [DeepSeek Sparse Attention (DSA)](ch04/09_dsa)
-    - [Cross-Layer KV Sharing](ch04/10_kv-sharing)
-  - [Mixture-of-Experts (MoE)](ch04/07_moe)
+    - [DeepSeek Seyrek Dikkati (DSA)](ch04/09_dsa)
+    - [Katmanlar Arası KV Paylaşımı](ch04/10_kv-sharing)
+  - [Uzmanlar Karışımı (MoE)](ch04/07_moe)
 
-- **Chapter 5: Pretraining on Unlabeled Data**
-  - [Alternative Weight Loading Methods](ch05/02_alternative_weight_loading/)
-  - [Pretraining GPT on the Project Gutenberg Dataset](ch05/03_bonus_pretraining_on_gutenberg)
-  - [Adding Bells and Whistles to the Training Loop](ch05/04_learning_rate_schedulers)
-  - [Optimizing Hyperparameters for Pretraining](ch05/05_bonus_hparam_tuning)
-  - [Building a User Interface to Interact With the Pretrained LLM](ch05/06_user_interface)
-  - [Converting GPT to Llama](ch05/07_gpt_to_llama)
-  - [Memory-efficient Model Weight Loading](ch05/08_memory_efficient_weight_loading/memory-efficient-state-dict.ipynb)
-  - [Extending the Tiktoken BPE Tokenizer with New Tokens](ch05/09_extending-tokenizers/extend-tiktoken.ipynb)
-  - [PyTorch Performance Tips for Faster LLM Training](ch05/10_llm-training-speed)
-  - [LLM Architectures](ch05/#llm-architectures-from-scratch)
-    - [Llama 3.2 From Scratch](ch05/07_gpt_to_llama/standalone-llama32.ipynb)
-    - [Qwen3 Dense and Mixture-of-Experts (MoE) From Scratch](ch05/11_qwen3/)
-    - [Gemma 3 From Scratch](ch05/12_gemma3/)
-    - [Olmo 3 From Scratch](ch05/13_olmo3/)
-    - [Tiny Aya From Scratch](ch05/15_tiny-aya/)
-    - [Qwen3.5 From Scratch](ch05/16_qwen3.5/)
-    - [Gemma 4 E2B and E4B From Scratch](ch05/17_gemma4/)
-  - [Chapter 5 with other LLMs as Drop-In Replacement (e.g., Llama 3, Qwen 3)](ch05/14_ch05_with_other_llms/)
-- **Chapter 6: Finetuning for classification**
-  - [Additional Experiments Finetuning Different Layers and Using Larger Models](ch06/02_bonus_additional-experiments)
-  - [Finetuning Different Models on the 50k IMDb Movie Review Dataset](ch06/03_bonus_imdb-classification)
-  - [Building a User Interface to Interact With the GPT-based Spam Classifier](ch06/04_user_interface)
-- **Chapter 7: Finetuning to follow instructions**
-  - [Dataset Utilities for Finding Near Duplicates and Creating Passive Voice Entries](ch07/02_dataset-utilities)
-  - [Evaluating Instruction Responses Using the OpenAI API and Ollama](ch07/03_model-evaluation)
-  - [Generating a Dataset for Instruction Finetuning](ch07/05_dataset-generation/llama3-ollama.ipynb)
-  - [Improving a Dataset for Instruction Finetuning](ch07/05_dataset-generation/reflection-gpt4.ipynb)
-  - [Generating a Preference Dataset With Llama 3.1 70B and Ollama](ch07/04_preference-tuning-with-dpo/create-preference-data-ollama.ipynb)
-  - [Direct Preference Optimization (DPO) for LLM Alignment](ch07/04_preference-tuning-with-dpo/dpo-from-scratch.ipynb)
-  - [Building a User Interface to Interact With the Instruction-Finetuned GPT Model](ch07/06_user_interface)
+- **Bölüm 5: Etiketlenmemiş Veri Üzerinde Ön Eğitim**
+  - [Alternatif Ağırlık Yükleme Yöntemleri](ch05/02_alternative_weight_loading/)
+  - [GPT'yi Project Gutenberg Veri Kümesi Üzerinde Ön Eğitmek](ch05/03_bonus_pretraining_on_gutenberg)
+  - [Eğitim Döngüsüne Ek Özellikler Eklemek](ch05/04_learning_rate_schedulers)
+  - [Ön Eğitim İçin Hiperparametreleri Optimize Etmek](ch05/05_bonus_hparam_tuning)
+  - [Önceden Eğitilmiş LLM ile Etkileşim İçin Kullanıcı Arayüzü Oluşturmak](ch05/06_user_interface)
+  - [GPT'yi Llama'ya Dönüştürmek](ch05/07_gpt_to_llama)
+  - [Bellek Açısından Verimli Model Ağırlığı Yükleme](ch05/08_memory_efficient_weight_loading/memory-efficient-state-dict.ipynb)
+  - [Tiktoken BPE Tokenizer'ını Yeni Token'larla Genişletmek](ch05/09_extending-tokenizers/extend-tiktoken.ipynb)
+  - [Daha Hızlı LLM Eğitimi İçin PyTorch Performans İpuçları](ch05/10_llm-training-speed)
+  - [LLM Mimarileri](ch05/#llm-architectures-from-scratch)
+    - [Sıfırdan Llama 3.2](ch05/07_gpt_to_llama/standalone-llama32.ipynb)
+    - [Sıfırdan Qwen3 Yoğun ve Uzmanlar Karışımı (MoE)](ch05/11_qwen3/)
+    - [Sıfırdan Gemma 3](ch05/12_gemma3/)
+    - [Sıfırdan Olmo 3](ch05/13_olmo3/)
+    - [Sıfırdan Tiny Aya](ch05/15_tiny-aya/)
+    - [Sıfırdan Qwen3.5](ch05/16_qwen3.5/)
+    - [Sıfırdan Gemma 4 E2B ve E4B](ch05/17_gemma4/)
+  - [Bölüm 5'i Diğer LLM'lerle Doğrudan Değiştirerek Çalıştırmak (ör. Llama 3, Qwen 3)](ch05/14_ch05_with_other_llms/)
+- **Bölüm 6: Sınıflandırma için ince ayar**
+  - [Farklı Katmanlara İnce Ayar ve Daha Büyük Modellerle Ek Deneyler](ch06/02_bonus_additional-experiments)
+  - [50 Bin IMDb Film Yorumu Veri Kümesinde Farklı Modellere İnce Ayar](ch06/03_bonus_imdb-classification)
+  - [GPT Tabanlı Spam Sınıflandırıcısıyla Etkileşim İçin Kullanıcı Arayüzü Oluşturmak](ch06/04_user_interface)
+- **Bölüm 7: Talimatları izlemek için ince ayar**
+  - [Yakın Kopyaları Bulmak ve Edilgen Çatılı Girdiler Oluşturmak İçin Veri Kümesi Araçları](ch07/02_dataset-utilities)
+  - [Talimat Yanıtlarını OpenAI API ve Ollama ile Değerlendirmek](ch07/03_model-evaluation)
+  - [Talimat İnce Ayarı İçin Veri Kümesi Üretmek](ch07/05_dataset-generation/llama3-ollama.ipynb)
+  - [Talimat İnce Ayarı İçin Veri Kümesini İyileştirmek](ch07/05_dataset-generation/reflection-gpt4.ipynb)
+  - [Llama 3.1 70B ve Ollama ile Tercih Veri Kümesi Üretmek](ch07/04_preference-tuning-with-dpo/create-preference-data-ollama.ipynb)
+  - [LLM Hizalaması İçin Doğrudan Tercih Optimizasyonu (DPO)](ch07/04_preference-tuning-with-dpo/dpo-from-scratch.ipynb)
+  - [Talimat İnce Ayarlı GPT Modeliyle Etkileşim İçin Kullanıcı Arayüzü Oluşturmak](ch07/06_user_interface)
 
-More bonus material from the [Reasoning From Scratch](https://github.com/rasbt/reasoning-from-scratch) repository:
+[Reasoning From Scratch](https://github.com/rasbt/reasoning-from-scratch) deposundan daha fazla bonus materyal:
 
-- **Qwen3 (From Scratch) Basics**
-  - [Qwen3 Source Code Walkthrough](https://github.com/rasbt/reasoning-from-scratch/blob/main/chC/01_main-chapter-code/chC_main.ipynb)
-  - [Optimized Qwen3](https://github.com/rasbt/reasoning-from-scratch/tree/main/ch02/03_optimized-LLM)
+- **Qwen3 (Sıfırdan) Temelleri**
+  - [Qwen3 Kaynak Kodu İncelemesi](https://github.com/rasbt/reasoning-from-scratch/blob/main/chC/01_main-chapter-code/chC_main.ipynb)
+  - [Optimize Edilmiş Qwen3](https://github.com/rasbt/reasoning-from-scratch/tree/main/ch02/03_optimized-LLM)
 
-- **Evaluation**
-  - [Verifier-Based Evaluation (MATH-500)](https://github.com/rasbt/reasoning-from-scratch/tree/main/ch03)
-  - [Multiple-Choice Evaluation (MMLU)](https://github.com/rasbt/reasoning-from-scratch/blob/main/chF/02_mmlu)
-  - [LLM Leaderboard Evaluation](https://github.com/rasbt/reasoning-from-scratch/blob/main/chF/03_leaderboards)
-  - [LLM-as-a-Judge Evaluation](https://github.com/rasbt/reasoning-from-scratch/blob/main/chF/04_llm-judge)
-- **Inference Scaling**
-  - [Self-Consistency](https://github.com/rasbt/reasoning-from-scratch/blob/main/ch04/01_main-chapter-code/ch04_main.ipynb)
-  - [Self-Refinement](https://github.com/rasbt/reasoning-from-scratch/blob/main/ch05/01_main-chapter-code/ch05_main.ipynb)
+- **Değerlendirme**
+  - [Doğrulayıcı Temelli Değerlendirme (MATH-500)](https://github.com/rasbt/reasoning-from-scratch/tree/main/ch03)
+  - [Çoktan Seçmeli Değerlendirme (MMLU)](https://github.com/rasbt/reasoning-from-scratch/blob/main/chF/02_mmlu)
+  - [LLM Liderlik Tablosu Değerlendirmesi](https://github.com/rasbt/reasoning-from-scratch/blob/main/chF/03_leaderboards)
+  - [Hakem Olarak LLM (LLM-as-a-Judge) Değerlendirmesi](https://github.com/rasbt/reasoning-from-scratch/blob/main/chF/04_llm-judge)
+- **Çıkarım Ölçeklendirme**
+  - [Öz Tutarlılık (Self-Consistency)](https://github.com/rasbt/reasoning-from-scratch/blob/main/ch04/01_main-chapter-code/ch04_main.ipynb)
+  - [Öz İyileştirme (Self-Refinement)](https://github.com/rasbt/reasoning-from-scratch/blob/main/ch05/01_main-chapter-code/ch05_main.ipynb)
 
-- **Reinforcement Learning** (RL)
-  - [RLVR with GRPO From Scratch](https://github.com/rasbt/reasoning-from-scratch/blob/main/ch06/01_main-chapter-code/ch06_main.ipynb)
+- **Pekiştirmeli Öğrenme** (RL)
+  - [Sıfırdan GRPO ile RLVR](https://github.com/rasbt/reasoning-from-scratch/blob/main/ch06/01_main-chapter-code/ch06_main.ipynb)
 
 
 <br>
 &nbsp;
 
-## Questions, Feedback, and Contributing to This Repository
+## Sorular, Geri Bildirim ve Bu Depoya Katkıda Bulunmak
 
 
-I welcome all sorts of feedback, best shared via the [Manning Forum](https://livebook.manning.com/forum?product=raschka&page=1) or [GitHub Discussions](https://github.com/rasbt/LLMs-from-scratch/discussions). Likewise, if you have any questions or just want to bounce ideas off others, please don't hesitate to post these in the forum as well.
+Her türlü geri bildirimi memnuniyetle karşılıyorum; bunu en iyi [Manning Forum](https://livebook.manning.com/forum?product=raschka&page=1) veya [GitHub Discussions](https://github.com/rasbt/LLMs-from-scratch/discussions) üzerinden paylaşabilirsiniz. Aynı şekilde, sorularınız varsa ya da sadece başkalarıyla fikir alışverişi yapmak istiyorsanız, bunları da foruma göndermekten çekinmeyin.
 
-Please note that since this repository contains the code corresponding to a print book, I currently cannot accept contributions that would extend the contents of the main chapter code, as it would introduce deviations from the physical book. Keeping it consistent helps ensure a smooth experience for everyone.
+Bu depo basılı bir kitaba karşılık gelen kodu içerdiğinden, şu anda ana bölüm kodunun içeriğini genişletecek katkıları kabul edemediğimi lütfen unutmayın; çünkü bu, basılı kitaptan sapmalara yol açardı. Tutarlılığı korumak herkes için sorunsuz bir deneyim sağlamaya yardımcı oluyor.
 
 
 &nbsp;
-## Citation
+## Atıf
 
-If you find this book or code useful for your research, please consider citing it.
+Bu kitabı veya kodu araştırmanız için faydalı bulursanız, lütfen atıfta bulunmayı düşünün.
 
-Chicago-style citation:
+Chicago tarzı atıf:
 
 > Raschka, Sebastian. *Build A Large Language Model (From Scratch)*. Manning, 2024. ISBN: 978-1633437166.
 
-BibTeX entry:
+BibTeX girdisi:
 
 ```
 @book{build-llms-from-scratch-book,

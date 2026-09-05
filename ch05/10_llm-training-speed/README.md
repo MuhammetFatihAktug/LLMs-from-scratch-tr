@@ -1,24 +1,26 @@
-# PyTorch Performance Tips for Faster LLM Training
+# Daha Hızlı LLM Eğitimi İçin PyTorch Performans İpuçları
+
+> 🇹🇷 **Türkçe çeviri.** Orijinal İngilizce sürüm: [README.md](https://github.com/rasbt/LLMs-from-scratch/blob/main/ch05/10_llm-training-speed/README.md) · Komut, ölçüm ve çıktı blokları birebir korunmuştur.
 
 
 
-Note that the book is written for education purposes, meaning the original code is kept purposefully simple. This is to aid readability and ensure compatibility across different hardware, including CPUs and GPUs. However, you might be curious about some more advanced PyTorch and GPU features to make the LLM training more performant.
+Kitabın eğitim amaçlı yazıldığını, yani orijinal kodun bilinçli olarak basit tutulduğunu unutmayın. Bu, okunabilirliğe yardımcı olmak ve CPU'lar ile GPU'lar dahil farklı donanımlar arasında uyumluluğu güvence altına almak içindir. Yine de, LLM eğitimini daha performanslı kılacak bazı ileri düzey PyTorch ve GPU özelliklerini merak ediyor olabilirsiniz.
 
-This folder contains three code files that demonstrate performance optimizations for the LLM and the training function introduced in Chapter 5:
+Bu klasör, 5. bölümde tanıtılan LLM ve eğitim fonksiyonu için performans optimizasyonlarını gösteren üç kod dosyası içerir:
 
-1. [`00_orig.py`](00_orig.py): The original Chapter 5 code for CPU and single-GPU training.  
-   ➤ Run via: `python 00_orig.py`
+1. [`00_orig.py`](00_orig.py): CPU ve tek GPU eğitimi için orijinal 5. bölüm kodu.  
+   ➤ Çalıştırma: `python 00_orig.py`
 
-2. [`01_opt_single_gpu.py`](01_opt_single_gpu.py): An optimized version for single-GPU training.  
-   ➤ Run via: `python 01_opt_single_gpu.py`
+2. [`01_opt_single_gpu.py`](01_opt_single_gpu.py): Tek GPU eğitimi için optimize edilmiş sürüm.  
+   ➤ Çalıştırma: `python 01_opt_single_gpu.py`
 
-3. [`02_opt_multi_gpu_ddp.py`](02_opt_multi_gpu_ddp.py): An optimized version for multi-GPU training using Distributed Data Parallel (DDP).  
-   ➤ Run via: `torchrun --nproc_per_node=4 02_opt_multi_gpu_ddp.py`  
-   (**Note:** To keep the changes minimal compared to `01_opt_single_gpu.py`, this script supports multi-processing only via `torchrun` as shown above. This means multi-GPU support is **not** supported via `python 02_opt_multi_gpu_ddp.py`)
+3. [`02_opt_multi_gpu_ddp.py`](02_opt_multi_gpu_ddp.py): Dağıtık Veri Paralelliği (DDP) kullanan çoklu GPU eğitimi için optimize edilmiş sürüm.  
+   ➤ Çalıştırma: `torchrun --nproc_per_node=4 02_opt_multi_gpu_ddp.py`  
+   (**Not:** `01_opt_single_gpu.py` dosyasına kıyasla değişiklikleri asgari düzeyde tutmak için bu betik, çoklu işlemeyi yalnızca yukarıda gösterildiği gibi `torchrun` aracılığıyla destekler. Yani çoklu GPU desteği `python 02_opt_multi_gpu_ddp.py` ile **çalışmaz**.)
 
-**Note that these modifications take the training speed from 12,525 tokens per second (single A100) to 142,156 tokens per second (single A100) and 419,259 tokens per second (4x A100s).**
+**Bu değişikliklerin eğitim hızını saniyede 12.525 token'dan (tek A100) saniyede 142.156 token'a (tek A100) ve saniyede 419.259 token'a (4x A100) çıkardığını unutmayın.**
 
-I plan to expand on the differences in a more detailed write-up sometime in the future. For now, the easiest way to see what improvements have been added to the code is to open the files in Visual Studio Code and look at the differences via the "Compare Selected" feature.
+Gelecekte farkları daha ayrıntılı bir yazıda genişletmeyi planlıyorum. Şimdilik, koda hangi iyileştirmelerin eklendiğini görmenin en kolay yolu dosyaları Visual Studio Code'da açıp "Compare Selected" özelliğiyle farklara bakmaktır.
 
 ![VS compare](https://sebastianraschka.com/images/LLMs-from-scratch-images/bonus/llm-training-speed/vs-code-compare.png)
 
@@ -26,20 +28,20 @@ I plan to expand on the differences in a more detailed write-up sometime in the 
 
 
 &nbsp;
-## Single GPU speed comparisons
+## Tek GPU hız karşılaştırmaları
 
-As mentioned above, I plan to elaborate more on the changes in the future. For now, this section contains a simple performance overview in terms of tokens/second for each modification. All experiments were run on A100 GPUs.
+Yukarıda belirtildiği gibi, değişiklikleri gelecekte daha ayrıntılı ele almayı planlıyorum. Şimdilik bu bölüm, her değişiklik için token/saniye cinsinden basit bir performans özeti içerir. Tüm deneyler A100 GPU'larda çalıştırılmıştır.
 
 &nbsp;
-### Baseline
+### Temel çizgi (baseline)
 
-Note that `00_orig.py` servers as the baseline and contains no significant modification and uses the code from Chapter 5 as is besides the following:
+`00_orig.py` dosyasının temel çizgi görevi gördüğünü, kayda değer bir değişiklik içermediğini ve aşağıdakiler dışında 5. bölümdeki kodu olduğu gibi kullandığını unutmayın:
 
-- 4 times larger context length (which explains the relatively large memory footprint of `00_orig.py` compared to Chapter 5);
-- 4-times batch size changes (another contributor to the relatively large memory footprint of `00_orig.py`);
-- a larger public domain book to increase the training data size. 
+- 4 kat daha büyük bağlam uzunluğu (bu, `00_orig.py` dosyasının 5. bölüme kıyasla nispeten büyük bellek ayak izini açıklar);
+- 4 kat yığın boyutu (batch size) değişikliği (`00_orig.py` dosyasının nispeten büyük bellek ayak izine katkıda bulunan bir diğer etken);
+- eğitim verisi boyutunu artırmak için kamu malı daha büyük bir kitap.
 
-The hyperparameters are not very optimized for minimizing loss and reducing overfitting, and the text generated by the LLM at the very end may not be super sophisticated; however, this shouldn't matter as the main takeaway is the `tok/sec` metric that serves as a speed reference here (higher is better).
+Hiperparametreler kaybı en aza indirmek ve aşırı öğrenmeyi (overfitting) azaltmak için pek optimize edilmemiştir ve LLM'in en sonda ürettiği metin çok gelişmiş olmayabilir; ancak bu önemli değil, çünkü asıl çıkarım burada hız referansı olarak kullanılan `tok/sec` ölçütüdür (yüksek olan daha iyidir).
 
 ```bash
 ubuntu@159-13-52-60:~$ python 00_orig.py
@@ -64,113 +66,113 @@ Allocated memory: 2.5069 GB
 Reserved memory: 26.2617 GB
 ```
 
-Note that `01_opt_single_gpu.py` contains all the modifications listed sequentially below. 
+`01_opt_single_gpu.py` dosyasının aşağıda sırayla listelenen tüm değişiklikleri içerdiğini unutmayın.
 
-The comparison is always based on the average tok/sec and allocated memory after the first epoch from the previous section.
+Karşılaştırma her zaman, önceki bölümdeki ilk dönemden (epoch) sonraki ortalama tok/sec ve ayrılan bellek değerlerine dayanır.
 
 &nbsp;
-### 1. Create causal mask on the fly
+### 1. Nedensel maskeyi anlık olarak oluşturmak
 
-- Instead of saving the causal mask, this creates the causal mask on the fly to reduce memory usage (here it has minimal effect, but it can add up in long-context size models like Llama 3.2 with 131k-input-tokens support)
+- Nedensel (causal) maskeyi kaydetmek yerine, bellek kullanımını azaltmak için anlık olarak oluşturur (burada etkisi çok azdır, ancak 131 bin girdi token'ı destekleyen Llama 3.2 gibi uzun bağlamlı modellerde birikerek anlamlı hâle gelebilir)
 
-Before:
+Önce:
 - `Avg tok/sec: 12525`
 - `Reserved memory: 26.2617 GB`
 
-After:
+Sonra:
 - `Avg tok/sec: 12526`
 - `Reserved memory: 26.2422 GB`
 
 &nbsp;
-### 2. Use  tensor cores
+### 2. Tensor çekirdeklerini (tensor cores) kullanmak
 
-- Uses tensor cores (only works for Ampere GPUs like A100 and newer)
+- Tensor çekirdeklerini kullanır (yalnızca A100 ve daha yeni Ampere GPU'larda çalışır)
 
-Before:
+Önce:
 - `Avg tok/sec: 12526`
 - `Reserved memory: 26.2422 GB`
 
-After:
+Sonra:
 - `Avg tok/sec: 27648`
 - `Reserved memory: 26.2422 GB`
 
 &nbsp;
-### 3. Fused AdamW optimizer
+### 3. Kaynaşık (fused) AdamW optimize edicisi
 
-- Uses the fused kernels for `AdamW` by setting `fused=True`
+- `fused=True` ayarlayarak `AdamW` için kaynaşık çekirdekleri kullanır
 
-Before:
+Önce:
 - `Avg tok/sec: 27648`
 - `Reserved memory: 26.2422 GB`
 
-After:
+Sonra:
 - `Avg tok/sec: 28399`
 - `Reserved memory: 26.2422 GB`
 
 &nbsp;
-### 4. Pinned memory in the data loader
+### 4. Veri yükleyicide sabitlenmiş bellek (pinned memory)
 
-- Uses `pin_memory=True` in the data loaders to pre-allocate and re-use GPU memory
+- GPU belleğini önceden ayırmak ve yeniden kullanmak için veri yükleyicilerde `pin_memory=True` kullanır
 
-Before:
+Önce:
 - `Avg tok/sec: 28399`
 - `Reserved memory: 26.2422 GB`
 
-After:
+Sonra:
 - `Avg tok/sec: 28402`
 - `Reserved memory: 26.2422 GB`
 
 &nbsp;
-### 5. Using bfloat16 precision
+### 5. bfloat16 hassasiyetini kullanmak
 
-- Switches from 32-bit float to 16-bit brain float (bfloat16) precision (for more on this topic, see my [article here](https://magazine.sebastianraschka.com/p/the-missing-bits-llama-2-weights))
+- 32 bit float'tan 16 bit brain float (bfloat16) hassasiyetine geçer (bu konu hakkında daha fazlası için [buradaki yazıma](https://magazine.sebastianraschka.com/p/the-missing-bits-llama-2-weights) bakın)
 
-Before:
+Önce:
 - `Avg tok/sec: 28402`
 - `Reserved memory: 26.2422 GB`
 
-After:
+Sonra:
 - `Avg tok/sec: 45486`
 - `Reserved memory: 13.7871 GB`
 
 &nbsp;
-### 6. Replacing from-scratch code by PyTorch classes
+### 6. Sıfırdan yazılan kodu PyTorch sınıflarıyla değiştirmek
 
-- Replaces the LayerNorm and GeLU from-scratch implementation by PyTorch's native implementations
+- Sıfırdan yazılan LayerNorm ve GeLU uygulamalarını PyTorch'un yerleşik uygulamalarıyla değiştirir
 
-Before:
+Önce:
 - `Avg tok/sec: 45486`
 - `Reserved memory: 13.7871 GB`
 
-After:
+Sonra:
 - `Avg tok/sec: 55256`
 - `Reserved memory: 11.5645 GB`
 
 &nbsp;
-### 7. Using FlashAttention
+### 7. FlashAttention kullanmak
 
-- Uses PyTorch's self-attention function with FlashAttention instead of our from-scratch multi-head attention implementation.
+- Sıfırdan yazdığımız çok başlı dikkat uygulaması yerine PyTorch'un FlashAttention destekli öz-dikkat fonksiyonunu kullanır.
 
 
-Before:
+Önce:
 - `Avg tok/sec: 55256`
 - `Reserved memory: 11.5645 GB`
 
-After:
+Sonra:
 - `Avg tok/sec: 91901`
 - `Reserved memory: 5.9004 GB`
 
 &nbsp;
-### 8. Using `pytorch.compile`
+### 8. `pytorch.compile` kullanmak
 
-- Uses `torch.compile(model)`. Note that the first iterations are always slow before it picks up speed. Since the `Avg tok/sec` measurement only includes the first row from the average calculation, we now use the `Step tok/sec` at the end of epoch 1.
+- `torch.compile(model)` kullanır. İlk yinelemelerin, hız kazanmadan önce her zaman yavaş olduğunu unutmayın. `Avg tok/sec` ölçümü ortalama hesabına yalnızca ilk satırı dahil ettiği için, artık 1. dönemin sonundaki `Step tok/sec` değerini kullanıyoruz.
 
 
-Before:
+Önce:
 - `Avg tok/sec: 91901`
 - `Reserved memory: 5.9004 GB`
 
-After:
+Sonra:
 - `Step tok/sec: 112046`
 - `Reserved memory: 6.1875 GB`
 
@@ -178,56 +180,56 @@ After:
 
 ---
 
-**Windows note**
+**Windows notu**
 
-- Compilation can be tricky on Windows
-- `torch.compile()` uses Inductor, which JIT-compiles kernels and needs a working C/C++ toolchain
-- For CUDA, Inductor also depends on Triton, available via the community package `triton-windows`
-  - If you see `cl not found`, [install Visual Studio Build Tools with the "C++ workload"](https://learn.microsoft.com/en-us/cpp/build/vscpp-step-0-installation?view=msvc-170) and run Python from the "x64 Native Tools" prompt
-  - If you see `triton not found` with CUDA, install `triton-windows` (for example, `uv pip install "triton-windows<3.4"`).
-- For CPU, a reader further recommended following this [PyTorch Inductor guide for Windows](https://docs.pytorch.org/tutorials/unstable/inductor_windows.html)
-  - Here, it is important to install the English language package when installing Visual Studio 2022 to avoid a UTF-8 error
-  - Also, please note that the code needs to be run via the "Visual Studio 2022 Developer Command Prompt" rather than a notebook
-- If this setup proves tricky, you can skip compilation; **compilation is optional, and all code examples work fine without it**
+- Windows'ta derleme zorlu olabilir
+- `torch.compile()`, çekirdekleri JIT ile derleyen ve çalışan bir C/C++ araç zinciri gerektiren Inductor'ı kullanır
+- CUDA için Inductor ayrıca, topluluk paketi `triton-windows` üzerinden erişilebilen Triton'a da bağlıdır
+  - `cl not found` hatası görürseniz, ["C++ workload" ile Visual Studio Build Tools kurun](https://learn.microsoft.com/en-us/cpp/build/vscpp-step-0-installation?view=msvc-170) ve Python'u "x64 Native Tools" komut isteminden çalıştırın
+  - CUDA ile `triton not found` hatası görürseniz `triton-windows` kurun (örneğin `uv pip install "triton-windows<3.4"`).
+- CPU için bir okur ayrıca şu [Windows için PyTorch Inductor rehberini](https://docs.pytorch.org/tutorials/unstable/inductor_windows.html) izlemeyi önerdi
+  - Burada, bir UTF-8 hatasından kaçınmak için Visual Studio 2022 kurulumunda İngilizce dil paketini kurmak önemlidir
+  - Ayrıca kodun bir not defteri yerine "Visual Studio 2022 Developer Command Prompt" üzerinden çalıştırılması gerektiğini unutmayın
+- Bu kurulum zorlayıcı gelirse derlemeyi atlayabilirsiniz; **derleme isteğe bağlıdır ve tüm kod örnekleri onsuz da sorunsuz çalışır**
 
 ---
 
 &nbsp;
-### 9. Vocabulary padding
+### 9. Sözlük dolgusu (vocabulary padding)
 
-- Here, we slightly increase the vocabulary size from 50,257 to 50,304, which is the nearest multiple of 64. This tip was suggested to me by my former colleague Carlos Mocholi, who mentioned that it originally came from Andrej Karpathy (likely from [this post](https://x.com/karpathy/status/1621578354024677377)). Karpathy's recommendation is based on an interaction with the PyTorch team, who gave advice on `torch.compile` as mentioned by [Bertrand Maher](https://www.linkedin.com/feed/update/urn:li:activity:7309569006057795584?commentUrn=urn%3Ali%3Acomment%3A%28activity%3A7309569006057795584%2C7309754284185669632%29&dashCommentUrn=urn%3Ali%3Afsd_comment%3A%287309754284185669632%2Curn%3Ali%3Aactivity%3A7309569006057795584%29). A good resource for this are [NVIDIA's guidelines on tensor shapes](https://docs.nvidia.com/deeplearning/performance/mixed-precision-training/index.html#tensor-core-shape), where batch sizes and linear layer dimensions are commonly chosen as multiples of certain values. Furthermore, the vocab-padding trick was described by NVIDIA's Megatron team a long time ago (see the 2019 [Megatron-LM: Training Multi-Billion Parameter Language Models Using Model Parallelism](https://arxiv.org/abs/1909.08053) paper).
+- Burada sözlük boyutunu 50.257'den, 64'ün en yakın katı olan 50.304'e hafifçe artırıyoruz. Bu ipucunu bana, aslen Andrej Karpathy'den geldiğini belirten eski meslektaşım Carlos Mocholi önerdi (muhtemelen [bu gönderiden](https://x.com/karpathy/status/1621578354024677377)). Karpathy'nin önerisi, [Bertrand Maher](https://www.linkedin.com/feed/update/urn:li:activity:7309569006057795584?commentUrn=urn%3Ali%3Acomment%3A%28activity%3A7309569006057795584%2C7309754284185669632%29&dashCommentUrn=urn%3Ali%3Afsd_comment%3A%287309754284185669632%2Curn%3Ali%3Aactivity%3A7309569006057795584%29) tarafından aktarıldığı üzere, `torch.compile` hakkında tavsiye veren PyTorch ekibiyle yapılan bir etkileşime dayanıyor. Bu konuda iyi bir kaynak, yığın boyutlarının ve doğrusal katman boyutlarının yaygın olarak belirli değerlerin katları seçildiği [NVIDIA'nın tensör şekilleri kılavuzudur](https://docs.nvidia.com/deeplearning/performance/mixed-precision-training/index.html#tensor-core-shape). Ayrıca sözlük dolgusu numarası, NVIDIA'nın Megatron ekibi tarafından uzun zaman önce anlatılmıştı (2019 tarihli [Megatron-LM: Training Multi-Billion Parameter Language Models Using Model Parallelism](https://arxiv.org/abs/1909.08053) makalesine bakın).
 
-Before:
+Önce:
 - `Step tok/sec: 112046`
 - `Reserved memory: 6.1875 GB`
 
-After:
+Sonra:
 - `Step tok/sec: 127345`
 - `Reserved memory: 5.8906 GB`
 
 &nbsp;
-### 10. Increasing the batch size
+### 10. Yığın boyutunu artırmak
 
-- Lastly, we increase the batch size to the largest power of 2 supported by the GPU
+- Son olarak, yığın boyutunu GPU'nun desteklediği en büyük 2'nin kuvvetine çıkarıyoruz
 
-Before:
+Önce:
 - `Step tok/sec: 127345`
 - `Reserved memory: 5.8906 GB`
 
-After:
+Sonra:
 - `Step tok/sec: 142156`
 - `Reserved memory: 22.5078 GB`
 
 
 &nbsp;
-## Multi-GPU speed comparisons
+## Çoklu GPU hız karşılaştırmaları
 
-This may not be an entirely fair comparison as we now use 4 GPUs instead of 1, but using distributed data parallelism, the fastest multi-GPU technique that can be used if the training is not bottle-necked by limited GPU memory, can, of course, result in noticeable speed-ups:
+Artık 1 yerine 4 GPU kullandığımız için bu tamamen adil bir karşılaştırma olmayabilir; ancak eğitim sınırlı GPU belleğiyle darboğaza girmiyorsa kullanılabilecek en hızlı çoklu GPU tekniği olan dağıtık veri paralelliğini kullanmak elbette gözle görülür hızlanmalar sağlayabilir:
 
-Before (single GPU):
+Önce (tek GPU):
 - `Step tok/sec: 142156`
 - `Reserved memory: 22.5078 GB`
 
-After (4 GPUs):
+Sonra (4 GPU):
 - `Step tok/sec: 419259`
 - `Reserved memory: 22.7969 GB`

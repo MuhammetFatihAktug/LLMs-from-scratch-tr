@@ -1,8 +1,10 @@
-# Chapter 7: Finetuning to Follow Instructions
+# Bölüm 7: Talimatları İzlemek İçin İnce Ayar
 
-This folder contains utility code that can be used for preparing an instruction dataset.
+> 🇹🇷 **Türkçe çeviri.** Orijinal İngilizce sürüm: [README.md](https://github.com/rasbt/LLMs-from-scratch/blob/main/ch07/02_dataset-utilities/README.md) · Komut ve çıktı blokları birebir korunmuştur.
 
-Install the additional package requirements via:
+Bu klasör, bir talimat veri kümesi hazırlamak için kullanılabilecek yardımcı kodları içerir.
+
+Ek paket gereksinimlerini şu komutla kurun:
 
 ```bash
 pip install -r requirements-extra.txt
@@ -11,10 +13,9 @@ pip install -r requirements-extra.txt
 
 
 
+### Yakın Kopyaları Bulmak
 
-### Finding Near Duplicates
-
-The `find-near-duplicates.py` function can be used to identify duplicates and near-duplicates in an instruction dataset. For example,
+`find-near-duplicates.py` fonksiyonu, bir talimat veri kümesindeki kopyaları ve yakın kopyaları belirlemek için kullanılabilir. Örneğin,
 
 
 
@@ -60,15 +61,15 @@ Duplicate pair found with similarity 1.00:
 ```
 
 &nbsp;
-You can use the `--threshold` setting with a value between 0 and 1 to decrease or increase the sensitivity.
-The default threshold is 0.9.
+Duyarlılığı azaltmak veya artırmak için `--threshold` ayarını 0 ile 1 arasında bir değerle kullanabilirsiniz.
+Varsayılan eşik değeri 0.9'dur.
 
 
 
 &nbsp;
- ## Creating Passive Voice Entries
+ ## Edilgen Çatılı (Passive Voice) Girdiler Oluşturmak
 
- - The [create-passive-voice-entries.ipynb](create-passive-voice-entries.ipynb) notebook uses OpenAI's GPT-4 to create "passive voice" entries for an instruction dataset, as shown in the example below
+ - [create-passive-voice-entries.ipynb](create-passive-voice-entries.ipynb) not defteri, aşağıdaki örnekte gösterildiği gibi bir talimat veri kümesi için "edilgen çatılı" girdiler oluşturmak üzere OpenAI'ın GPT-4 modelini kullanır
 
  ```python
  {  

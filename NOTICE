@@ -1,0 +1,48 @@
+Build a Large Language Model (From Scratch) — Türkçe Çeviri
+===========================================================
+
+Bu eser, aşağıdaki özgün çalışmanın Türkçeye çevrilmiş bir türevidir:
+
+    Build a Large Language Model (From Scratch)
+    Copyright 2023-2026 Sebastian Raschka
+    https://github.com/rasbt/LLMs-from-scratch
+    Apache License, Version 2.0
+
+Alt modül olarak yer alan reasoning-from-scratch dizini için:
+
+    Build a Reasoning Model (From Scratch)
+    Copyright 2025-2026 Sebastian Raschka
+    https://github.com/rasbt/reasoning-from-scratch
+    Apache License, Version 2.0
+
+
+DEĞİŞİKLİK BİLDİRİMİ (Apache License 2.0, Bölüm 4(b))
+-----------------------------------------------------
+
+Bu depodaki dosyalar özgün hâlinden değiştirilmiştir. Yapılan değişiklikler
+yalnızca çeviriden ibarettir:
+
+  * Tüm Markdown (.md) dosyalarının metin içeriği Türkçeye çevrilmiştir.
+  * Jupyter not defterlerindeki (.ipynb) markdown hücrelerinin metinleri
+    Türkçeye çevrilmiştir.
+  * Kod hücrelerindeki açıklama satırları (# ile başlayan yorumlar)
+    Türkçeye çevrilmiştir.
+  * Depo köküne bu NOTICE dosyası, OKUMA_SIRASI.md (okuma rehberi) ve
+    SOZLUK.md (terim karşılıkları) eklenmiştir.
+
+Aşağıdakiler bilinçli olarak DEĞİŞTİRİLMEMİŞTİR:
+
+  * Çalıştırılabilir kodun kendisi: ifadeler, değişken ve fonksiyon adları,
+    kod içindeki metin sabitleri (string) ve modele verilen istemler (prompt),
+    sohbet şablonları.
+  * Not defterlerinde kayıtlı hücre çıktıları, eğitim günlükleri ve
+    başarım ölçüm tabloları.
+  * Python (.py) kaynak dosyaları.
+  * LICENSE.txt ve telif bildirimleri.
+  * Not defterlerinin başındaki özgün atıf tablosu.
+
+Özgün İngilizce sürüm bu deponun 'main' dalında değiştirilmeden
+korunmaktadır; çeviri 'tr' dalında bulunur.
+
+Bu, resmî bir çeviri değildir. Eserin yazarı veya yayıncısı (Manning)
+tarafından incelenmemiş ya da onaylanmamıştır.

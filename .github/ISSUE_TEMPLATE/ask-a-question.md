@@ -1,10 +1,10 @@
 ---
-name: Ask a Question
-about: Ask questions related to the book
+name: Bir Soru Sorun (TR)
+about: Kitapla ilgili sorularınızı sorun
 title: ''
 labels: [question]
 assignees: rasbt
 
 ---
 
-If you have a question that is not a bug, please consider asking it in this GitHub repository's [discussion forum](https://github.com/rasbt/LLMs-from-scratch/discussions).
+Hata bildirimi olmayan bir sorunuz varsa, lütfen bunu bu GitHub deposunun [tartışma forumunda](https://github.com/rasbt/LLMs-from-scratch/discussions) sormayı düşünün.

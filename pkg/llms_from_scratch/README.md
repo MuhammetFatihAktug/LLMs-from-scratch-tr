@@ -1,20 +1,22 @@
-# `llms-from-scratch` PyPI Package
+# `llms-from-scratch` PyPI Paketi
 
-This optional PyPI package lets you conveniently import code from various chapters of the *Build a Large Language Model From Scratch* book.
+> 🇹🇷 **Türkçe çeviri.** Orijinal İngilizce sürüm: [README.md](https://github.com/rasbt/LLMs-from-scratch/blob/main/pkg/llms_from_scratch/README.md) · Kod ve komut blokları birebir korunmuştur.
+
+Bu isteğe bağlı PyPI paketi, *Build a Large Language Model From Scratch* kitabının çeşitli bölümlerindeki kodu rahatça içe aktarmanızı sağlar.
 
 &nbsp;
-## Installation
+## Kurulum
 
 &nbsp;
-### From PyPI
+### PyPI üzerinden
 
-Install the `llms-from-scratch` package from the official [Python Package Index](https://pypi.org/project/llms-from-scratch/) (PyPI):
+`llms-from-scratch` paketini resmî [Python Package Index](https://pypi.org/project/llms-from-scratch/) (PyPI) üzerinden kurun:
 
 ```bash
 pip install llms-from-scratch
 ```
 
-> **Note:** If you're using [`uv`](https://github.com/astral-sh/uv), replace `pip` with `uv pip` or use `uv add`:
+> **Not:** [`uv`](https://github.com/astral-sh/uv) kullanıyorsanız `pip` yerine `uv pip` kullanın veya `uv add` komutunu tercih edin:
 
 ```bash
 uv add llms-from-scratch
@@ -23,9 +25,9 @@ uv add llms-from-scratch
 
 
 &nbsp;
-### Editable Install from GitHub
+### GitHub'dan düzenlenebilir (editable) kurulum
 
-If you'd like to modify the code and have those changes reflected during development:
+Kodu değiştirmek ve bu değişikliklerin geliştirme sırasında yansımasını istiyorsanız:
 
 ```bash
 git clone https://github.com/rasbt/LLMs-from-scratch.git
@@ -33,7 +35,7 @@ cd LLMs-from-scratch
 pip install -e .
 ```
 
-> **Note:** With `uv`, use:
+> **Not:** `uv` ile şunu kullanın:
 
 ```bash
 uv add --editable . --dev
@@ -42,9 +44,9 @@ uv add --editable . --dev
 
 
 &nbsp;
-## Using the Package
+## Paketi Kullanmak
 
-Once installed, you can import code from any chapter using:
+Kurulumdan sonra, herhangi bir bölümden kodu şu şekilde içe aktarabilirsiniz:
 
 ```python
 from llms_from_scratch.ch02 import GPTDatasetV1, create_dataloader_v1
@@ -115,20 +117,20 @@ from llms_from_scratch.appendix_d import find_highest_gradient, train_model
 
 &nbsp;
 
-### GPT-2 KV cache variant (Bonus material)
+### GPT-2 KV önbelleği varyantı (Bonus materyal)
 
 ```python
 from llms_from_scratch.kv_cache.gpt2 import GPTModel
 from llms_from_scratch.kv_cache.generate import generate_text_simple
 ```
 
-For more information about KV caching, please see the [KV cache README](../../ch04/03_kv-cache).
+KV önbellekleme hakkında daha fazla bilgi için lütfen [KV önbelleği README dosyasına](../../ch04/03_kv-cache) bakın.
 
 
 
 &nbsp;
 
-### Llama  3 (Bonus material)
+### Llama 3 (Bonus materyal)
 
 ```python
 from llms_from_scratch.llama3 import (
@@ -145,13 +147,13 @@ from llms_from_scratch.kv_cache.llama3 import Llama3Model
 from llms_from_scratch.kv_cache.generate import generate_text_simple
 ```
 
-For the `llms_from_scratch.llama3` usage information, please see [this bonus section](../../ch05/07_gpt_to_llama/README.md). 
+`llms_from_scratch.llama3` kullanım bilgileri için lütfen [bu bonus bölüme](../../ch05/07_gpt_to_llama/README.md) bakın.
 
-For more information about KV caching, please see the [KV cache README](../../ch04/03_kv-cache).
+KV önbellekleme hakkında daha fazla bilgi için lütfen [KV önbelleği README dosyasına](../../ch04/03_kv-cache) bakın.
 
 
 &nbsp;
-### Qwen3 (Bonus material)
+### Qwen3 (Bonus materyal)
 
 ```python
 from llms_from_scratch.qwen3 import (
@@ -175,6 +177,6 @@ from llms_from_scratch.kv_cache_batched.generate import (
 from llms_from_scratch.kv_cache_batched.qwen3 import Qwen3Model
 ```
 
-For the `llms_from_scratch.qwen3` usage information, please see [this bonus section](../../ch05/11_qwen3/README.md).
+`llms_from_scratch.qwen3` kullanım bilgileri için lütfen [bu bonus bölüme](../../ch05/11_qwen3/README.md) bakın.
 
-For more information about KV caching, please see the [KV cache README](../../ch04/03_kv-cache).
+KV önbellekleme hakkında daha fazla bilgi için lütfen [KV önbelleği README dosyasına](../../ch04/03_kv-cache) bakın.

@@ -1,15 +1,17 @@
-# Cross-Layer KV Sharing
+# Katmanlar Arası KV Paylaşımı (Cross-Layer KV Sharing)
 
-This bonus material illustrates the memory savings when using cross-layer KV sharing together with a KV cache.
+> 🇹🇷 **Türkçe çeviri.** Orijinal İngilizce sürüm: [README.md](https://github.com/rasbt/LLMs-from-scratch/blob/main/ch04/10_kv-sharing/README.md) · Komut ve çıktı blokları birebir korunmuştur.
+
+Bu bonus materyal, katmanlar arası KV paylaşımının bir KV önbelleğiyle birlikte kullanılması durumunda elde edilen bellek tasarrufunu gösterir.
 
 &nbsp;
-## Introduction
+## Giriş
 
-In [../04_gqa](../04_gqa), we discussed Grouped-Query Attention (GQA), where several query heads share the same key and value heads. Cross-layer KV sharing applies a related idea across transformer layers.
+[../04_gqa](../04_gqa) klasöründe, birkaç sorgu başının aynı anahtar ve değer başlarını paylaştığı Gruplanmış Sorgu Dikkati'ni (GQA) ele almıştık. Katmanlar arası KV paylaşımı, benzer bir fikri transformer katmanları arasında uygular.
 
-Instead of computing a fresh key and value projection in every layer, later layers reuse K/V tensors from an earlier layer. They still compute their own queries, so each layer can form its own attention pattern. The main memory saving comes from storing fewer K/V tensors in the cache.
+Her katmanda yeni bir anahtar ve değer izdüşümü hesaplamak yerine, sonraki katmanlar daha önceki bir katmandan gelen K/V tensörlerini yeniden kullanır. Yine de kendi sorgularını hesaplarlar, böylece her katman kendi dikkat örüntüsünü oluşturabilir. Ana bellek tasarrufu, önbellekte daha az K/V tensörü saklanmasından gelir.
 
-This idea is also called cross-layer attention. It is described in Brandon *et al.*, [Reducing Transformer Key-Value Cache Size with Cross-Layer Attention](https://arxiv.org/abs/2405.12981). Gemma 4 E2B and E4B use a related shared KV-cache scheme, which makes this a useful addition to the GQA, MLA, and SWA examples in this chapter.
+Bu fikir çapraz katman dikkati (cross-layer attention) olarak da adlandırılır. Brandon *ve ark.*, [Reducing Transformer Key-Value Cache Size with Cross-Layer Attention](https://arxiv.org/abs/2405.12981) çalışmasında açıklanmıştır. Gemma 4 E2B ve E4B, buna benzer paylaşılan bir KV önbelleği şeması kullanır; bu da onu bu bölümdeki GQA, MLA ve SWA örneklerine faydalı bir ek yapar.
 
 &nbsp;
 
@@ -17,28 +19,28 @@ This idea is also called cross-layer attention. It is described in Brandon *et a
 
 &nbsp;
 
-In [Gemma 4](../../ch05/17_gemma4), KV sharing is combined with GQA or MQA and sliding window attention. For the simplified GPT example in this folder, we only implement the cross-layer KV-sharing part, so the code stays focused on the main mechanism.
+[Gemma 4](../../ch05/17_gemma4) modelinde KV paylaşımı, GQA veya MQA ve kayan pencere dikkatiyle birleştirilir. Bu klasördeki basitleştirilmiş GPT örneğinde yalnızca katmanlar arası KV paylaşımı kısmını uyguluyoruz; böylece kod ana mekanizmaya odaklı kalıyor.
 
-The simplified rule used here is:
+Burada kullanılan basitleştirilmiş kural şudur:
 
-1. Early layers compute and cache their own K/V tensors.
-2. Later layers reuse the most recent K/V tensors from an earlier producing layer.
-3. All layers still compute their own query projections.
+1. Erken katmanlar kendi K/V tensörlerini hesaplar ve önbelleğe alır.
+2. Sonraki katmanlar, daha önceki bir üretici katmandan gelen en güncel K/V tensörlerini yeniden kullanır.
+3. Tüm katmanlar yine de kendi sorgu izdüşümlerini hesaplar.
 
-This reduces the number of K/V caches that grow with context length. The tradeoff is reduced model capacity because some layers no longer get their own K/V projections.
+Bu, bağlam uzunluğuyla birlikte büyüyen K/V önbelleklerinin sayısını azaltır. Ödünleşim ise, bazı katmanların artık kendi K/V izdüşümlerine sahip olmaması nedeniyle model kapasitesinin azalmasıdır.
 
 &nbsp;
-## KV-Sharing Memory Savings
+## KV Paylaşımı Bellek Tasarrufu
 
-The usual KV-cache memory is computed as follows:
+Olağan KV önbelleği belleği şöyle hesaplanır:
 
-bytes = batch_size x seqlen x head_dim x n_kv_heads x n_layers x 2 (K,V) x bytes_per_elem
+bayt = batch_size x seqlen x head_dim x n_kv_heads x n_layers x 2 (K,V) x eleman_başına_bayt
 
-With cross-layer KV sharing, we replace `n_layers` with the number of K/V-producing layers:
+Katmanlar arası KV paylaşımıyla, `n_layers` yerine K/V üreten katman sayısını koyarız:
 
-bytes = batch_size x seqlen x head_dim x n_kv_heads x n_kv_producing_layers x 2 (K,V) x bytes_per_elem
+bayt = batch_size x seqlen x head_dim x n_kv_heads x n_kv_producing_layers x 2 (K,V) x eleman_başına_bayt
 
-You can use the [memory_estimator_kv_sharing.py](memory_estimator_kv_sharing.py) script in this folder to apply this to different model configs:
+Bunu farklı model yapılandırmalarına uygulamak için bu klasördeki [memory_estimator_kv_sharing.py](memory_estimator_kv_sharing.py) betiğini kullanabilirsiniz:
 
 ```bash
 # Gemma 4 E2B-like setup
@@ -84,9 +86,9 @@ Ratio (MHA / GQA+sharing) : 18.67x
 Savings vs MHA            : 94.64%
 ```
 
-This is a Gemma 4 E2B-like setup. The 35 layers include 15 K/V-producing layers, and the remaining layers reuse earlier K/V tensors. For the E4B-like setup, the corresponding numbers are 42 total layers and 24 K/V-producing layers.
+Bu, Gemma 4 E2B benzeri bir kurulumdur. 35 katmanın 15'i K/V üreten katmandır; kalan katmanlar daha önceki K/V tensörlerini yeniden kullanır. E4B benzeri kurulum için karşılık gelen sayılar toplam 42 katman ve 24 K/V üreten katmandır.
 
-The savings are shown below for the E2B-like and E4B-like setups. For simplicity, these plots do not include additional savings from sliding window attention.
+Tasarruflar aşağıda E2B ve E4B benzeri kurulumlar için gösterilmiştir. Basitlik adına bu grafikler, kayan pencere dikkatinden gelen ek tasarrufları içermez.
 
 &nbsp;
 
@@ -98,7 +100,7 @@ The savings are shown below for the E2B-like and E4B-like setups. For simplicity
 
 &nbsp;
 
-You can reproduce similar plots via:
+Benzer grafikleri şu komutlarla yeniden üretebilirsiniz:
 
 ```bash
 uv run plot_memory_estimates_kv_sharing.py --preset gemma4_e2b
@@ -106,15 +108,15 @@ uv run plot_memory_estimates_kv_sharing.py --preset gemma4_e4b
 ```
 
 &nbsp;
-## KV-Sharing Code Examples
+## KV Paylaşımı Kod Örnekleri
 
-The [gpt_with_kv_mha.py](gpt_with_kv_mha.py) and [gpt_with_kv_sharing.py](gpt_with_kv_sharing.py) scripts in this folder provide hands-on examples for comparing regular MHA with a cross-layer KV-sharing variant.
+Bu klasördeki [gpt_with_kv_mha.py](gpt_with_kv_mha.py) ve [gpt_with_kv_sharing.py](gpt_with_kv_sharing.py) betikleri, klasik MHA ile katmanlar arası KV paylaşımı varyantını karşılaştırmak için uygulamalı örnekler sunar.
 
-The easiest way to see the implementation details is to inspect a file diff between [gpt_with_kv_mha.py](gpt_with_kv_mha.py) and [gpt_with_kv_sharing.py](gpt_with_kv_sharing.py). The comments are intentionally kept similar so that the diff highlights the KV-sharing changes.
+Uygulama ayrıntılarını görmenin en kolay yolu, [gpt_with_kv_mha.py](gpt_with_kv_mha.py) ile [gpt_with_kv_sharing.py](gpt_with_kv_sharing.py) arasındaki dosya farkını (diff) incelemektir. Yorumlar, farkın KV paylaşımı değişikliklerini öne çıkarması için bilinçli olarak benzer tutulmuştur.
 
-Note that the model is not trained and thus generates nonsensical text. However, you can use it as a drop-in replacement for the standard GPT model in chapters 5-7 and train it.
+Modelin eğitilmediğini ve dolayısıyla anlamsız metin ürettiğini unutmayın. Yine de 5-7. bölümlerdeki standart GPT modelinin yerine doğrudan kullanabilir ve eğitebilirsiniz.
 
-Also, this implementation uses the KV cache explained in [another bonus section](../03_kv-cache), so the memory savings are more pronounced.
+Ayrıca bu uygulama, [başka bir bonus bölümde](../03_kv-cache) açıklanan KV önbelleğini kullanır; böylece bellek tasarrufu daha belirgin hâle gelir.
 
 ```bash
 uv run gpt_with_kv_mha.py \
@@ -133,4 +135,4 @@ uv run gpt_with_kv_sharing.py \
 --n_kv_producing_layers 6
 ```
 
-In this small GPT setup, the whole model still contains the same feed-forward layers and output head. The main memory difference is in how many attention layers store K/V tensors in the cache.
+Bu küçük GPT kurulumunda modelin tamamı yine aynı ileri beslemeli katmanları ve çıkış başını içerir. Ana bellek farkı, kaç dikkat katmanının önbellekte K/V tensörü sakladığındadır.

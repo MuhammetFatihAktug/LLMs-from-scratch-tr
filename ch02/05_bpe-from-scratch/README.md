@@ -1,5 +1,7 @@
-# Byte Pair Encoding (BPE) Tokenizer From Scratch
+# Sıfırdan Byte Pair Encoding (BPE) Tokenizer
 
-- [bpe-from-scratch-simple.ipynb](bpe-from-scratch-simple.ipynb) contains optional (bonus) code that explains and shows how the BPE tokenizer works under the hood; this is geared for simplicity and readability.
+> 🇹🇷 **Türkçe çeviri.** Orijinal İngilizce sürüm: [README.md](https://github.com/rasbt/LLMs-from-scratch/blob/main/ch02/05_bpe-from-scratch/README.md)
 
-- [bpe-from-scratch.ipynb](bpe-from-scratch.ipynb) implements a more sophisticated (and much more complicated) BPE tokenizer that behaves similarly as tiktoken with respect to all the edge cases; it also has additional funcitionality for loading the official GPT-2 vocab.
+- [bpe-from-scratch-simple.ipynb](bpe-from-scratch-simple.ipynb) BPE tokenizer'ının arka planda nasıl çalıştığını açıklayan ve gösteren isteğe bağlı (bonus) kod içerir; basitlik ve okunabilirlik gözetilerek hazırlanmıştır.
+
+- [bpe-from-scratch.ipynb](bpe-from-scratch.ipynb) tüm uç durumlar (edge case) açısından tiktoken'a benzer davranan, daha gelişmiş (ve çok daha karmaşık) bir BPE tokenizer'ı uygular; ayrıca resmî GPT-2 sözlüğünü yüklemek için ek işlevsellik sunar.

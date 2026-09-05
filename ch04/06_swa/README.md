@@ -1,41 +1,43 @@
-# Sliding Window Attention (SWA)
+# Kayan Pencere Dikkati (Sliding Window Attention, SWA)
 
-This bonus material illustrates the memory savings when using Sliding Window Attention (SWA) over regular Multi-Head Attention (MHA).
+> 🇹🇷 **Türkçe çeviri.** Orijinal İngilizce sürüm: [README.md](https://github.com/rasbt/LLMs-from-scratch/blob/main/ch04/06_swa/README.md) · Komut ve çıktı blokları birebir korunmuştur.
+
+Bu bonus materyal, klasik Çok Başlı Dikkat (MHA) yerine Kayan Pencere Dikkati (SWA) kullanıldığında elde edilen bellek tasarrufunu gösterir.
 
 
 
 &nbsp;
-## Introduction
+## Giriş
 
-What is sliding window attention (SWA)? If we think of regular self-attention as a *global* attention mechanism, since each sequence element can access every other sequence element, then we can think of SWA as *local* attention, because here we restrict the context size around the current query position. This is illustrated in the figure below.
+Kayan pencere dikkati (SWA) nedir? Klasik öz-dikkati (self-attention) *küresel* (global) bir dikkat mekanizması olarak düşünürsek (çünkü her dizi elemanı diğer tüm dizi elemanlarına erişebilir), SWA'yı *yerel* (local) dikkat olarak düşünebiliriz; çünkü burada bağlam boyutunu mevcut sorgu konumunun etrafıyla sınırlandırırız. Bu, aşağıdaki şekilde gösterilmiştir.
 
 <img src="https://sebastianraschka.com/images/LLMs-from-scratch-images/bonus/swa-memory/1.webp?2" alt="Sliding Window Attention" width="500px" />
 
-As shown in the figure above, instead of attending to all previous tokens, each token only attends to a fixed-size local window around its position. This localized attention lowers the size of the KV cache substantially.
+Yukarıdaki şekilde görüldüğü gibi, her token önceki tüm token'lara dikkat etmek yerine yalnızca kendi konumunun etrafındaki sabit boyutlu yerel bir pencereye dikkat eder. Bu yerelleştirilmiş dikkat, KV önbelleğinin boyutunu önemli ölçüde düşürür.
 
-In the remainder of this introduction, we will discuss SWA in the context of [Gemma 3](https://arxiv.org/abs/2503.19786), which is implemented from scratch in [../../ch05/12_gemma3](../../ch05/12_gemma3).
+Bu girişin geri kalanında SWA'yı, [../../ch05/12_gemma3](../../ch05/12_gemma3) klasöründe sıfırdan uygulanan [Gemma 3](https://arxiv.org/abs/2503.19786) bağlamında ele alacağız.
 
-Sliding window attention was originally introduced in the [LongFormer paper in 2020](https://arxiv.org/abs/2004.05150), but the reason we focus on Google's Gemma models is that they are very good open-weight models showing that sliding window attention is indeed a feasible approach in recent, capable models.
+Kayan pencere dikkati ilk olarak [2020'deki LongFormer makalesinde](https://arxiv.org/abs/2004.05150) tanıtıldı, ancak Google'ın Gemma modellerine odaklanmamızın nedeni, bunların kayan pencere dikkatinin güncel ve yetenekli modellerde gerçekten uygulanabilir bir yaklaşım olduğunu gösteren çok iyi açık ağırlıklı (open-weight) modeller olmasıdır.
 
-[Gemma 2](https://arxiv.org/abs/2408.00118) used a hybrid approach that combined local (sliding window) and global attention layers in a 1:1 ratio. Each token could attend to a context window of 4 k tokens. The reason for this 1:1 hybrid is that it strikes a balance between efficiency and global context modeling, since an LLM using only local attention can be too restrictive.
+[Gemma 2](https://arxiv.org/abs/2408.00118), yerel (kayan pencere) ve küresel dikkat katmanlarını 1:1 oranında birleştiren hibrit bir yaklaşım kullandı. Her token 4 bin token'lık bir bağlam penceresine dikkat edebiliyordu. Bu 1:1 hibrit yaklaşımın nedeni, verimlilik ile küresel bağlam modellemesi arasında bir denge kurmasıdır; çünkü yalnızca yerel dikkat kullanan bir LLM fazla kısıtlayıcı olabilir.
 
-[Gemma 3](https://arxiv.org/abs/2503.19786) then took the design further toward efficiency. It used a 5:1 ratio between sliding window and full attention layers, which means that for every five local attention layers, there is one global layer. In addition, the sliding window size was reduced from 4096 tokens in Gemma 2 to 1024 tokens in Gemma 3. 
+[Gemma 3](https://arxiv.org/abs/2503.19786) ise tasarımı verimlilik yönünde daha da ileri taşıdı. Kayan pencere ve tam dikkat katmanları arasında 5:1 oranı kullandı; yani her beş yerel dikkat katmanına karşılık bir küresel katman var. Ayrıca kayan pencere boyutu Gemma 2'deki 4096 token'dan Gemma 3'te 1024 token'a düşürüldü.
 
-Interestingly, the ablation studies in the Gemma 3 technical report indicate that these changes have only a minor effect on overall model quality. In other words, the substantial memory and compute savings achieved through sliding window attention come with minimal loss in modeling performance.
+İlginç biçimde, Gemma 3 teknik raporundaki ablasyon çalışmaları bu değişikliklerin genel model kalitesi üzerinde yalnızca küçük bir etkisi olduğunu gösteriyor. Başka bir deyişle, kayan pencere dikkatiyle elde edilen kayda değer bellek ve hesaplama tasarrufu, modelleme performansında çok az kayıpla geliyor.
 
 
 
 &nbsp;
-## Sliding Window Attention (SWA) Memory Savings
+## Kayan Pencere Dikkati (SWA) Bellek Tasarrufu
 
-The memory savings are mostly reflected in the KV storage. We can compute the KV storage size with the following formula:
+Bellek tasarrufu esas olarak KV depolamasına yansır. KV depolama boyutunu şu formülle hesaplayabiliriz:
 
-bytes ≈ batch_size × seqlen × (embed_dim / n_heads) × n_layers × 2 (K,V) × bytes_per_elem × n_kv_heads
+bayt ≈ batch_size × seqlen × (embed_dim / n_heads) × n_layers × 2 (K,V) × eleman_başına_bayt × n_kv_heads
 
-When using SWA, we replace the sequence length (seqlen) above by the window size W. So, when using sliding window attention, we reduce the KV cache size by a factor of "W / seqlen". (Note that for simplicity, this assumes that sliding window attention is used in every layer.)
+SWA kullanırken, yukarıdaki dizi uzunluğunu (seqlen) pencere boyutu W ile değiştiririz. Yani kayan pencere dikkati kullanırken KV önbelleği boyutunu "W / seqlen" çarpanı kadar azaltmış oluruz. (Basitlik adına bunun, kayan pencere dikkatinin her katmanda kullanıldığını varsaydığını unutmayın.)
 
 
-You can use the [memory_estimator_swa.py](memory_estimator_swa.py) script in this folder to apply this for different model configs to see how much memory you can save by using SWA over MHA:
+MHA yerine SWA kullanarak ne kadar bellek tasarrufu sağlayabileceğinizi görmek üzere bunu farklı model yapılandırmalarına uygulamak için bu klasördeki [memory_estimator_swa.py](memory_estimator_swa.py) betiğini kullanabilirsiniz:
 
 ```bash
 ➜ uv run memory_estimator_swa.py \
@@ -65,9 +67,9 @@ MHA + SWA (Ratio: 5:1) : 3.14 GB
 GQA + SWA (Ratio: 5:1) : 0.78 GB
 ```
 
-Note that Gemma 3 uses SWA in combination with GQA.
+Gemma 3'ün SWA'yı GQA ile birlikte kullandığını unutmayın.
 
-The savings when using SWA over MHA are further shown in the plot below for different context lengths:
+MHA yerine SWA kullanıldığındaki tasarruf, aşağıdaki grafikte farklı bağlam uzunlukları için ayrıca gösterilmiştir:
 
 &nbsp;
 
@@ -75,7 +77,7 @@ The savings when using SWA over MHA are further shown in the plot below for diff
 
 &nbsp;
 
-You can reproduce thi plots via:
+Bu grafikleri şu komutla yeniden üretebilirsiniz:
 
 ```bash
 uv run plot_memory_estimates_swa.py \
@@ -86,15 +88,15 @@ uv run plot_memory_estimates_swa.py \
 
 
 &nbsp;
-## SWA Code Examples
+## SWA Kod Örnekleri
 
-The [gpt_with_kv_mha.py](gpt_with_kv_mha.py) and [gpt_with_kv_swa.py](gpt_with_kv_swa.py) scripts in this folder provide hands-on examples for comparing the MHA and SWA memory usage in the context of a GPT model implementation.
+Bu klasördeki [gpt_with_kv_mha.py](gpt_with_kv_mha.py) ve [gpt_with_kv_swa.py](gpt_with_kv_swa.py) betikleri, bir GPT modeli uygulaması bağlamında MHA ve SWA bellek kullanımını karşılaştırmak için uygulamalı örnekler sunar.
 
-Note that SWA can also be used in combination with MLA and GQA (as mentioned earlier), but for simplicity, this is not done here.
+SWA'nın (daha önce belirtildiği gibi) MLA ve GQA ile birlikte de kullanılabileceğini, ancak basitlik adına burada bunun yapılmadığını unutmayın.
 
-Note that the model is not trained and thus generates nonsensical text. However, you can use it as a drop-in replacement for the standard GPT model in chapters 5-7 and train it.
+Modelin eğitilmediğini ve dolayısıyla anlamsız metin ürettiğini unutmayın. Yine de 5-7. bölümlerdeki standart GPT modelinin yerine doğrudan kullanabilir ve eğitebilirsiniz.
 
-Also, this implementation uses the KV cache explained in [another bonus section](../03_kv-cache), so the memory savings are more pronounced.
+Ayrıca bu uygulama, [başka bir bonus bölümde](../03_kv-cache) açıklanan KV önbelleğini kullanır; böylece bellek tasarrufu daha belirgin hâle gelir.
 
 ```bash
 uv run gpt_with_kv_mha.py \
@@ -126,7 +128,7 @@ Time: 514.38 sec
 Max memory allocated: 0.63 GB
 ```
 
-The reason why we are not seeing such a big saving as in the plots above is 2-fold:
+Yukarıdaki grafiklerdeki kadar büyük bir tasarruf görmememizin iki nedeni var:
 
-1. I use a smaller configuration to have the model finish the generation in a reasonable time.
-2. More importantly, we are looking at the whole model here, not just the attention mechanism; the fully-connected layers in the model take up most of the memory (but this is a topic for a separate analysis).
+1. Modelin üretimi makul bir sürede bitirmesi için daha küçük bir yapılandırma kullanıyorum.
+2. Daha da önemlisi, burada yalnızca dikkat mekanizmasına değil, modelin tamamına bakıyoruz; belleğin çoğunu modeldeki tam bağlantılı katmanlar kaplıyor (ancak bu ayrı bir analizin konusu).

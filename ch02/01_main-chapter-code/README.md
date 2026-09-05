@@ -1,9 +1,11 @@
-# Chapter 2: Working with Text Data
+# Bölüm 2: Metin Verileriyle Çalışmak
 
-### Main Chapter Code
+> 🇹🇷 **Türkçe çeviri.** Orijinal İngilizce sürüm: [README.md](https://github.com/rasbt/LLMs-from-scratch/blob/main/ch02/01_main-chapter-code/README.md)
 
-- [ch02.ipynb](ch02.ipynb) contains all the code as it appears in the chapter
+### Ana Bölüm Kodu
 
-### Optional Code
+- [ch02.ipynb](ch02.ipynb) bölümde geçtiği haliyle tüm kodu içerir
 
-- [dataloader.ipynb](dataloader.ipynb) is a minimal notebook with the main data loading pipeline implemented in this chapter
+### İsteğe Bağlı Kod
+
+- [dataloader.ipynb](dataloader.ipynb) bu bölümde uygulanan ana veri yükleme hattını (pipeline) içeren minimal bir not defteridir

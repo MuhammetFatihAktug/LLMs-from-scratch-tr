@@ -1,5 +1,5 @@
-# Memory-efficient Model Weight Loading
+# Bellek Açısından Verimli Model Ağırlığı Yükleme
 
-This folder contains code to illustrate how to load model weights more efficiently
+> 🇹🇷 **Türkçe çeviri.** Orijinal İngilizce sürüm: [README.md](https://github.com/rasbt/LLMs-from-scratch/blob/main/ch05/08_memory_efficient_weight_loading/README.md) · Bu klasör, model ağırlıklarının nasıl daha verimli yükleneceğini gösteren kodu içerir
 
-- [memory-efficient-state-dict.ipynb](memory-efficient-state-dict.ipynb): contains code to load model weights via PyTorch's `load_state_dict` method more efficiently
+- [memory-efficient-state-dict.ipynb](memory-efficient-state-dict.ipynb): model ağırlıklarını PyTorch'un `load_state_dict` metodu aracılığıyla daha verimli yükleyen kodu içerir

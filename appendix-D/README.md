@@ -1,3 +1,5 @@
-# Appendix D: Adding Bells and Whistles to the Training Loop
+# Ek D: Eğitim Döngüsüne Ek Özellikler Eklemek
 
-- [01_main-chapter-code](01_main-chapter-code) contains the main chapter code.
+> 🇹🇷 **Türkçe çeviri.** Orijinal İngilizce sürüm: [README.md](https://github.com/rasbt/LLMs-from-scratch/blob/main/appendix-D/README.md)
+
+- [01_main-chapter-code](01_main-chapter-code) ana bölüm kodunu içerir.

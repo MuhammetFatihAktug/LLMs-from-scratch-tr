@@ -1,10 +1,12 @@
-# Gemma 3 270M From Scratch
+# Sıfırdan Gemma 3 270M
 
-This [standalone-gemma3.ipynb](standalone-gemma3.ipynb) Jupyter notebook in this folder contains a from-scratch implementation of Gemma 3 270M. It requires about 2 GB of RAM to run. 
+> 🇹🇷 **Türkçe çeviri.** Orijinal İngilizce sürüm: [README.md](https://github.com/rasbt/LLMs-from-scratch/blob/main/ch05/12_gemma3/README.md) · Tablo verileri birebir korunmuştur.
 
-The alternative [standalone-gemma3-plus-kvcache.ipynb](standalone-gemma3-plus-kvcache.ipynb) notebook adds a KV cache for better runtime performance (but adds more code complexity). To learn more about KV caching, see my [Understanding and Coding the KV Cache in LLMs from Scratch](https://magazine.sebastianraschka.com/p/coding-the-kv-cache-in-llms) article.
+Bu klasördeki [standalone-gemma3.ipynb](standalone-gemma3.ipynb) Jupyter not defteri, Gemma 3 270M'in sıfırdan bir uygulamasını içerir. Çalıştırmak için yaklaşık 2 GB RAM gerektirir.
 
-| Model             | Mode              | Hardware        | Tokens/sec | GPU Memory (VRAM) |
+Alternatif [standalone-gemma3-plus-kvcache.ipynb](standalone-gemma3-plus-kvcache.ipynb) not defteri, daha iyi çalışma zamanı performansı için bir KV önbelleği ekler (ancak koda daha fazla karmaşıklık katar). KV önbellekleme hakkında daha fazla bilgi için [Understanding and Coding the KV Cache in LLMs from Scratch](https://magazine.sebastianraschka.com/p/coding-the-kv-cache-in-llms) yazıma bakın.
+
+| Model             | Mod               | Donanım         | Token/saniye | GPU Belleği (VRAM) |
 | ----------------- | ----------------- | --------------- | ---------- | ----------------- |
 | Gemma3Model 270M  | Regular           | Mac Mini M4 CPU | 8          | -                 |
 | Gemma3Model 270M  | Regular compiled  | Mac Mini M4 CPU | 9          | -                 |
@@ -22,7 +24,7 @@ The alternative [standalone-gemma3-plus-kvcache.ipynb](standalone-gemma3-plus-kv
 | Gemma3Model 270M  | KV cache compiled | Nvidia A100 GPU | 99         | 2.12 GB           |
 
 
-Below is a side-by-side comparison with Qwen3 0.6B as a reference model; if you are interested in the Qwen3 0.6B standalone notebook, you can find it [here](../11_qwen3).
+Aşağıda, referans model olarak Qwen3 0.6B ile yan yana bir karşılaştırma yer alıyor; Qwen3 0.6B bağımsız not defteriyle ilgileniyorsanız [buradan](../11_qwen3) ulaşabilirsiniz.
 
 <br>
 
@@ -30,9 +32,4 @@ Below is a side-by-side comparison with Qwen3 0.6B as a reference model; if you 
 
 <br>
 
-To learn more about the architecture differences and read about comparisons with other architectures, see my [The Big LLM Architecture Comparison: From DeepSeek-V3 to Kimi K2: A Look At Modern LLM Architecture Design](https://magazine.sebastianraschka.com/p/the-big-llm-architecture-comparison) article.
-
-
-
-
-
+Mimari farkları hakkında daha fazla bilgi edinmek ve diğer mimarilerle karşılaştırmaları okumak için [The Big LLM Architecture Comparison: From DeepSeek-V3 to Kimi K2: A Look At Modern LLM Architecture Design](https://magazine.sebastianraschka.com/p/the-big-llm-architecture-comparison) yazıma bakın.

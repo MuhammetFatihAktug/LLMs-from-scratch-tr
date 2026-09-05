@@ -1,13 +1,15 @@
-# Mixture of Experts (MoE)
+# Uzmanlar Karışımı (Mixture of Experts, MoE)
 
-This bonus material illustrates the memory savings (per token) when using Mixture-of-Experts (MoE) layers instead of regular feed-forward (FFN) layers.
+> 🇹🇷 **Türkçe çeviri.** Orijinal İngilizce sürüm: [README.md](https://github.com/rasbt/LLMs-from-scratch/blob/main/ch04/07_moe/README.md) · Komut ve çıktı blokları birebir korunmuştur.
+
+Bu bonus materyal, klasik ileri beslemeli (feed-forward, FFN) katmanlar yerine Uzmanlar Karışımı (MoE) katmanları kullanıldığında (token başına) elde edilen bellek tasarrufunu gösterir.
 
 
 
 &nbsp;
-## Introduction
+## Giriş
 
-The core idea in MoE is to replace each feed-forward module in a transformer block with multiple expert layers, where each of these expert layers is also a feed-forward module. This means we replace a single feed-forward block with multiple feed-forward blocks, as illustrated in the figure below.
+MoE'deki temel fikir, bir transformer bloğundaki her ileri beslemeli modülü birden çok uzman katmanıyla değiştirmektir; bu uzman katmanlarının her biri de birer ileri beslemeli modüldür. Yani aşağıdaki şekilde gösterildiği gibi, tek bir ileri beslemeli bloğu birden çok ileri beslemeli blokla değiştiriyoruz.
 
 
 
@@ -15,37 +17,37 @@ The core idea in MoE is to replace each feed-forward module in a transformer blo
 
 <img src="https://sebastianraschka.com/images/LLMs-from-scratch-images/bonus/moe-memory/1.webp" alt="SWA" width="800px" />
 
-The feed-forward block inside a transformer block (shown as the dark gray block in the figure above) typically contains a large number of the model's total parameters. (Note that the transformer block, and thereby the feed-forward block, is repeated many times in an LLM; in the case of DeepSeek-V3, 61 times.)
+Bir transformer bloğunun içindeki ileri beslemeli blok (yukarıdaki şekilde koyu gri blok olarak gösterilmiştir) tipik olarak modelin toplam parametrelerinin büyük bir kısmını barındırır. (Transformer bloğunun ve dolayısıyla ileri beslemeli bloğun bir LLM'de defalarca tekrarlandığını unutmayın; DeepSeek-V3 örneğinde 61 kez.)
 
-So, replacing *a single* feed-forward block with *multiple* feed-forward blocks (as done in a MoE setup) substantially increases the model's total parameter count. However, the key trick is that we don't use ("activate") all experts for every token. Instead, a router selects only a small subset of experts per token.
+Dolayısıyla, *tek bir* ileri beslemeli bloğu *birden çok* ileri beslemeli blokla değiştirmek (bir MoE kurulumunda yapıldığı gibi) modelin toplam parametre sayısını ciddi biçimde artırır. Ancak asıl numara, her token için tüm uzmanları kullanmamamızdır ("etkinleştirmememizdir"). Bunun yerine bir yönlendirici (router), token başına yalnızca küçük bir uzman alt kümesini seçer.
 
-Because only a few experts are active at a time, MoE modules are often referred to as *sparse*, in contrast to *dense* modules that always use the full parameter set. However, the large total number of parameters via an MoE increases the capacity of the LLM, which means it can take up more knowledge during training. The sparsity keeps inference efficient, though, as we don't use all the parameters at the same time.
+Aynı anda yalnızca birkaç uzman etkin olduğu için, MoE modülleri sıklıkla *seyrek* (sparse) olarak adlandırılır; buna karşılık her zaman parametre kümesinin tamamını kullanan modüller *yoğun* (dense) olarak anılır. Bununla birlikte, MoE üzerinden gelen yüksek toplam parametre sayısı LLM'in kapasitesini artırır; yani eğitim sırasında daha fazla bilgi barındırabilir. Yine de seyreklik, tüm parametreleri aynı anda kullanmadığımız için çıkarımı verimli tutar.
 
-For example, DeepSeek-V3 has 256 experts per MoE module and a total of 671 billion parameters. Yet during inference, only 9 experts are active at a time (1 shared expert plus 8 selected by the router). This means just 37 billion parameters are used for each token inference step as opposed to all 671 billion.
+Örneğin DeepSeek-V3'te MoE modülü başına 256 uzman ve toplam 671 milyar parametre vardır. Yine de çıkarım sırasında aynı anda yalnızca 9 uzman etkindir (1 paylaşılan uzman artı yönlendiricinin seçtiği 8 uzman). Bu, her token çıkarım adımında 671 milyarın tamamı yerine yalnızca 37 milyar parametrenin kullanıldığı anlamına gelir.
 
-One notable feature of DeepSeek-V3's MoE design is the use of a shared expert. This is an expert that is always active for every token. This idea is not new and was already introduced in the [2022 DeepSpeed-MoE](https://arxiv.org/abs/2201.05596) and the [2024 DeepSeek MoE](https://arxiv.org/abs/2401.06066) papers.
+DeepSeek-V3'ün MoE tasarımının dikkat çekici bir özelliği, paylaşılan bir uzman (shared expert) kullanmasıdır. Bu, her token için daima etkin olan bir uzmandır. Bu fikir yeni değildir; [2022 DeepSpeed-MoE](https://arxiv.org/abs/2201.05596) ve [2024 DeepSeek MoE](https://arxiv.org/abs/2401.06066) makalelerinde zaten tanıtılmıştı.
 
 &nbsp;
 
 <img src="https://sebastianraschka.com/images/LLMs-from-scratch-images/bonus/moe-memory/3.webp?1" alt="MoE shared expert" width="500px" />
 
-(An annotated figure from the [DeepSeekMoE: Towards Ultimate Expert Specialization in Mixture-of-Experts Language Models](https://arxiv.org/abs/2401.06066) paper.)
+([DeepSeekMoE: Towards Ultimate Expert Specialization in Mixture-of-Experts Language Models](https://arxiv.org/abs/2401.06066) makalesinden açıklamalı bir şekil.)
 
 &nbsp;
 
-The benefit of having a shared expert was first noted in the [DeepSpeed-MoE paper](https://arxiv.org/abs/2201.05596), where they found that it boosts overall modeling performance compared to no shared experts. This is likely because common or repeated patterns don't have to be learned by multiple individual experts, which leaves them with more room for learning more specialized patterns.
+Paylaşılan bir uzmana sahip olmanın faydası ilk olarak [DeepSpeed-MoE makalesinde](https://arxiv.org/abs/2201.05596) fark edildi; burada, paylaşılan uzman olmayan duruma kıyasla genel modelleme performansını artırdığı görüldü. Bunun nedeni muhtemelen, yaygın veya tekrar eden örüntülerin birden çok ayrı uzman tarafından öğrenilmek zorunda kalmaması ve böylece bu uzmanlara daha özelleşmiş örüntüleri öğrenmek için daha fazla alan kalmasıdır.
 
 &nbsp;
-## Mixture of Experts (MoE) Memory Savings
+## Uzmanlar Karışımı (MoE) Bellek Tasarrufu
 
-The memory savings in MoE models primarily come from reduced activation storage and compute. In a regular (dense) feed-forward layer (FFN), every token activates the full intermediate dimension. 
+MoE modellerindeki bellek tasarrufu esas olarak azalan aktivasyon depolaması ve hesaplamadan gelir. Klasik (yoğun) bir ileri beslemeli katmanda (FFN) her token, ara boyutun tamamını etkinleştirir.
 
-In contrast, an MoE layer routes each token through only a small subset of experts (for example, `top_k` out of `num_experts`) per token.
+Buna karşılık bir MoE katmanı, her token'ı yalnızca küçük bir uzman alt kümesi üzerinden yönlendirir (örneğin, `num_experts` içinden `top_k` kadarı).
 
-When using an MoE layer, only `top_k` experts are active per token, so the effective memory (and compute) scales by roughly a factor of `top_k / num_experts` relative to a dense FFN of the same total capacity.
+Bir MoE katmanı kullanırken token başına yalnızca `top_k` uzman etkin olur; dolayısıyla etkin bellek (ve hesaplama), aynı toplam kapasiteye sahip yoğun bir FFN'e kıyasla kabaca `top_k / num_experts` çarpanıyla ölçeklenir.
 
 
-You can use the [memory_estimator_moe.py](memory_estimator_moe.py) script in this folder to apply this for different model configs to see how much memory you can save by using MoE over FFN (note that this is for a single transformer block, to get the total savings, multiply by the number of transformer blocks in your model):
+FFN yerine MoE kullanarak ne kadar bellek tasarrufu sağlayabileceğinizi görmek üzere bunu farklı model yapılandırmalarına uygulamak için bu klasördeki [memory_estimator_moe.py](memory_estimator_moe.py) betiğini kullanabilirsiniz (bunun tek bir transformer bloğu için olduğunu, toplam tasarrufu bulmak için modelinizdeki transformer bloğu sayısıyla çarpmanız gerektiğini unutmayın):
 
 ```bash
 uv run memory_estimator_moe.py --emb_dim 7168 --hidden_dim 14336 --ffn_type swiglu \
@@ -68,11 +70,11 @@ MoE ACTIVE/Token       : 77,127,680 (0.15 GB)
 moe_hidden_size        : 1792
 ```
 
-So, based on the results above, we can see that if we have a FFN with an input/output dimension (`emb_dim`) of 7,168 and an intermediate size (`hidden_dim`) of 14,336, we have ~308M parameters in this layer, and all these parameters are active in the forward pass.
+Yukarıdaki sonuçlara dayanarak görebiliriz ki, girdi/çıktı boyutu (`emb_dim`) 7.168 ve ara boyutu (`hidden_dim`) 14.336 olan bir FFN'imiz varsa, bu katmanda yaklaşık 308 milyon parametre bulunur ve bu parametrelerin tamamı ileri geçişte etkindir.
 
-Now, if we use an MoE layer with roughly the same number of total parameters (~308M), with 8 experts where 2 experts are active, only ~77M parameters are active in each forward pass. 
+Şimdi, kabaca aynı toplam parametre sayısına (~308M) sahip, 8 uzmanlı ve 2 uzmanın etkin olduğu bir MoE katmanı kullanırsak, her ileri geçişte yalnızca ~77M parametre etkin olur.
 
-Moreover, at a constant number of experts, the more experts we have, the lower the number of active parameters becomes, and the greater the "savings":
+Dahası, sabit sayıda uzman için, ne kadar çok uzmanımız olursa etkin parametre sayısı o kadar düşer ve "tasarruf" o kadar artar:
 
 &nbsp;
 
@@ -84,7 +86,7 @@ Moreover, at a constant number of experts, the more experts we have, the lower t
 
 &nbsp;
 
-You can reproduce this plot via:
+Bu grafiği şu komutla yeniden üretebilirsiniz:
 
 ```bash
 uv run plot_memory_estimates_moe.py \
@@ -96,15 +98,15 @@ uv run plot_memory_estimates_moe.py \
 
 
 &nbsp;
-## MoE Code Examples
+## MoE Kod Örnekleri
 
-The [gpt_with_kv_ffn.py](gpt_with_kv_ffn.py) and [gpt_with_kv_moe.py](gpt_with_kv_moe.py) scripts in this folder provide hands-on examples for comparing the regular FFN and MoE memory usage in the context of a GPT model implementation. Note that both scripts use [SwiGLU](https://arxiv.org/abs/2002.05202) feed-forward modules as shown in the first figure of this page (GPT-2 traditionally uses GELU).
+Bu klasördeki [gpt_with_kv_ffn.py](gpt_with_kv_ffn.py) ve [gpt_with_kv_moe.py](gpt_with_kv_moe.py) betikleri, bir GPT modeli uygulaması bağlamında klasik FFN ile MoE bellek kullanımını karşılaştırmak için uygulamalı örnekler sunar. Her iki betiğin de bu sayfanın ilk şeklinde gösterildiği gibi [SwiGLU](https://arxiv.org/abs/2002.05202) ileri beslemeli modüllerini kullandığını unutmayın (GPT-2 geleneksel olarak GELU kullanır).
 
-**Note: The model is not trained and thus generates nonsensical text. You can find a trained MoE in the bonus materials at [../../ch05/11_qwen3/standalone-qwen3-moe-plus-kvcache.ipynb](../../ch05/11_qwen3/standalone-qwen3-moe-plus-kvcache.ipynb).**
+**Not: Model eğitilmemiştir ve dolayısıyla anlamsız metin üretir. Eğitilmiş bir MoE'yi [../../ch05/11_qwen3/standalone-qwen3-moe-plus-kvcache.ipynb](../../ch05/11_qwen3/standalone-qwen3-moe-plus-kvcache.ipynb) bonus materyalinde bulabilirsiniz.**
 
 
 
-First, let's run the model with a regular FFN:
+Önce modeli klasik bir FFN ile çalıştıralım:
 
 
 ```bash
@@ -124,7 +126,7 @@ Time: 25.13 sec
 Max memory allocated: 11.47 GB
 ```
 
-For a fair comparison with an MoE, we have to shrink the expert size. E.g., of we use 32 experts, we have to set `--hidden_dim 32768/32`:
+MoE ile adil bir karşılaştırma için uzman boyutunu küçültmemiz gerekir. Örneğin 32 uzman kullanırsak `--hidden_dim 32768/32` ayarlamalıyız:
 
 
 ```bash
@@ -146,15 +148,12 @@ Time: 35.11 sec
 Max memory allocated: 11.48 GB
 ```
 
-We can see that the dense feed-forward layer processes a token in about 0.76 ms and uses roughly 0.19 MB of activations (peaking near 0.75 MB),
+Görebiliyoruz ki yoğun ileri beslemeli katman bir token'ı yaklaşık 0,76 ms'de işliyor ve kabaca 0,19 MB aktivasyon kullanıyor (tepe noktası 0,75 MB civarında).
 
-The sparse MoE layer keeps only about 0.04 MB of memory (peaking at 0.11). However, this comes at the cost of roughly twice the compute time. (There is an added routing overhead, and my implementation may also not be the most efficient one.)
+Seyrek MoE katmanı ise yalnızca yaklaşık 0,04 MB bellek tutuyor (tepe noktası 0,11 MB). Ancak bu, kabaca iki katı hesaplama süresi pahasına geliyor. (Ek bir yönlendirme yükü var ve benim uygulamam en verimli uygulama olmayabilir.)
 
-Overall generation still peaks around 11.5 GB of GPU memory in both cases, since both versions load the same number of weight parameters and have the same KV cache size, which dominate here.
+Genel üretim yine de her iki durumda da yaklaşık 11,5 GB GPU belleğinde zirve yapıyor; çünkü her iki sürüm de aynı sayıda ağırlık parametresi yüklüyor ve aynı KV önbelleği boyutuna sahip; burada baskın olan bunlar.
 
-Either way, we can see the trade-off here where MoE reduces the FFN memory by about 4-5× while roughly doubling the feed-forward compute time.
+Her hâlükârda, buradaki ödünleşimi görebiliyoruz: MoE, FFN belleğini yaklaşık 4-5 kat azaltırken ileri besleme hesaplama süresini kabaca ikiye katlıyor.
 
-Note that if we processed more tokens at one, e.g., with a batch size larger than 1 (here we don't have batches due to code simplicity), the savings would be more pronounced.
-
-
-
+Aynı anda daha fazla token işleseydik, örneğin 1'den büyük bir yığın boyutuyla (burada kod basitliği nedeniyle yığın kullanmıyoruz), tasarrufun daha belirgin olacağını unutmayın.

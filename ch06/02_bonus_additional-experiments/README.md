@@ -1,11 +1,13 @@
-# Additional Classification Finetuning Experiments
+# Ek Sınıflandırma İnce Ayarı Deneyleri
 
-The table below adds experiments to answer additional questions about various design choices. The first row uses the same settings as the main chapter and is used as a reference.
-For example,
+> 🇹🇷 **Türkçe çeviri.** Orijinal İngilizce sürüm: [README.md](https://github.com/rasbt/LLMs-from-scratch/blob/main/ch06/02_bonus_additional-experiments/README.md) · Sonuç tablosu ve komutlar birebir korunmuştur.
 
-- comparing rows 1 and 2 answers the question: "What is the performance difference when we train the last or first token?";
-- comparing rows 1 and 3 answers the question: "What is the performance difference when we train only the last layer instead of the last block?";
-- and so forth.
+Aşağıdaki tablo, çeşitli tasarım tercihleriyle ilgili ek soruları yanıtlamak için deneyler ekler. İlk satır ana bölümdekiyle aynı ayarları kullanır ve referans olarak alınır.
+Örneğin,
+
+- 1. ve 2. satırların karşılaştırılması şu soruyu yanıtlar: "Son token'ı mı yoksa ilk token'ı mı eğittiğimizde performans farkı ne olur?";
+- 1. ve 3. satırların karşılaştırılması şu soruyu yanıtlar: "Son bloğun yerine yalnızca son katmanı eğittiğimizde performans farkı ne olur?";
+- ve benzeri.
 
 &nbsp;
 
@@ -33,45 +35,45 @@ For example,
 
 &nbsp;
 
-### Usage
+### Kullanım
 
-You can use the following code to reproduce the experiments:
+Deneyleri yeniden üretmek için aşağıdaki kodu kullanabilirsiniz:
 
-- Row 1: `python additional_experiments.py`
-- Row 2: `python additional_experiments.py --trainable_token_pos first`
-- Row 3: `python additional_experiments.py --trainable_layers last_layer`
-- Row 4: `python additional_experiments.py --trainable_layers last_two_blocks`
-- Row 5: `python additional_experiments.py --trainable_layers all`
-- Row 6: `python additional_experiments.py --model_size "gpt2-medium (355M)"`
-- Row 7: `python additional_experiments.py --model_size "gpt2-large (774M)"`
-- Row 8: `python additional_experiments.py --model_size "gpt2-xl (1558M)"`
-- Row 9: `python additional_experiments.py --model_size "gpt2-xl (1558M)"--trainable_layers all`
-- Row 10: `python additional_experiments.py --weights random --trainable_layers all`
-- Row 11: `python additional_experiments.py --trainable_layers lora --lora_rank 16 --lora_alpha 16`
-- Row 12: `python additional_experiments.py --trainable_layers lora --lora_rank 16 --lora_alpha 8 --model_size "gpt2-xl (1558M)"`
-- Row 13: `python additional_experiments.py --context_length "model_context_length"`
-- Row 14: `python additional_experiments.py --no_padding --batch_size 1`
-- Row 15: `python additional_experiments.py --no_padding --batch_size 1 --accumulation_steps 8`
-- Row 16: `python additional_experiments.py --trainable_token_pos "flexible"`
-- Row 17: `python additional_experiments.py --disable_causal_mask`
-- Row 18: `python additional_experiments.py --ignore_index 50256`
-- Row 19: `python additional_experiments.py --average_embeddings`
+- Satır 1: `python additional_experiments.py`
+- Satır 2: `python additional_experiments.py --trainable_token_pos first`
+- Satır 3: `python additional_experiments.py --trainable_layers last_layer`
+- Satır 4: `python additional_experiments.py --trainable_layers last_two_blocks`
+- Satır 5: `python additional_experiments.py --trainable_layers all`
+- Satır 6: `python additional_experiments.py --model_size "gpt2-medium (355M)"`
+- Satır 7: `python additional_experiments.py --model_size "gpt2-large (774M)"`
+- Satır 8: `python additional_experiments.py --model_size "gpt2-xl (1558M)"`
+- Satır 9: `python additional_experiments.py --model_size "gpt2-xl (1558M)"--trainable_layers all`
+- Satır 10: `python additional_experiments.py --weights random --trainable_layers all`
+- Satır 11: `python additional_experiments.py --trainable_layers lora --lora_rank 16 --lora_alpha 16`
+- Satır 12: `python additional_experiments.py --trainable_layers lora --lora_rank 16 --lora_alpha 8 --model_size "gpt2-xl (1558M)"`
+- Satır 13: `python additional_experiments.py --context_length "model_context_length"`
+- Satır 14: `python additional_experiments.py --no_padding --batch_size 1`
+- Satır 15: `python additional_experiments.py --no_padding --batch_size 1 --accumulation_steps 8`
+- Satır 16: `python additional_experiments.py --trainable_token_pos "flexible"`
+- Satır 17: `python additional_experiments.py --disable_causal_mask`
+- Satır 18: `python additional_experiments.py --ignore_index 50256`
+- Satır 19: `python additional_experiments.py --average_embeddings`
 
-I've kept the LLM and dataset small on purpose, so you can run the training on a regular laptop like a MacBook Air M3 in about 15 minutes (for the default setting) in case you don't have access to a GPU.
+LLM'i ve veri kümesini bilinçli olarak küçük tuttum; böylece bir GPU'ya erişiminiz yoksa eğitimi MacBook Air M3 gibi sıradan bir dizüstü bilgisayarda (varsayılan ayarla) yaklaşık 15 dakikada çalıştırabilirsiniz.
 
 &nbsp;
 
-### Interpretation
+### Yorum
 
-1. **Training the Last vs. First Output Token Position (Row 1 vs. 2)**: Training the last output token position results in substantially better performance compared to the first. This improvement is expected due to the causal self-attention mask.
-2. **Training the Last Transformer Block vs. Last Layer (Row 1 vs. 3)**: Training the entire last transformer block is also results in substantially better results than training only the last layer.
-3. **Training the Last vs. Last Two Last Transformer Blocks (Row 1 vs. 4)**: Training the two last transformer blocks instead of only the last block results in a noticeable 3.33% accuracy boost.
-4. **Training Last Transformer Block vs All Layers (Row 1 vs. 5)**: Training all layers shows a modest improvement of ~2% over just training the last transformer block, but it requires almost three times longer in terms of training duration. Also, it does not perform as well as training only the last two out of 12 transformer blocks.
-5. **Using Larger Pretrained Models (Row 1 vs 6, and Row 1 vs. 7 and 8)**: Employing a 3x larger pretrained model leads to worse results. However, using a 5x larger model improves performance compared to the initial model, as was anticipated. Similarly, the 12x larger model improves the predictive performance even further. (The medium model was perhaps not well pretrained or the particular finetuning configuration works not as well for this model.)
-6. **Using a Model with Random Weights vs. Pretrained Weights (Row 1 and 5 vs. 10)**: Utilizing a model with random weights yields results that are only slightly worse (by 3% and 1.3%) compared to using pretrained weights.
-7. **Using LoRA (Low-Rank Adaptation) vs Training All Layers (Row 11 vs. 5, and row 12 vs. 9)**: Keeping the model frozen and adding trainable LoRA layers (see [Appendix E](../../appendix-E/01_main-chapter-code/appendix-E.ipynb) for details) is a viable alternative to training all model parameters and even improves the performance by 1% point (row 11 vs. 5). As it can be seen by the ~1% lower gap between the training and validation accuracy when using LoRA, this is likely due to less overfitting. Moreover, using LoRA is also more memory-efficient because fewer parameters have to be updated. When training the larger model (row 12 vs. 9), we can also see that LoRA trains much faster (5.79 min instead of 8.12 min).
-8. **Padding Input to Full Context Length vs. Longest Training Example (Row 1 vs. 13)**: Padding the input to the full supported context length results is significantly worse.
-9. **Padding vs no padding (Row 1 vs. 14 & 15, and 16)**: The `--no_padding` option disables the padding in the dataset, which requires training the model with a batch size of 1 since the inputs have variable lengths. This results in a better test accuracy but takes longer to train. In row 15, we additionally enable gradient accumulation with 8 steps to achieve the same batch size as in the other experiments, which helps reduce overfitting and slightly boost the test set accuracy. In row 16, padding is applied, but the token position is selected based on the last non-padding token. Row 16 should be mathematically similar to row 15, which uses gradient accumulation. However, due to some challenges with gradient accumulation in cases of unequal token counts, there may be small discrepancies (this is discussed in [this](https://unsloth.ai/blog/gradient) blog post).
-10. **Disabling the causal attention mask (Row 1 vs. 17)**: Disables the causal attention mask used in the multi-head attention module. This means all tokens can attend all other tokens. The model accuracy is slightly improved compared to the GPT model with causal mask.
-11. **Ignoring the padding indices in the loss and backpropagation (Row 1 vs. 18)**: Setting `--ignore_index 50256` excludes the `<|endoftext|>` padding tokens in the `cross_entropy` loss function in PyTorch. In this case, it does not have any effect because we replaced the output layers so that the token IDs are either 0 or 1 for the binary classification example. However, this setting is useful when instruction finetuning models in chapter 7.
-12. **Averaging the embeddings over all tokens (Row 1 vs. 19)**: Setting `--average_embeddings` will average the embeddings over all tokens. If this option is not used (the default), only the output embeddings at the chosen token position (specified by `--trainable_token_pos`) are considered; for example, the embeddings of the last token. Enabling `--average_embeddings` will mean-pool the embeddings of all tokens into the position chosen by `--trainable_token_pos` (the last token by default). As we can see, this improves the performance from 95.00% to 96.33% with only a minimal increase in run time (0.28 min to 0.32 min) and might be worthwhile considering in practice.
+1. **Son ve İlk Çıkış Token Konumunu Eğitmek (1. ve 2. satır)**: Son çıkış token konumunu eğitmek, ilkine kıyasla belirgin biçimde daha iyi performans verir. Bu iyileşme, nedensel (causal) öz-dikkat maskesi nedeniyle beklenen bir sonuçtur.
+2. **Son Transformer Bloğunu ve Son Katmanı Eğitmek (1. ve 3. satır)**: Son transformer bloğunun tamamını eğitmek de yalnızca son katmanı eğitmekten belirgin biçimde daha iyi sonuçlar verir.
+3. **Son ve Son İki Transformer Bloğunu Eğitmek (1. ve 4. satır)**: Yalnızca son blok yerine son iki transformer bloğunu eğitmek, doğrulukta gözle görülür %3,33'lük bir artış sağlar.
+4. **Son Transformer Bloğunu ve Tüm Katmanları Eğitmek (1. ve 5. satır)**: Tüm katmanları eğitmek, yalnızca son transformer bloğunu eğitmeye kıyasla ~%2'lik mütevazı bir iyileşme gösterir, ancak eğitim süresi açısından neredeyse üç kat daha uzun sürer. Ayrıca, 12 transformer bloğundan yalnızca son ikisini eğitmek kadar iyi performans göstermez.
+5. **Daha Büyük Önceden Eğitilmiş Modeller Kullanmak (1'e karşı 6. satır ile 1'e karşı 7. ve 8. satırlar)**: 3 kat daha büyük, önceden eğitilmiş bir model kullanmak daha kötü sonuçlara yol açar. Ancak 5 kat daha büyük bir model kullanmak, beklendiği gibi ilk modele kıyasla performansı artırır. Benzer şekilde, 12 kat daha büyük model tahmin performansını daha da iyileştirir. (Orta boy model belki iyi ön eğitilmemişti veya bu ince ayar yapılandırması bu model için o kadar iyi çalışmıyor.)
+6. **Rastgele Ağırlıklı Model ile Önceden Eğitilmiş Ağırlıklı Modeli Karşılaştırmak (1. ve 5. satıra karşı 10. satır)**: Rastgele ağırlıklı bir model kullanmak, önceden eğitilmiş ağırlıklara kıyasla yalnızca biraz daha kötü sonuçlar verir (%3 ve %1,3 fark).
+7. **LoRA (Low-Rank Adaptation) Kullanmak ile Tüm Katmanları Eğitmek (11'e karşı 5. satır ve 12'ye karşı 9. satır)**: Modeli dondurup eğitilebilir LoRA katmanları eklemek (ayrıntılar için bkz. [Ek E](../../appendix-E/01_main-chapter-code/appendix-E.ipynb)), tüm model parametrelerini eğitmeye uygulanabilir bir alternatiftir ve performansı 1 puan bile artırır (11'e karşı 5. satır). LoRA kullanıldığında eğitim ile doğrulama doğruluğu arasındaki farkın ~%1 daha düşük olmasından görülebileceği gibi, bu muhtemelen daha az aşırı öğrenmeden (overfitting) kaynaklanır. Ayrıca, daha az parametrenin güncellenmesi gerektiği için LoRA kullanmak bellek açısından da daha verimlidir. Daha büyük modeli eğitirken (12'ye karşı 9. satır), LoRA'nın çok daha hızlı eğitildiğini de görebiliriz (8,12 dakika yerine 5,79 dakika).
+8. **Girdiyi Tam Bağlam Uzunluğuna ve En Uzun Eğitim Örneğine Göre Doldurmak (1. ve 13. satır)**: Girdiyi desteklenen tam bağlam uzunluğuna kadar doldurmak (padding) kayda değer ölçüde daha kötü sonuç verir.
+9. **Dolgulu ve dolgusuz (1'e karşı 14, 15 ve 16. satırlar)**: `--no_padding` seçeneği veri kümesindeki dolguyu devre dışı bırakır; girdiler değişken uzunlukta olduğu için modelin 1 yığın boyutuyla eğitilmesini gerektirir. Bu, daha iyi bir test doğruluğu verir ancak eğitim daha uzun sürer. 15. satırda, diğer deneylerdekiyle aynı yığın boyutuna ulaşmak için ek olarak 8 adımlı gradyan biriktirme (gradient accumulation) etkinleştirilir; bu, aşırı öğrenmeyi azaltmaya ve test kümesi doğruluğunu biraz artırmaya yardımcı olur. 16. satırda dolgu uygulanır, ancak token konumu son dolgusuz token'a göre seçilir. 16. satır, gradyan biriktirme kullanan 15. satırla matematiksel olarak benzer olmalıdır. Ancak eşit olmayan token sayıları durumunda gradyan biriktirmeyle ilgili bazı zorluklar nedeniyle küçük farklılıklar olabilir (bu, [şu](https://unsloth.ai/blog/gradient) blog yazısında tartışılmaktadır).
+10. **Nedensel dikkat maskesini devre dışı bırakmak (1. ve 17. satır)**: Çok başlı dikkat modülünde kullanılan nedensel dikkat maskesini devre dışı bırakır. Bu, tüm token'ların diğer tüm token'lara dikkat edebileceği anlamına gelir. Model doğruluğu, nedensel maskeli GPT modeline kıyasla biraz iyileşir.
+11. **Kayıp ve geri yayılımda dolgu indekslerini yok saymak (1. ve 18. satır)**: `--ignore_index 50256` ayarı, PyTorch'taki `cross_entropy` kayıp fonksiyonunda `<|endoftext|>` dolgu token'larını hariç tutar. Bu durumda hiçbir etkisi yoktur; çünkü çıkış katmanlarını, ikili sınıflandırma örneğinde token kimlikleri 0 veya 1 olacak şekilde değiştirdik. Ancak bu ayar, 7. bölümde modellere talimat ince ayarı yaparken faydalıdır.
+12. **Gömmelerin tüm token'lar üzerinden ortalamasını almak (1. ve 19. satır)**: `--average_embeddings` ayarı, gömmelerin tüm token'lar üzerinden ortalamasını alır. Bu seçenek kullanılmazsa (varsayılan), yalnızca seçilen token konumundaki (`--trainable_token_pos` ile belirtilen) çıkış gömmeleri dikkate alınır; örneğin son token'ın gömmeleri. `--average_embeddings` etkinleştirildiğinde, tüm token'ların gömmeleri `--trainable_token_pos` ile seçilen konuma (varsayılan olarak son token) ortalama havuzlama (mean-pooling) ile toplanır. Görüldüğü gibi bu, çalışma süresinde yalnızca çok küçük bir artışla (0,28 dakikadan 0,32 dakikaya) performansı %95,00'ten %96,33'e çıkarır ve pratikte değerlendirmeye değer olabilir.

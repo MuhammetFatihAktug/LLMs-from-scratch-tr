@@ -1,76 +1,63 @@
-# Recommendations for Getting the Most Out of a Technical Book
+# Teknik Bir Kitaptan En İyi Şekilde Yararlanmak İçin Öneriler
 
-Below are a few notes I previously shared when readers ask how to get the most out of my building large language model from scratch book(s).
+> 🇹🇷 **Türkçe çeviri.** Orijinal İngilizce sürüm: [reading-recommendations.md](https://github.com/rasbt/LLMs-from-scratch/blob/main/ch01/reading-recommendations.md) · Aşağıda, okurlar sıfırdan büyük dil modeli geliştirme kitap(lar)ımdan en iyi şekilde nasıl yararlanacaklarını sorduğunda daha önce paylaştığım birkaç not yer alıyor.
 
 
-I follow a similar approach when I read technical books myself. It is not meant as a universal recipe, but it may be a helpful starting point.
+Ben de teknik kitaplar okurken benzer bir yaklaşım izliyorum. Bu, evrensel bir reçete olarak sunulmuyor; ancak faydalı bir başlangıç noktası olabilir.
 
-For this particular book, I strongly suggest reading it in order since each chapter depends on the previous one. And for each chapter, I recommend the following steps.
-
-&nbsp;
-### 1) First read (offline)
-
-I recommend reading the chapter from start to finish without any coding, yet.
-The goal of this first read-through is to get the big picture first.
-
-Ideally, I recommend reading the chapter away from the computer. A physical copy works
-well, but a digital device without distractions (no browser, social media, or
-email) works, too.
-
-Personally, I read both on paper and on an e-ink tablet. While I have used
-e-ink tablets since 2018, and always try to read more on e-ink, I still notice
-that physical copies help me focus better. That is also why I sometimes print
-research papers that are challenging or that I really want to understand in
-detail.
-
-My recommendation is to make the first read-through a short, focused 20-minute reading
-session with minimal distractions and without overthinking it or getting stuck
-with details.
-
-Highlighting or annotating confusing or interesting parts is
-fine, but I would not look things up at this stage. I just suggest reading, but
-not running any code yet. This first pass is meant to understand the bigger picture.
+Bu kitap özelinde, her bölüm bir öncekine dayandığı için kitabı sırayla okumanızı şiddetle öneriyorum. Ve her bölüm için aşağıdaki adımları tavsiye ediyorum.
 
 &nbsp;
-### 2) Second read (with code)
+### 1) İlk okuma (bilgisayarsız)
 
-On the second read-through, I recommend typing up and running the code from the chapter. Copying code is tempting because retyping is a lot of work, but when I read other technical books, it usually helps me to think about the code a bit more (versus just glancing over it). 
+Bölümü henüz hiç kod yazmadan baştan sona okumanızı öneririm.
+Bu ilk okumanın amacı, önce büyük resmi kavramaktır.
 
-If I get different results than in the book, I would check the book's GitHub repo and try the code from there. If I still get different results, I would try to see if it's due to different package versions, random seeds, CPU/CUDA, etc. If I then still can't figure it out, asking the author would not be a bad idea (via the book forum, public GitHub repo issues or discussions, and as a last resort, email).
+İdeal olarak bölümü bilgisayardan uzakta okumanızı öneririm. Basılı bir nüsha iyi iş görür, ancak dikkat dağıtıcı unsurlar olmayan (tarayıcı, sosyal medya veya e-posta içermeyen) dijital bir cihaz da uygundur.
 
-&nbsp;
-### 3) Exercises
+Ben hem kâğıttan hem de bir e-mürekkep tabletten okuyorum. 2018'den beri e-mürekkep tablet kullanıyor ve her zaman daha çok e-mürekkepten okumaya çalışıyor olsam da, basılı nüshaların odaklanmama daha çok yardımcı olduğunu hâlâ fark ediyorum. Zorlayıcı bulduğum ya da gerçekten ayrıntılı anlamak istediğim araştırma makalelerini bazen bu yüzden çıktı alıyorum.
 
-After the second read-through, retyping and running the code, it's usually a good time to try the exercises. It's great for solidifying one's understanding or tinkering with a problem in a semi-structured way. If the exercise is too challenging, it's okay to look at the solution. However, I would still recommend giving it a solid try first.
+Önerim, ilk okumayı dikkat dağıtıcı unsurları en aza indirdiğiniz, aşırı düşünmeden ve ayrıntılara takılmadan geçirdiğiniz kısa ve odaklı 20 dakikalık bir okuma seansı hâline getirmenizdir.
 
-&nbsp;
-### 4) Review notes and explore further
-
-Now, after reading the chapter, running the code, and doing the exercises, I recommend going back to highlights and annotations from the previous two read-throughs and seeing if there's still something unclear.
-
-This is also a good time to look up additional references or do a quick search to clarify anything that still feels unresolved. But even if everything makes sense, reading more about a topic of interest is not a bad idea.
-
-At this stage, it also makes sense to write down or transfer useful insights, code snippets, etc., to your favorite note-taking app. 
+Kafa karıştırıcı veya ilginç kısımların altını çizmek ya da not almak sorun değil; ancak bu aşamada hiçbir şeyi araştırmazdım. Sadece okumanızı, henüz hiç kod çalıştırmamanızı öneriyorum. Bu ilk geçiş, büyük resmi anlamaya yöneliktir.
 
 &nbsp;
-### 5) Use the ideas in a project
+### 2) İkinci okuma (kodla birlikte)
 
-The previous steps were all about soaking up knowledge. Now, see if you can use certain aspects of a chapter in your own project. Or maybe build a small project using the code from the book as a starting point. For inspiration, check out the bonus materials, which are basically mini-projects I did to satisfy my own curiosity.
+İkinci okumada, bölümdeki kodu yazıp çalıştırmanızı öneririm. Kodu kopyalamak cazip gelir; çünkü yeniden yazmak epey iş demektir. Ancak başka teknik kitaplar okurken bu, kod üzerinde biraz daha fazla düşünmeme (sadece göz gezdirmek yerine) genellikle yardımcı oluyor.
 
-For example, after reading about the multi-head attention mechanisms and implementing the LLM, you may wonder how well a model with grouped-query attention performs, or how much of a difference RMSNorm vs LayerNorm really makes. And so forth.
-
-There could also be smaller aspects that could be useful in your own projects. For example, sometimes it is a tiny detail that ends up being useful, like testing whether
-explicitly calling `torch.mps.manual_seed(seed)` changes anything
-compared to using `torch.manual_seed(seed)` alone.
-
-Eventually, though, I somehow want to use that knowledge. This could involve using the main concept from the chapter, but also sometimes minor tidbits I learned along the way, e.g., even trivial things like whether it actually makes a difference in my project to explicitly call 
-`torch.mps.manual_seed(seed)` instead of just `torch.manual_seed(seed)`.
+Kitaptakinden farklı sonuçlar alırsam, kitabın GitHub deposunu kontrol eder ve oradaki kodu denerdim. Yine farklı sonuçlar alıyorsam, bunun farklı paket sürümlerinden, rastgele tohum (seed) değerlerinden, CPU/CUDA farkından vb. kaynaklanıp kaynaklanmadığına bakardım. Bunu da çözemezsem, yazara sormak fena bir fikir olmaz (kitap forumu, açık GitHub deposundaki issue veya tartışmalar üzerinden; son çare olarak e-posta).
 
 &nbsp;
-### Additional thoughts
+### 3) Alıştırmalar
 
-Of course, none of the above is set in stone. If the topic is overall very familiar or easy, and I am primarily reading the book to get some information in later chapters, skimming a chapter is ok (to not waste my time).
+İkinci okumadan, kodu yeniden yazıp çalıştırmaktan sonra genellikle alıştırmaları denemek için iyi bir zamandır. Anlayışı pekiştirmek ya da bir problemle yarı yapılandırılmış bir şekilde uğraşmak için harikadır. Alıştırma çok zorlayıcıysa çözüme bakmak sorun değil. Yine de önce ciddi bir deneme yapmanızı öneririm.
 
-Also, for chapters that don't have any code (for example, the introductory chapter 1), it makes of course sense to skip the code-related steps.
+&nbsp;
+### 4) Notları gözden geçirin ve daha derine inin
 
-Anyway, I hope this is useful. And happy reading and learning!
+Şimdi, bölümü okuduktan, kodu çalıştırdıktan ve alıştırmaları yaptıktan sonra, önceki iki okumadaki altını çizdiğiniz yerlere ve notlarınıza geri dönüp hâlâ belirsiz kalan bir şey olup olmadığına bakmanızı öneririm.
+
+Bu aynı zamanda ek kaynaklara bakmak ya da hâlâ çözülmemiş hissettiren şeyleri netleştirmek için hızlı bir arama yapmak için de iyi bir zamandır. Ancak her şey anlaşılmış olsa bile, ilgi duyduğunuz bir konu hakkında daha fazla okumak fena bir fikir değildir.
+
+Bu aşamada, faydalı içgörüleri, kod parçalarını vb. favori not alma uygulamanıza yazmak veya aktarmak da mantıklıdır.
+
+&nbsp;
+### 5) Fikirleri bir projede kullanın
+
+Önceki adımların hepsi bilgiyi özümsemekle ilgiliydi. Şimdi, bir bölümün belirli yönlerini kendi projenizde kullanıp kullanamayacağınıza bakın. Ya da kitaptaki kodu başlangıç noktası alarak küçük bir proje geliştirin. İlham için bonus materyallere göz atın; bunlar temelde kendi merakımı gidermek için yaptığım mini projelerdir.
+
+Örneğin, çok başlı dikkat mekanizmalarını okuyup LLM'i uyguladıktan sonra, gruplanmış sorgu dikkatine sahip bir modelin ne kadar iyi performans gösterdiğini ya da RMSNorm ile LayerNorm arasında gerçekte ne kadar fark olduğunu merak edebilirsiniz. Ve bu böyle devam eder.
+
+Kendi projelerinizde işe yarayabilecek daha küçük noktalar da olabilir. Örneğin, bazen faydalı olan minik bir ayrıntıdır; `torch.manual_seed(seed)` tek başına kullanılırken `torch.mps.manual_seed(seed)` çağrısını açıkça yapmanın bir şeyi değiştirip değiştirmediğini test etmek gibi.
+
+Ama sonunda bu bilgiyi bir şekilde kullanmak istiyorum. Bu, bölümün ana kavramını kullanmak olabileceği gibi, bazen yol boyunca öğrendiğim küçük ayrıntılar da olabilir; örneğin, projemde sadece `torch.manual_seed(seed)` yerine `torch.mps.manual_seed(seed)` çağrısını açıkça yapmanın gerçekten bir fark yaratıp yaratmadığı gibi basit şeyler.
+
+&nbsp;
+### Ek düşünceler
+
+Elbette yukarıdakilerin hiçbiri değişmez kurallar değil. Konu genel olarak çok tanıdık veya kolaysa ve kitabı esas olarak sonraki bölümlerdeki bilgiler için okuyorsam, bir bölüme göz gezdirmek sorun değil (zamanımı boşa harcamamak için).
+
+Ayrıca, hiç kod içermeyen bölümlerde (örneğin giriş niteliğindeki 1. bölüm) kodla ilgili adımları atlamak elbette mantıklıdır.
+
+Her hâlükârda, umarım bu faydalı olmuştur. İyi okumalar ve iyi öğrenmeler!

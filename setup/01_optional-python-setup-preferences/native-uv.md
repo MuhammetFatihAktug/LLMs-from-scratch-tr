@@ -1,39 +1,41 @@
-# Native uv Python and package management
+# Yerel (native) uv ile Python ve paket yönetimi
 
-This tutorial is an alternative to *Option 1: Using uv* in the [README.md](./README.md) document for those who prefer `uv`'s native commands over the `uv pip` interface. While `uv pip` is faster than pure `pip`, `uv`'s native interface is even faster than `uv pip` as it has less overhead and doesn't have to handle legacy support for PyPy package dependency management.
+> 🇹🇷 **Türkçe çeviri.** Orijinal İngilizce sürüm: [native-uv.md](https://github.com/rasbt/LLMs-from-scratch/blob/main/setup/01_optional-python-setup-preferences/native-uv.md) · Komutlar birebir korunmuştur.
 
-The table below provides a comparison of the speeds of different dependency and package management approaches. The speed comparison specifically refers to package dependency resolution during installation, not the runtime performance of the installed packages. Note that package installation is a one-time process for this project, so it is reasonable to choose the preferred approach by overall convenience, not just installation speed.
+Bu öğretici, `uv pip` arayüzü yerine `uv` aracının yerel komutlarını tercih edenler için [README.md](./README.md) belgesindeki *Seçenek 1: uv Kullanmak* bölümüne bir alternatiftir. `uv pip`, saf `pip`'ten daha hızlı olsa da, `uv` aracının yerel arayüzü `uv pip`'ten bile daha hızlıdır; çünkü daha az ek yük taşır ve PyPy paket bağımlılığı yönetimi için eski (legacy) desteği ele almak zorunda değildir.
+
+Aşağıdaki tablo, farklı bağımlılık ve paket yönetimi yaklaşımlarının hızlarını karşılaştırır. Hız karşılaştırması özellikle kurulum sırasındaki paket bağımlılığı çözümlemesine işaret eder; kurulan paketlerin çalışma zamanı performansına değil. Bu proje için paket kurulumunun tek seferlik bir işlem olduğunu unutmayın; dolayısıyla tercih edilen yaklaşımı yalnızca kurulum hızına göre değil, genel kullanım kolaylığına göre seçmek makuldür.
 
 
-| Command               | Speed Comparison |
+| Komut                 | Hız Karşılaştırması |
 |-----------------------|-----------------|
-| `conda install <pkg>` | Slowest (Baseline) |
-| `pip install <pkg>`   | 2-10× faster than above |
-| `uv pip install <pkg>`| 5-10× faster than above |
-| `uv add <pkg>`        | 2-5× faster than above |
+| `conda install <pkg>` | En yavaş (Temel çizgi) |
+| `pip install <pkg>`   | Yukarıdakinden 2-10× daha hızlı |
+| `uv pip install <pkg>`| Yukarıdakinden 5-10× daha hızlı |
+| `uv add <pkg>`        | Yukarıdakinden 2-5× daha hızlı |
 
-This tutorial focuses on `uv add`.
+Bu öğretici `uv add` üzerine odaklanır.
 
 
-Otherwise, similar to *Option 1: Using uv* in the [README.md](./README.md) , this tutorial guides you through the Python setup and package installation procedure using `uv`.
+Bunun dışında, [README.md](./README.md) belgesindeki *Seçenek 1: uv Kullanmak* bölümüne benzer şekilde, bu öğretici de `uv` kullanarak Python kurulumu ve paket yükleme sürecinde size rehberlik eder.
 
-In this tutorial, I am using a computer running macOS, but this workflow is similar for Linux machines and may work for other operating systems as well.
+Bu öğreticide macOS çalıştıran bir bilgisayar kullanıyorum, ancak bu iş akışı Linux makineler için de benzerdir ve diğer işletim sistemlerinde de çalışabilir.
 
 
 &nbsp;
-## 1. Install uv
+## 1. uv'yi kurun
 
-Uv can be installed as follows, depending on your operating system.
+Uv, işletim sisteminize bağlı olarak şu şekilde kurulabilir.
 
 <br>
 
-**macOS and Linux**
+**macOS ve Linux**
 
 ```bash
 curl -LsSf https://astral.sh/uv/install.sh | sh
 ```
 
-or
+veya
 
 ```bash
 wget -qO- https://astral.sh/uv/install.sh | sh
@@ -49,37 +51,37 @@ powershell -c "irm https://astral.sh/uv/install.ps1 | more"
 
 &nbsp;
 
-> **Note:**
-> For more installation options, please refer to the official [uv documentation](https://docs.astral.sh/uv/getting-started/installation/#standalone-installer).
+> **Not:**
+> Daha fazla kurulum seçeneği için lütfen resmî [uv belgelerine](https://docs.astral.sh/uv/getting-started/installation/#standalone-installer) bakın.
 
 &nbsp;
-## 2. Install Python packages and dependencies
+## 2. Python paketlerini ve bağımlılıkları kurun
 
-To install all required packages from a `pyproject.toml` file (such as the one located at the top level of this GitHub repository), run the following command, assuming the file is in the same directory as your terminal session:
+Bir `pyproject.toml` dosyasındaki (örneğin bu GitHub deposunun en üst düzeyinde bulunan) gerekli tüm paketleri kurmak için, dosyanın terminal oturumunuzla aynı dizinde olduğunu varsayarak şu komutu çalıştırın:
 
 ```bash
 uv sync --dev --python 3.11
 ```
 
-> **Note:**
-> If you do not have Python 3.11 available on your system, uv will download and install it for you.
-> I recommend using a Python version that is at least 1-3 versions older than the most recent release to ensure PyTorch compatibility. For example, if the most recent version is Python 3.13, I recommend using version 3.10, 3.11, 3.12. You can find out the most recent Python version by visiting [python.org](https://www.python.org/downloads/).
+> **Not:**
+> Sisteminizde Python 3.11 mevcut değilse, uv sizin için indirip kuracaktır.
+> PyTorch uyumluluğunu güvence altına almak için, en güncel sürümden en az 1-3 sürüm eski bir Python sürümü kullanmanızı öneririm. Örneğin, en güncel sürüm Python 3.13 ise 3.10, 3.11 veya 3.12 sürümünü kullanmanızı öneririm. En güncel Python sürümünü [python.org](https://www.python.org/downloads/) adresini ziyaret ederek öğrenebilirsiniz.
 
-> **Note:**
-> If you have problems with the following commands above due to certain dependencies (for example, if you are using Windows), you can always fall back to regular pip:
+> **Not:**
+> Yukarıdaki komutlarda bazı bağımlılıklar nedeniyle sorun yaşarsanız (örneğin Windows kullanıyorsanız), her zaman klasik pip'e geri dönebilirsiniz:
 > `uv add pip`
 > `uv run python -m pip install -U -r requirements.txt`
 
 
-Note that the `uv sync` command above will create a separate virtual environment via the `.venv` subfolder. (In case you want to delete your virtual environment to start from scratch, you can simply delete the `.venv` folder.)
+Yukarıdaki `uv sync` komutunun `.venv` alt klasörü aracılığıyla ayrı bir sanal ortam oluşturacağını unutmayın. (Sıfırdan başlamak için sanal ortamınızı silmek isterseniz, `.venv` klasörünü silmeniz yeterlidir.)
 
-You can install new packages, that are not specified in the `pyproject.toml` via `uv add`, for example:
+`pyproject.toml` dosyasında belirtilmeyen yeni paketleri `uv add` ile kurabilirsiniz, örneğin:
 
 ```bash
 uv add packaging
 ```
 
-And you can remove packages via `uv remove`, for example,
+Ve paketleri `uv remove` ile kaldırabilirsiniz, örneğin:
 
 ```bash
 uv remove packaging
@@ -88,13 +90,13 @@ uv remove packaging
 
 
 &nbsp;
-## 3. Run Python code
+## 3. Python kodunu çalıştırın
 
 <br>
 
-Your environment should now be ready to run the code in the repository.
+Ortamınız artık depodaki kodu çalıştırmaya hazır olmalı.
 
-Optionally, you can run an environment check by executing the `python_environment_check.py` script in this repository:
+İsteğe bağlı olarak, bu depodaki `python_environment_check.py` betiğini çalıştırarak bir ortam kontrolü yapabilirsiniz:
 
 ```bash
 uv run python setup/02_installing-python-libraries/python_environment_check.py
@@ -107,60 +109,60 @@ uv run python setup/02_installing-python-libraries/python_environment_check.py
 
 <br>
 
-**Launching JupyterLab**
+**JupyterLab'ı başlatmak**
 
-You can launch a JupyterLab instance via:
+Bir JupyterLab örneğini şu komutla başlatabilirsiniz:
 
 ```bash
 uv run jupyter lab
 ```
 
-**Skipping the `uv run` command**
+**`uv run` komutunu atlamak**
 
-If you find typing `uv run` cumbersome, you can manually activate the virtual environment as described below.
+Her seferinde `uv run` yazmayı zahmetli buluyorsanız, sanal ortamı aşağıda açıklandığı gibi elle etkinleştirebilirsiniz.
 
-On macOS/Linux:
+macOS/Linux'ta:
 
 ```bash
 source .venv/bin/activate
 ```
 
-On Windows (PowerShell):
+Windows'ta (PowerShell):
 
 ```bash
 .venv\Scripts\activate
 ```
 
-Then, you can run scripts via
+Ardından betikleri şu şekilde çalıştırabilirsiniz:
 
 ```bash
 python script.py
 ```
 
-and launch JupyterLab via
+ve JupyterLab'ı şu komutla başlatabilirsiniz:
 
 ```bash
 jupyter lab
 ```
 
 &nbsp;
-> **Note:**
-> If you encounter problems with the jupyter lab command, you can also start it using the full path inside your virtual environment. For example, use `.venv/bin/jupyter lab` on Linux/macOS or `.venv\Scripts\jupyter-lab` on Windows.
+> **Not:**
+> jupyter lab komutuyla ilgili sorun yaşarsanız, sanal ortamınızın içindeki tam yolu kullanarak da başlatabilirsiniz. Örneğin, Linux/macOS'ta `.venv/bin/jupyter lab`, Windows'ta ise `.venv\Scripts\jupyter-lab` kullanın.
 
 &nbsp;
 
 
 &nbsp;
 
-## Optional: Manage virtual environments manually
+## İsteğe bağlı: Sanal ortamları elle yönetmek
 
-Alternatively, you can still install the dependencies directly from the repository using `uv pip install`. But note that this doesn't record dependencies in a `uv.lock` file as `uv add` does. Also, it requires creating and activating the virtual environment manually:
+Alternatif olarak, bağımlılıkları doğrudan depodan `uv pip install` ile de kurabilirsiniz. Ancak bunun, `uv add` gibi bağımlılıkları bir `uv.lock` dosyasına kaydetmediğini unutmayın. Ayrıca sanal ortamın elle oluşturulmasını ve etkinleştirilmesini gerektirir:
 
 <br>
 
-**1. Create a new virtual environment**
+**1. Yeni bir sanal ortam oluşturun**
 
-Run the following command to manually create a new virtual environment, which will be saved via a new `.venv` subfolder:
+Yeni bir `.venv` alt klasörü aracılığıyla kaydedilecek yeni bir sanal ortamı elle oluşturmak için şu komutu çalıştırın:
 
 ```bash
 uv venv --python=python3.10
@@ -168,17 +170,17 @@ uv venv --python=python3.10
 
 <br>
 
-**2. Activate virtual environment**
+**2. Sanal ortamı etkinleştirin**
 
-Next, we need to activate this new virtual environment.
+Ardından bu yeni sanal ortamı etkinleştirmemiz gerekir.
 
-On macOS/Linux:
+macOS/Linux'ta:
 
 ```bash
 source .venv/bin/activate
 ```
 
-On Windows (PowerShell):
+Windows'ta (PowerShell):
 
 ```bash
 .venv\Scripts\activate
@@ -186,9 +188,9 @@ On Windows (PowerShell):
 
 <br>
 
-**3. Install dependencies**
+**3. Bağımlılıkları kurun**
 
-Finally, we can install dependencies from a remote location using the `uv pip` interface:
+Son olarak, `uv pip` arayüzünü kullanarak bağımlılıkları uzak bir konumdan kurabiliriz:
 
 ```bash
 uv pip install -U -r https://raw.githubusercontent.com/rasbt/LLMs-from-scratch/refs/heads/main/requirements.txt
@@ -198,4 +200,4 @@ uv pip install -U -r https://raw.githubusercontent.com/rasbt/LLMs-from-scratch/r
 
 ---
 
-Any questions? Please feel free to reach out in the [Discussion Forum](https://github.com/rasbt/LLMs-from-scratch/discussions).
+Sorularınız mı var? Lütfen [Tartışma Forumu](https://github.com/rasbt/LLMs-from-scratch/discussions) üzerinden bize ulaşmaktan çekinmeyin.

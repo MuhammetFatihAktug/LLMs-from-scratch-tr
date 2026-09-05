@@ -1,11 +1,12 @@
-# Chapter 4: Implementing a GPT Model from Scratch To Generate Text
+# Bölüm 4: Metin Üretmek İçin Sıfırdan Bir GPT Modeli Uygulamak
 
-### Main Chapter Code
+> 🇹🇷 **Türkçe çeviri.** Orijinal İngilizce sürüm: [README.md](https://github.com/rasbt/LLMs-from-scratch/blob/main/ch04/01_main-chapter-code/README.md)
 
-- [ch04.ipynb](ch04.ipynb) contains all the code as it appears in the chapter
-- [previous_chapters.py](previous_chapters.py) is a Python module that contains the `MultiHeadAttention` module from the previous chapter, which we import in [ch04.ipynb](ch04.ipynb) to create the GPT model
+### Ana Bölüm Kodu
 
-### Optional Code
+- [ch04.ipynb](ch04.ipynb) bölümde geçtiği haliyle tüm kodu içerir
+- [previous_chapters.py](previous_chapters.py) önceki bölümdeki `MultiHeadAttention` modülünü içeren bir Python modülüdür; GPT modelini oluşturmak için [ch04.ipynb](ch04.ipynb) içinde bu modülü içe aktarırız
 
-- [gpt.py](gpt.py) is a standalone Python script file with the code that we implemented thus far, including the GPT model we coded in this chapter
+### İsteğe Bağlı Kod
 
+- [gpt.py](gpt.py) bu bölümde kodladığımız GPT modeli dahil, buraya kadar uyguladığımız kodu içeren bağımsız (standalone) bir Python betik dosyasıdır

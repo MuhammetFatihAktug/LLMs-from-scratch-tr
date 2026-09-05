@@ -1,8 +1,10 @@
-# Building a User Interface to Interact With the Pretrained LLM
+# Önceden Eğitilmiş LLM ile Etkileşim İçin Kullanıcı Arayüzü Oluşturmak
+
+> 🇹🇷 **Türkçe çeviri.** Orijinal İngilizce sürüm: [README.md](https://github.com/rasbt/LLMs-from-scratch/blob/main/ch05/06_user_interface/README.md) · Komutlar birebir korunmuştur.
 
 
 
-This bonus folder contains code for running a ChatGPT-like user interface to interact with the pretrained LLMs from chapter 5, as shown below.
+Bu bonus klasörü, aşağıda gösterildiği gibi 5. bölümdeki önceden eğitilmiş LLM'lerle etkileşim kurmak için ChatGPT benzeri bir kullanıcı arayüzü çalıştıran kodu içerir.
 
 
 
@@ -10,39 +12,39 @@ This bonus folder contains code for running a ChatGPT-like user interface to int
 
 
 
-To implement this user interface, we use the open-source [Chainlit Python package](https://github.com/Chainlit/chainlit).
+Bu kullanıcı arayüzünü uygulamak için açık kaynaklı [Chainlit Python paketini](https://github.com/Chainlit/chainlit) kullanıyoruz.
 
 &nbsp;
-## Step 1: Install dependencies
+## Adım 1: Bağımlılıkları kurun
 
-First, we install the `chainlit` package via
+Önce `chainlit` paketini şu komutla kuruyoruz:
 
 ```bash
 pip install chainlit
 ```
 
-(Alternatively, execute `pip install -r requirements-extra.txt`.)
+(Alternatif olarak `pip install -r requirements-extra.txt` komutunu çalıştırın.)
 
 &nbsp;
-## Step 2: Run `app` code
+## Adım 2: `app` kodunu çalıştırın
 
-This folder contains 2 files:
+Bu klasör 2 dosya içerir:
 
-1. [`app_orig.py`](app_orig.py): This file loads and uses the original GPT-2 weights from OpenAI. 
-2. [`app_own.py`](app_own.py): This file loads and uses the GPT-2 weights we generated in chapter 5. This requires that you execute the [`../01_main-chapter-code/ch05.ipynb`](../01_main-chapter-code/ch05.ipynb) file first.
+1. [`app_orig.py`](app_orig.py): Bu dosya OpenAI'ın orijinal GPT-2 ağırlıklarını yükler ve kullanır.
+2. [`app_own.py`](app_own.py): Bu dosya 5. bölümde ürettiğimiz GPT-2 ağırlıklarını yükler ve kullanır. Bunun için önce [`../01_main-chapter-code/ch05.ipynb`](../01_main-chapter-code/ch05.ipynb) dosyasını çalıştırmanız gerekir.
 
-(Open and inspect these files to learn more.)
+(Daha fazlasını öğrenmek için bu dosyaları açıp inceleyin.)
 
-Run one of the following commands from the terminal to start the UI server:
+Arayüz sunucusunu başlatmak için terminalde aşağıdaki komutlardan birini çalıştırın:
 
 ```bash
 chainlit run app_orig.py
 ```
 
-or
+veya
 
 ```bash
 chainlit run app_own.py
 ```
 
-Running one of the commands above should open a new browser tab where you can interact with the model. If the browser tab does not open automatically, inspect the terminal command and copy the local address into your browser address bar (usually, the address is `http://localhost:8000`).
+Yukarıdaki komutlardan birini çalıştırmak, modelle etkileşim kurabileceğiniz yeni bir tarayıcı sekmesi açmalıdır. Tarayıcı sekmesi otomatik olarak açılmazsa, terminal çıktısını inceleyip yerel adresi tarayıcınızın adres çubuğuna kopyalayın (adres genellikle `http://localhost:8000` şeklindedir).

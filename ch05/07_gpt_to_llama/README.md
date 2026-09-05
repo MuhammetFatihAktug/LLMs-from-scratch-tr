@@ -1,34 +1,36 @@
-# Converting GPT to Llama
+# GPT'yi Llama'ya Dönüştürmek
+
+> 🇹🇷 **Türkçe çeviri.** Orijinal İngilizce sürüm: [README.md](https://github.com/rasbt/LLMs-from-scratch/blob/main/ch05/07_gpt_to_llama/README.md) · Kod ve çıktı blokları birebir korunmuştur.
 
 
 
-This folder contains code for converting the GPT implementation from chapter 4 and 5 to Meta AI's Llama architecture in the following recommended reading order:
+Bu klasör, 4. ve 5. bölümlerdeki GPT uygulamasını Meta AI'ın Llama mimarisine dönüştüren kodu içerir; önerilen okuma sırası şöyledir:
 
-- [converting-gpt-to-llama2.ipynb](converting-gpt-to-llama2.ipynb): contains code to convert GPT to Llama 2 7B step by step and loads pretrained weights from Meta AI
-- [converting-llama2-to-llama3.ipynb](converting-llama2-to-llama3.ipynb): contains code to convert the Llama 2 model to Llama 3, Llama 3.1, and Llama 3.2
-- [standalone-llama32.ipynb](standalone-llama32.ipynb): a standalone notebook implementing Llama 3.2
+- [converting-gpt-to-llama2.ipynb](converting-gpt-to-llama2.ipynb): GPT'yi adım adım Llama 2 7B'ye dönüştüren ve Meta AI'dan önceden eğitilmiş ağırlıkları yükleyen kodu içerir
+- [converting-llama2-to-llama3.ipynb](converting-llama2-to-llama3.ipynb): Llama 2 modelini Llama 3, Llama 3.1 ve Llama 3.2'ye dönüştüren kodu içerir
+- [standalone-llama32.ipynb](standalone-llama32.ipynb): Llama 3.2'yi uygulayan bağımsız bir not defteri
 
 <img src="https://sebastianraschka.com/images/LLMs-from-scratch-images/bonus/gpt-to-llama/gpt-and-all-llamas.webp">
 
 
 &nbsp;
-### Using Llama 3.2 via the `llms-from-scratch` package
+### Llama 3.2'yi `llms-from-scratch` paketiyle kullanmak
 
-For an easy way to use the Llama 3.2 1B and 3B models, you can also use the `llms-from-scratch` PyPI package based on the source code in this repository at [pkg/llms_from_scratch](../../pkg/llms_from_scratch).
+Llama 3.2 1B ve 3B modellerini kolayca kullanmak için, bu depodaki [pkg/llms_from_scratch](../../pkg/llms_from_scratch) kaynak koduna dayanan `llms-from-scratch` PyPI paketini de kullanabilirsiniz.
 
 &nbsp;
-#### 1) Installation
+#### 1) Kurulum
 
 ```bash
 pip install llms_from_scratch blobfile
 ```
 
-(Note that `blobfile` is needed to load the tokenizer.)
+(Tokenizer'ı yüklemek için `blobfile` paketinin gerekli olduğunu unutmayın.)
 
 &nbsp;
-#### 2) Model and text generation settings
+#### 2) Model ve metin üretimi ayarları
 
-Specify which model to use:
+Hangi modelin kullanılacağını belirtin:
 
 ```python
 MODEL_FILE = "llama3.2-1B-instruct.pth"
@@ -37,7 +39,7 @@ MODEL_FILE = "llama3.2-1B-instruct.pth"
 # MODEL_FILE = "llama3.2-3B-base.pth"
 ```
 
-Basic text generation settings that can be defined by the user. Note that the recommended 8192-token context size requires approximately 3 GB of VRAM for the text generation example.
+Kullanıcı tarafından tanımlanabilen temel metin üretimi ayarları. Önerilen 8192 token'lık bağlam boyutunun, metin üretimi örneği için yaklaşık 3 GB VRAM gerektirdiğini unutmayın.
 
 ```python
 # Text generation settings
@@ -52,9 +54,9 @@ TOP_K = 1
 ```
 
 &nbsp;
-#### 3) Weight download and loading
+#### 3) Ağırlıkların indirilmesi ve yüklenmesi
 
-This automatically downloads the weight file based on the model choice above:
+Aşağıdaki kod, yukarıdaki model seçimine göre ağırlık dosyasını otomatik olarak indirir:
 
 ```python
 import os
@@ -72,7 +74,7 @@ if not os.path.exists(MODEL_FILE):
     print(f"Downloaded to {MODEL_FILE}")
 ```
 
-The model weights are then loaded as follows:
+Model ağırlıkları daha sonra şöyle yüklenir:
 
 ```python
 import torch
@@ -97,9 +99,9 @@ model.to(device)
 ```
 
 &nbsp;
-#### 4) Initialize tokenizer
+#### 4) Tokenizer'ı başlatmak
 
-The following code downloads and initializes the tokenizer:
+Aşağıdaki kod tokenizer'ı indirir ve başlatır:
 
 ```python
 from llms_from_scratch.llama3 import Llama3Tokenizer, ChatFormat, clean_text
@@ -119,9 +121,9 @@ if "instruct" in MODEL_FILE:
 ```
 
 &nbsp;
-#### 5) Generating text
+#### 5) Metin üretmek
 
-Lastly, we can generate text via the following code:
+Son olarak, aşağıdaki kodla metin üretebiliriz:
 
 ```python
 import time
@@ -162,7 +164,7 @@ if "instruct" in MODEL_FILE:
 print("\n\nOutput text:\n\n", output_text)
 ```
 
-When using the Llama 3.2 1B Instruct model, the output should look similar to the one shown below:
+Llama 3.2 1B Instruct modelini kullanırken çıktı aşağıdakine benzer görünmelidir:
 
 ```
 Time: 3.17 sec
@@ -183,49 +185,49 @@ It's worth noting that the specific diet of llamas can vary depending on factors
 ```
 
 &nbsp;
-#### Pro tip 1: speed up inference with FlashAttention
+#### Uzman ipucu 1: FlashAttention ile çıkarımı hızlandırın
 
-Instead of using `Llama3Model`, you can use `Llama3ModelFast` as a drop-in replacement. For more information, I encourage you to inspect the [pkg/llms_from_scratch/llama3.py](../../pkg/llms_from_scratch/llama3.py) code.
+`Llama3Model` yerine, doğrudan yerine geçecek şekilde `Llama3ModelFast` kullanabilirsiniz. Daha fazla bilgi için [pkg/llms_from_scratch/llama3.py](../../pkg/llms_from_scratch/llama3.py) kodunu incelemenizi tavsiye ederim.
 
-The `Llama3ModelFast` replaces my from-scratch scaled dot-product code in the `GroupedQueryAttention` module with PyTorch's `scaled_dot_product` function, which uses `FlashAttention` on Ampere GPUs or newer.
+`Llama3ModelFast`, `GroupedQueryAttention` modülündeki sıfırdan yazdığım ölçeklenmiş nokta çarpımı kodunu, Ampere ve daha yeni GPU'larda `FlashAttention` kullanan PyTorch'un `scaled_dot_product` fonksiyonuyla değiştirir.
 
-The following table shows a performance comparison on an A100:
+Aşağıdaki tablo bir A100 üzerindeki performans karşılaştırmasını gösterir:
 
-|                 | Tokens/sec | Memory  |
+|                 | Token/saniye | Bellek  |
 | --------------- | ---------- | ------- |
 | Llama3Model     | 42         | 2.91 GB |
 | Llama3ModelFast | 54         | 2.91 GB |
 
 &nbsp;
-#### Pro tip 2: speed up inference with compilation
+#### Uzman ipucu 2: derleme ile çıkarımı hızlandırın
 
 
-For up to a 4× speed-up, replace
+4 kata varan hızlanma için şunu:
 
 ```python
 model.to(device)
 ```
 
-with
+şununla değiştirin:
 
 ```python
 model = torch.compile(model)
 model.to(device)
 ```
 
-Note: There is a significant multi-minute upfront cost when compiling, and the speed-up takes effect after the first `generate` call. 
+Not: Derleme sırasında birkaç dakikalık kayda değer bir başlangıç maliyeti vardır ve hızlanma ilk `generate` çağrısından sonra devreye girer.
 
-The following table shows a performance comparison on an A100 for consequent `generate` calls:
+Aşağıdaki tablo, art arda yapılan `generate` çağrıları için bir A100 üzerindeki performans karşılaştırmasını gösterir:
 
-|                 | Tokens/sec | Memory  |
+|                 | Token/saniye | Bellek  |
 | --------------- | ---------- | ------- |
 | Llama3Model     | 170        | 3.12 GB |
 | Llama3ModelFast | 177        | 3.61 GB |
 
 &nbsp;
-#### Pro tip 3: speed up inference with compilation
+#### Uzman ipucu 3: derleme ile çıkarımı hızlandırın
 
-You can significantly boost inference performance using the KV cache `Llama3Model` drop-in replacement when running the model on a CPU. (See my [Understanding and Coding the KV Cache in LLMs from Scratch](https://magazine.sebastianraschka.com/p/coding-the-kv-cache-in-llms) article to learn more about KV caches.)
+Modeli bir CPU üzerinde çalıştırırken, doğrudan yerine geçen KV önbellekli `Llama3Model` sürümünü kullanarak çıkarım performansını kayda değer biçimde artırabilirsiniz. (KV önbellekleri hakkında daha fazla bilgi için [Understanding and Coding the KV Cache in LLMs from Scratch](https://magazine.sebastianraschka.com/p/coding-the-kv-cache-in-llms) yazıma bakın.)
 
 ```python
 from llms_from_scratch.kv_cache.llama3 import Llama3Model
@@ -241,9 +243,9 @@ token_ids = generate_text_simple(
 )
 ```
 
-Note that the peak memory usage is only listed for Nvidia CUDA devices, as it is easier to calculate. However, the memory usage on other devices is likely similar as it uses a similar precision format, and the KV cache storage results in even lower memory usage here for the generated 150-token text (however, different devices may implement matrix multiplication differently and may result in different peak memory requirements; and KV-cache memory may increase prohibitively for longer contexts lengths).
+Tepe bellek kullanımının yalnızca Nvidia CUDA cihazları için listelendiğini unutmayın; çünkü hesaplaması daha kolaydır. Ancak diğer cihazlardaki bellek kullanımı benzer bir hassasiyet biçimi kullandığı için muhtemelen benzerdir ve KV önbelleği depolaması, üretilen 150 token'lık metin için burada daha da düşük bellek kullanımına yol açar (yine de farklı cihazlar matris çarpımını farklı uygulayabilir ve farklı tepe bellek gereksinimleri doğurabilir; ayrıca daha uzun bağlam uzunluklarında KV önbelleği belleği karşılanamaz ölçüde artabilir).
 
-| Model       | Mode              | Hardware        | Tokens/sec | GPU Memory (VRAM) |
+| Model       | Mod               | Donanım         | Token/saniye | GPU Belleği (VRAM) |
 | ----------- | ----------------- | --------------- | ---------- | ----------------- |
 | Llama3Model | Regular           | Mac Mini M4 CPU | 1          | -                 |
 | Llama3Model | Regular compiled  | Mac Mini M4 CPU | 1          | -                 |
@@ -260,4 +262,4 @@ Note that the peak memory usage is only listed for Nvidia CUDA devices, as it is
 | Llama3Model | KV cache          | Nvidia A100 GPU | 58         | 2.87 GB           |
 | Llama3Model | KV cache compiled | Nvidia A100 GPU | 161        | 3.61 GB           |
 
-Note that all settings above have been tested to produce the same text outputs.
+Yukarıdaki tüm ayarların aynı metin çıktılarını ürettiğinin test edildiğini unutmayın.

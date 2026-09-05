@@ -1,4 +1,6 @@
-# Chapter 4: Implementing a GPT Model from Scratch To Generate Text
+# Bölüm 4: Metin Üretmek İçin Sıfırdan Bir GPT Modeli Uygulamak
 
-- [flops-analysis.ipynb](flops-analysis.ipynb) analyses the floating point operations per second (FLOPS) of the GPT model(s) implemented in the main chapter. 
-- `requirements-extra.txt` includes additional Python libraries that need to be installed (via `pip install -r requirements-extra.txt`.
+> 🇹🇷 **Türkçe çeviri.** Orijinal İngilizce sürüm: [README.md](https://github.com/rasbt/LLMs-from-scratch/blob/main/ch04/02_performance-analysis/README.md)
+
+- [flops-analysis.ipynb](flops-analysis.ipynb) ana bölümde uygulanan GPT model(ler)inin saniyedeki kayan noktalı işlem sayısını (FLOPS) analiz eder.
+- `requirements-extra.txt` kurulması gereken ek Python kütüphanelerini içerir (`pip install -r requirements-extra.txt` ile kurulur).

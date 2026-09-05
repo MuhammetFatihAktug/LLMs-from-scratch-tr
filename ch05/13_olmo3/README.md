@@ -1,10 +1,10 @@
-# Olmo 3 7B and 32B From Scratch
+# Sıfırdan Olmo 3 7B ve 32B
 
-This [standalone-olmo3.ipynb](standalone-olmo3.ipynb) Jupyter notebook in this folder contains a from-scratch implementation of Olmo 3 7B and 32B and requires about 13 GB of RAM to run. 
+> 🇹🇷 **Türkçe çeviri.** Orijinal İngilizce sürüm: [README.md](https://github.com/rasbt/LLMs-from-scratch/blob/main/ch05/13_olmo3/README.md) · Bu klasördeki [standalone-olmo3.ipynb](standalone-olmo3.ipynb) Jupyter not defteri, Olmo 3 7B ve 32B'nin sıfırdan bir uygulamasını içerir ve çalıştırmak için yaklaşık 13 GB RAM gerektirir.
 
-The alternative [standalone-olmo3-plus-kvcache.ipynb](standalone-olmo3-plus-kv-cache.ipynb) notebook adds a KV cache for better runtime performance (but adds more code complexity). To learn more about KV caching, see my [Understanding and Coding the KV Cache in LLMs from Scratch](https://magazine.sebastianraschka.com/p/coding-the-kv-cache-in-llms) article.
+Alternatif [standalone-olmo3-plus-kvcache.ipynb](standalone-olmo3-plus-kv-cache.ipynb) not defteri, daha iyi çalışma zamanı performansı için bir KV önbelleği ekler (ancak koda daha fazla karmaşıklık katar). KV önbellekleme hakkında daha fazla bilgi için [Understanding and Coding the KV Cache in LLMs from Scratch](https://magazine.sebastianraschka.com/p/coding-the-kv-cache-in-llms) yazıma bakın.
 
-Below is a side-by-side comparison with Qwen3 as a reference model; if you are interested in the Qwen3 0.6B standalone notebook, you can find it [here](../11_qwen3).
+Aşağıda, referans model olarak Qwen3 ile yan yana bir karşılaştırma yer alıyor; Qwen3 0.6B bağımsız not defteriyle ilgileniyorsanız [buradan](../11_qwen3) ulaşabilirsiniz.
 
 <br>
 
@@ -12,33 +12,33 @@ Below is a side-by-side comparison with Qwen3 as a reference model; if you are i
 
 <img src="https://sebastianraschka.com/images/LLMs-from-scratch-images/bonus/olmo3/olmo3-32B.webp?1">
 
-Olmo 3 also comes in different flavors, as shown below (the architecture is the same, only the training pipeline differs):
+Olmo 3, aşağıda gösterildiği gibi farklı türlerde de gelir (mimari aynıdır, yalnızca eğitim hattı farklıdır):
 
 <img src="https://sebastianraschka.com/images/LLMs-from-scratch-images/bonus/olmo3/olmo3-pipeline.webp?1">
 
 
 &nbsp;
-## How does Olmo 3 compare to Qwen3
+## Olmo 3, Qwen3 ile nasıl karşılaştırılır
 
-Focusing on the architecture, not the training details, this section provides a brief comparison to Qwen3.
+Eğitim ayrıntılarına değil mimariye odaklanan bu bölüm, Qwen3 ile kısa bir karşılaştırma sunar.
 
 
-The 7B model:
+7B model:
 
-1. As we can see in the figures above, the Olmo 3 architecture is relatively similar to Qwen3. However, it's worth noting that this is essentially likely inspired by the Olmo 2 predecessor, not Qwen3. 
+1. Yukarıdaki şekillerde görebileceğimiz gibi, Olmo 3 mimarisi Qwen3'e nispeten benzerdir. Ancak bunun esasen Qwen3'ten değil, selefi Olmo 2'den esinlenmiş olması muhtemeldir.
 
-2) Similar to Olmo 2, Olmo 3 still uses a post-norm flavor instead of pre-norm, as they found in the Olmo 2 paper that it stabilizes the training.
+2) Olmo 2'ye benzer şekilde, Olmo 3 hâlâ pre-norm yerine post-norm türünü kullanır; çünkü Olmo 2 makalesinde bunun eğitimi kararlı hâle getirdiği bulunmuştu.
 
-3) Interestingly, the 7B model still uses multi-head attention similar to Olmo 2. 
-However, to make things more efficient and reduce the KV cache size, they now use sliding-window attention (e.g., similar to Gemma 3).
+3) İlginç biçimde, 7B model Olmo 2'ye benzer şekilde hâlâ çok başlı dikkat kullanıyor.
+Ancak işleri daha verimli kılmak ve KV önbelleği boyutunu azaltmak için artık kayan pencere dikkati kullanıyorlar (örneğin Gemma 3'e benzer şekilde).
 
-Next, the 32B model:
+Ardından 32B model:
 
-4) Overall, it's the same architecture but just scaled up. Also, the proportions (e.g., going from the input to the intermediate size in the feed-forward layer, and so on) roughly match the ones in Qwen3. 
+4) Genel olarak mimari aynı, sadece ölçeklendirilmiş. Ayrıca oranlar (örneğin ileri beslemeli katmanda girdiden ara boyuta geçiş vb.) kabaca Qwen3'tekilerle eşleşiyor.
 
-5) My guess is the architecture was initially somewhat smaller than Qwen3 due to the smaller vocabulary, and they then scaled up the intermediate size expansion from 5x in Qwen3 to 5.4 in Olmo 3 to have a 32B model for a direct comparison. 
+5) Tahminim, mimarinin daha küçük sözlük nedeniyle başlangıçta Qwen3'ten biraz daha küçük olduğu ve doğrudan karşılaştırma için 32B'lik bir model elde etmek amacıyla ara boyut genişletmesini Qwen3'teki 5 katından Olmo 3'te 5,4 katına çıkardıkları yönünde.
 
-6) Also, note that the 32B model (finally!) uses grouped query attention.
+6) Ayrıca, 32B modelin (nihayet!) gruplanmış sorgu dikkati kullandığını belirtelim.
 
 
 
@@ -46,9 +46,4 @@ Next, the 32B model:
 
 <br>
 
-To learn more about the architecture differences and read about comparisons with other architectures, see my [The Big LLM Architecture Comparison: From DeepSeek-V3 to Kimi K2: A Look At Modern LLM Architecture Design](https://magazine.sebastianraschka.com/p/the-big-llm-architecture-comparison) article.
-
-
-
-
-
+Mimari farkları hakkında daha fazla bilgi edinmek ve diğer mimarilerle karşılaştırmaları okumak için [The Big LLM Architecture Comparison: From DeepSeek-V3 to Kimi K2: A Look At Modern LLM Architecture Design](https://magazine.sebastianraschka.com/p/the-big-llm-architecture-comparison) yazıma bakın.

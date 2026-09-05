@@ -1,8 +1,3 @@
-## Python and Environment Setup Recommendations
+## Python ve Ortam Kurulumu Önerileri
 
-
-
-Please see the [README.md](../../setup/README.md) in the [setup](../../setup) directory for Python installation and setup recommendations.
-
-
-
+> 🇹🇷 **Türkçe çeviri.** Orijinal İngilizce sürüm: [README.md](https://github.com/rasbt/LLMs-from-scratch/blob/main/appendix-A/02_setup-recommendations/README.md) · Python kurulumu ve ortam ayarlarına dair öneriler için lütfen [setup](../../setup) dizinindeki [README.md](../../setup/README.md) dosyasına bakın.

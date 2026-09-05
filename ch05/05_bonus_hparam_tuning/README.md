@@ -1,6 +1,8 @@
-# Optimizing Hyperparameters for Pretraining
+# Ön Eğitim İçin Hiperparametreleri Optimize Etmek
 
-The [hparam_search.py](hparam_search.py) script, based on the extended training function in [Appendix D: Adding Bells and Whistles to the Training Loop](../../appendix-D/01_main-chapter-code/appendix-D.ipynb), is designed to find optimal hyperparameters via grid search.
+> 🇹🇷 **Türkçe çeviri.** Orijinal İngilizce sürüm: [README.md](https://github.com/rasbt/LLMs-from-scratch/blob/main/ch05/05_bonus_hparam_tuning/README.md)
+
+[Ek D: Eğitim Döngüsüne Ek Özellikler Eklemek](../../appendix-D/01_main-chapter-code/appendix-D.ipynb) bölümündeki genişletilmiş eğitim fonksiyonuna dayanan [hparam_search.py](hparam_search.py) betiği, ızgara arama (grid search) yoluyla en uygun hiperparametreleri bulmak için tasarlanmıştır.
 
 >[!NOTE]
-This script will take a long time to run. You may want to reduce the number of hyperparameter configurations explored in the `HPARAM_GRID` dictionary at the top.
+Bu betiğin çalışması uzun sürecektir. En üstteki `HPARAM_GRID` sözlüğünde taranan hiperparametre yapılandırmalarının sayısını azaltmak isteyebilirsiniz.

@@ -1,14 +1,15 @@
-# Chapter 5: Pretraining on Unlabeled Data
+# Bölüm 5: Etiketlenmemiş Veri Üzerinde Ön Eğitim (Pretraining)
 
-### Main Chapter Code
+> 🇹🇷 **Türkçe çeviri.** Orijinal İngilizce sürüm: [README.md](https://github.com/rasbt/LLMs-from-scratch/blob/main/ch05/01_main-chapter-code/README.md)
 
-- [ch05.ipynb](ch05.ipynb) contains all the code as it appears in the chapter
-- [previous_chapters.py](previous_chapters.py) is a Python module that contains the `MultiHeadAttention` module and `GPTModel` class from the previous chapters, which we import in [ch05.ipynb](ch05.ipynb) to pretrain the GPT model
-- [gpt_download.py](gpt_download.py) contains the utility functions for downloading the pretrained GPT model weights
-- [exercise-solutions.ipynb](exercise-solutions.ipynb) contains the exercise solutions for this chapter
+### Ana Bölüm Kodu
 
-### Optional Code
+- [ch05.ipynb](ch05.ipynb) bölümde geçtiği haliyle tüm kodu içerir
+- [previous_chapters.py](previous_chapters.py) önceki bölümlerdeki `MultiHeadAttention` modülünü ve `GPTModel` sınıfını içeren bir Python modülüdür; GPT modelini ön eğitmek için [ch05.ipynb](ch05.ipynb) içinde bu modülü içe aktarırız
+- [gpt_download.py](gpt_download.py) önceden eğitilmiş GPT model ağırlıklarını indirmek için yardımcı fonksiyonları içerir
+- [exercise-solutions.ipynb](exercise-solutions.ipynb) bu bölüme ait alıştırma çözümlerini içerir
 
-- [gpt_train.py](gpt_train.py) is a standalone Python script file with the code that we implemented in [ch05.ipynb](ch05.ipynb) to train the GPT model (you can think of it as a code file summarizing this chapter)
-- [gpt_generate.py](gpt_generate.py) is a standalone Python script file with the code that we implemented in [ch05.ipynb](ch05.ipynb) to load and use the pretrained model weights from OpenAI
+### İsteğe Bağlı Kod
 
+- [gpt_train.py](gpt_train.py) GPT modelini eğitmek için [ch05.ipynb](ch05.ipynb) içinde uyguladığımız kodu barındıran bağımsız bir Python betik dosyasıdır (bu bölümü özetleyen bir kod dosyası olarak düşünebilirsiniz)
+- [gpt_generate.py](gpt_generate.py) OpenAI'ın önceden eğitilmiş model ağırlıklarını yüklemek ve kullanmak için [ch05.ipynb](ch05.ipynb) içinde uyguladığımız kodu barındıran bağımsız bir Python betik dosyasıdır

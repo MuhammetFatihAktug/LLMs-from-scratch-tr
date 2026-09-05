@@ -1,5 +1,5 @@
-# Adding Bells and Whistles to the Training Loop
+# Eğitim Döngüsüne Ek Özellikler Eklemek
 
-The main chapter used a relatively simple training function to keep the code readable and fit Chapter 5 within the page limits. Optionally, we can add a linear warm-up, a cosine decay schedule, and gradient clipping to improve the training stability and convergence.
+> 🇹🇷 **Türkçe çeviri.** Orijinal İngilizce sürüm: [README.md](https://github.com/rasbt/LLMs-from-scratch/blob/main/ch05/04_learning_rate_schedulers/README.md) · Ana bölüm, kodu okunabilir tutmak ve 5. bölümü sayfa sınırları içinde bitirmek için nispeten basit bir eğitim fonksiyonu kullandı. İsteğe bağlı olarak, eğitim kararlılığını ve yakınsamayı iyileştirmek için doğrusal ısınma (linear warm-up), kosinüs sönümleme (cosine decay) zamanlaması ve gradyan kırpma ekleyebiliriz.
 
-You can find the code for this more sophisticated training function in [Appendix D: Adding Bells and Whistles to the Training Loop](../../appendix-D/01_main-chapter-code/appendix-D.ipynb).
+Bu daha gelişmiş eğitim fonksiyonunun kodunu [Ek D: Eğitim Döngüsüne Ek Özellikler Eklemek](../../appendix-D/01_main-chapter-code/appendix-D.ipynb) bölümünde bulabilirsiniz.

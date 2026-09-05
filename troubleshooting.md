@@ -1,42 +1,44 @@
-# Troubleshooting Guide
+# Sorun Giderme Rehberi
 
-This page collects common issues and setup tips encountered while working through the book.
+> 🇹🇷 **Türkçe çeviri.** Orijinal İngilizce sürüm: [troubleshooting.md](https://github.com/rasbt/LLMs-from-scratch/blob/main/troubleshooting.md) · Komut blokları birebir korunmuştur.
 
-&nbsp;
-## Notebook Image Loading Issues
-
-The chapter notebooks use Markdown image links hosted at `https://sebastianraschka.com/images/LLMs-from-scratch-images/...`. This keeps the repository download size manageable, but it also means the images depend on the image host and your network connection.
-
-If images in the `.ipynb` notebooks do not render:
-
-- Open one of the image URLs directly in your browser, for example [https://sebastianraschka.com/images/LLMs-from-scratch-images/ch02_compressed/02.webp](https://sebastianraschka.com/images/LLMs-from-scratch-images/ch02_compressed/02.webp).
-- If the URL does not load in the browser either, the issue is likely a temporary website, DNS, VPN, proxy, firewall, or local network problem rather than a notebook problem.
-- I recommend double-checking the URL on a different device or network (e.g., try opening the image on your phone); if the image loads fine on your phone, it likely points to a VPN or firewall issue on your computer.
-- If the images also don't load on your phone, please feel  free to open GitHub [Issue](https://github.com/rasbt/LLMs-from-scratch/issues) to help me debug this further.
+Bu sayfa, kitap boyunca ilerlerken karşılaşılan yaygın sorunları ve kurulum ipuçlarını bir araya toplar.
 
 &nbsp;
-## Keeping Personal Notebook Changes While Updating the Repository
+## Not Defteri Görsel Yükleme Sorunları
 
-If you want to modify notebooks while also receiving repository updates, fork the repository first, then clone your fork. The main book notebooks are kept in sync with the printed book and are generally not changed, except for critical fixes. Most repository updates add bonus material instead.
+Bölüm not defterleri, `https://sebastianraschka.com/images/LLMs-from-scratch-images/...` adresinde barındırılan Markdown görsel bağlantılarını kullanır. Bu, depo indirme boyutunu makul tutar; ancak görsellerin görsel sunucusuna ve internet bağlantınıza bağlı olduğu anlamına da gelir.
 
-Notebook files are JSON files, so Git diffs and merge conflicts can be hard to read. To avoid unnecessary conflicts, I recommend keeping your experiments separate from the tracked book notebooks:
+`.ipynb` not defterlerindeki görseller görüntülenmiyorsa:
 
-- Copy a notebook before changing it, for example from `ch02.ipynb` to `ch02_experiments.ipynb`.
-- Keep your scratch notebooks in a separate folder or on your own branch.
-- Fetch updates from the original repository with an `upstream` remote, then merge or rebase only when you need those updates.
+- Görsel URL'lerinden birini doğrudan tarayıcınızda açın, örneğin [https://sebastianraschka.com/images/LLMs-from-scratch-images/ch02_compressed/02.webp](https://sebastianraschka.com/images/LLMs-from-scratch-images/ch02_compressed/02.webp).
+- URL tarayıcıda da açılmıyorsa, sorun büyük olasılıkla not defteriyle değil; geçici bir web sitesi, DNS, VPN, proxy, güvenlik duvarı veya yerel ağ sorunuyla ilgilidir.
+- URL'yi farklı bir cihazda veya ağda bir kez daha kontrol etmenizi öneririm (ör. görseli telefonunuzda açmayı deneyin); görsel telefonunuzda sorunsuz yükleniyorsa, bu büyük olasılıkla bilgisayarınızdaki bir VPN veya güvenlik duvarı sorununa işaret eder.
+- Görseller telefonunuzda da yüklenmiyorsa, sorunu daha ayrıntılı incelememe yardımcı olmak için lütfen GitHub'da bir [Issue](https://github.com/rasbt/LLMs-from-scratch/issues) açmaktan çekinmeyin.
 
-To create a fork and clone it:
+&nbsp;
+## Depoyu Güncellerken Kişisel Not Defteri Değişikliklerinizi Korumak
 
-1. Open [https://github.com/rasbt/LLMs-from-scratch](https://github.com/rasbt/LLMs-from-scratch).
-2. Click the **Fork** button in the upper-right corner on GitHub.
-3. Clone your fork, replacing `YOUR-USERNAME` with your GitHub username:
+Not defterlerini değiştirirken aynı zamanda depo güncellemelerini de almak istiyorsanız, önce depoyu çatallayın (fork) ve ardından kendi çatalınızı klonlayın. Kitabın ana not defterleri basılı kitapla eşzamanlı tutulur ve kritik düzeltmeler dışında genellikle değiştirilmez. Depo güncellemelerinin çoğu, bunun yerine bonus materyal ekler.
+
+Not defteri dosyaları JSON dosyalarıdır; bu nedenle Git farklarını (diff) ve birleştirme çakışmalarını okumak zor olabilir. Gereksiz çakışmalardan kaçınmak için denemelerinizi, izlenen kitap not defterlerinden ayrı tutmanızı öneririm:
+
+- Bir not defterini değiştirmeden önce kopyalayın, örneğin `ch02.ipynb` dosyasından `ch02_experiments.ipynb` oluşturun.
+- Taslak not defterlerinizi ayrı bir klasörde veya kendi dalınızda (branch) tutun.
+- Orijinal depodan güncellemeleri bir `upstream` uzak deposu (remote) ile çekin; ardından yalnızca bu güncellemelere ihtiyaç duyduğunuzda birleştirin (merge) veya yeniden temellendirin (rebase).
+
+Bir çatal oluşturmak ve klonlamak için:
+
+1. [https://github.com/rasbt/LLMs-from-scratch](https://github.com/rasbt/LLMs-from-scratch) adresini açın.
+2. GitHub'da sağ üst köşedeki **Fork** düğmesine tıklayın.
+3. Çatalınızı klonlayın; `YOUR-USERNAME` yerine kendi GitHub kullanıcı adınızı yazın:
 
 ```bash
 git clone https://github.com/YOUR-USERNAME/LLMs-from-scratch.git
 cd LLMs-from-scratch
 ```
 
-Then add the original repository as `upstream` so you can fetch future updates:
+Ardından, ileride güncellemeleri çekebilmek için orijinal depoyu `upstream` olarak ekleyin:
 
 ```bash
 git remote add upstream https://github.com/rasbt/LLMs-from-scratch.git
@@ -44,27 +46,27 @@ git fetch upstream
 git merge upstream/main
 ```
 
-If you do need to merge edited notebooks, consider installing [`nbdime`](https://nbdime.readthedocs.io/) to get notebook-aware diffs and merge tools:
+Düzenlenmiş not defterlerini birleştirmeniz gerekiyorsa, not defterine duyarlı fark ve birleştirme araçları için [`nbdime`](https://nbdime.readthedocs.io/) kurmayı değerlendirin:
 
 ```bash
 pip install nbdime
 nbdime config-git --enable
 ```
 
-For more context, see [#1015](https://github.com/rasbt/LLMs-from-scratch/issues/1015).
+Daha fazla bağlam için bkz. [#1015](https://github.com/rasbt/LLMs-from-scratch/issues/1015).
 
 &nbsp;
-## Apple Silicon and MPS Support
+## Apple Silicon ve MPS Desteği
 
-Some notebooks and scripts use `cuda` when available and otherwise fall back to `cpu`, without selecting Apple's `mps` backend. This omission of `mps` support is intentional in many places because earlier PyTorch/MPS versions produced unstable or different results in several examples, especially during training and finetuning.
+Bazı not defterleri ve betikler, mevcut olduğunda `cuda` kullanır ve aksi hâlde `cpu` seçeneğine geri döner; Apple'ın `mps` arka ucunu seçmez. `mps` desteğinin bu şekilde dışarıda bırakılması pek çok yerde bilinçlidir; çünkü önceki PyTorch/MPS sürümleri, özellikle eğitim ve ince ayar sırasında birkaç örnekte kararsız veya farklı sonuçlar üretmiştir.
 
-If you are using an Apple Silicon Mac and see diverging losses, sharp loss spikes, poor generated text, or results that do not match the book, rerun the example on `cpu` first. For faster training with book-matching behavior, I recommend using `cuda` on a local NVIDIA GPU or a cloud GPU.
+Apple Silicon bir Mac kullanıyor ve birbirinden uzaklaşan kayıp değerleri, ani kayıp sıçramaları, kötü üretilmiş metin ya da kitapla uyuşmayan sonuçlar görüyorsanız, örneği önce `cpu` üzerinde yeniden çalıştırın. Kitapla uyumlu davranışla daha hızlı eğitim için, yerel bir NVIDIA GPU'da veya bir bulut GPU'sunda `cuda` kullanmanızı öneririm.
 
-Newer PyTorch versions may improve MPS behavior, and you can experiment with `mps` locally if you validate the results carefully. However, if you add `mps` support to a script yourself, keep in mind that CUDA-specific options such as `pin_memory=True`, `torch.compile`, and DDP/multi-GPU code may need separate guards.
+Daha yeni PyTorch sürümleri MPS davranışını iyileştirebilir; sonuçları dikkatlice doğruladığınız sürece yerelde `mps` ile deneme yapabilirsiniz. Ancak bir betiğe `mps` desteğini kendiniz eklerseniz, `pin_memory=True`, `torch.compile` ve DDP/çoklu GPU kodu gibi CUDA'ya özgü seçeneklerin ayrı koruma koşulları (guard) gerektirebileceğini unutmayın.
 
-For more context, see [#977](https://github.com/rasbt/LLMs-from-scratch/issues/977), [#625](https://github.com/rasbt/LLMs-from-scratch/discussions/625), [#644](https://github.com/rasbt/LLMs-from-scratch/discussions/644), [#442](https://github.com/rasbt/LLMs-from-scratch/discussions/442), and [#846](https://github.com/rasbt/LLMs-from-scratch/issues/846).
+Daha fazla bağlam için bkz. [#977](https://github.com/rasbt/LLMs-from-scratch/issues/977), [#625](https://github.com/rasbt/LLMs-from-scratch/discussions/625), [#644](https://github.com/rasbt/LLMs-from-scratch/discussions/644), [#442](https://github.com/rasbt/LLMs-from-scratch/discussions/442) ve [#846](https://github.com/rasbt/LLMs-from-scratch/issues/846).
 
 &nbsp;
-## Other Issues
+## Diğer Sorunlar
 
-For other issues, please feel free to open a new GitHub [Issue](https://github.com/rasbt/LLMs-from-scratch/issues).
+Diğer sorunlar için lütfen GitHub'da yeni bir [Issue](https://github.com/rasbt/LLMs-from-scratch/issues) açmaktan çekinmeyin.

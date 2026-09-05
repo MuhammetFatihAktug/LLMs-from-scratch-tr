@@ -1,21 +1,23 @@
-# Chapter 4: Implementing a GPT Model from Scratch to Generate Text
+# Bölüm 4: Metin Üretmek İçin Sıfırdan Bir GPT Modeli Uygulamak
+
+> 🇹🇷 **Türkçe çeviri.** Orijinal İngilizce sürüm: [README.md](https://github.com/rasbt/LLMs-from-scratch/blob/main/ch04/README.md)
 
 &nbsp;
-## Main Chapter Code
+## Ana Bölüm Kodu
 
-- [01_main-chapter-code](01_main-chapter-code) contains the main chapter code.
-
-&nbsp;
-## Bonus Materials
-
-- [02_performance-analysis](02_performance-analysis) contains optional code analyzing the performance of the GPT model(s) implemented in the main chapter
-- [03_kv-cache](03_kv-cache) implements a KV cache to speed up the text generation during inference
-- [07_moe](07_moe) explanation and implementation of Mixture-of-Experts (MoE)
-- [ch05/07_gpt_to_llama](../ch05/07_gpt_to_llama) contains a step-by-step guide for converting a GPT architecture implementation to Llama 3.2 and loads pretrained weights from Meta AI (it might be interesting to look at alternative architectures after completing chapter 4, but you can also save that for after reading chapter 5)
-
+- [01_main-chapter-code](01_main-chapter-code) ana bölüm kodunu içerir.
 
 &nbsp;
-## Attention Alternatives
+## Bonus Materyaller
+
+- [02_performance-analysis](02_performance-analysis) ana bölümde uygulanan GPT model(ler)inin performansını analiz eden isteğe bağlı kod içerir
+- [03_kv-cache](03_kv-cache) çıkarım (inference) sırasında metin üretimini hızlandırmak için bir KV önbelleği (KV cache) uygular
+- [07_moe](07_moe) Uzmanlar Karışımı (Mixture-of-Experts, MoE) açıklaması ve uygulaması
+- [ch05/07_gpt_to_llama](../ch05/07_gpt_to_llama) bir GPT mimarisi uygulamasını Llama 3.2'ye dönüştürmek için adım adım bir rehber içerir ve Meta AI'dan önceden eğitilmiş ağırlıkları yükler (4. bölümü tamamladıktan sonra alternatif mimarilere bakmak ilgi çekici olabilir, ancak bunu 5. bölümü okuduktan sonraya da bırakabilirsiniz)
+
+
+&nbsp;
+## Dikkat Mekanizmasına Alternatifler
 
 &nbsp;
 
@@ -23,19 +25,19 @@
 
 &nbsp;
 
-- [04_gqa](04_gqa) contains an introduction to Grouped-Query Attention (GQA), which is used by most modern LLMs (Llama 4, gpt-oss, Qwen3, Gemma 3, and many more) as alternative to regular Multi-Head Attention (MHA)
-- [05_mla](05_mla) contains an introduction to Multi-Head Latent Attention (MLA), which is used by DeepSeek V3, as alternative to regular Multi-Head Attention (MHA)
-- [06_swa](06_swa) contains an introduction to Sliding Window Attention (SWA), which is used by Gemma 3 and others
-- [08_deltanet](08_deltanet) explanation of Gated DeltaNet as a popular linear attention variant (used in Qwen3-Next and Kimi Linear)
-- [10_kv-sharing](10_kv-sharing) contains an introduction to cross-layer KV sharing, which is used by Gemma 4 E2B and E4B to reduce KV-cache memory
+- [04_gqa](04_gqa) çoğu modern LLM'in (Llama 4, gpt-oss, Qwen3, Gemma 3 ve daha birçoğu) klasik Çok Başlı Dikkat'e (Multi-Head Attention, MHA) alternatif olarak kullandığı Gruplanmış Sorgu Dikkati'ne (Grouped-Query Attention, GQA) bir giriş içerir
+- [05_mla](05_mla) DeepSeek V3 tarafından klasik Çok Başlı Dikkat'e (MHA) alternatif olarak kullanılan Çok Başlı Gizil Dikkat'e (Multi-Head Latent Attention, MLA) bir giriş içerir
+- [06_swa](06_swa) Gemma 3 ve diğerleri tarafından kullanılan Kayan Pencere Dikkati'ne (Sliding Window Attention, SWA) bir giriş içerir
+- [08_deltanet](08_deltanet) popüler bir doğrusal dikkat varyantı olan Gated DeltaNet'in açıklaması (Qwen3-Next ve Kimi Linear'da kullanılır)
+- [10_kv-sharing](10_kv-sharing) Gemma 4 E2B ve E4B tarafından KV önbelleği belleğini azaltmak için kullanılan katmanlar arası KV paylaşımına bir giriş içerir
 
 
 &nbsp;
-## More
+## Dahası
 
-In the video below, I provide a code-along session that covers some of the chapter contents as supplementary material.
+Aşağıdaki videoda, bölüm içeriğinin bir kısmını kapsayan, birlikte kod yazdığımız bir oturum sunuyorum (tamamlayıcı materyal).
 
 <br>
 <br>
 
-[![Link to the video](https://img.youtube.com/vi/YSAkgEarBGE/0.jpg)](https://www.youtube.com/watch?v=YSAkgEarBGE)
+[![Videoya bağlantı](https://img.youtube.com/vi/YSAkgEarBGE/0.jpg)](https://www.youtube.com/watch?v=YSAkgEarBGE)

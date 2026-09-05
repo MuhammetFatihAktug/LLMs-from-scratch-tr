@@ -1,41 +1,43 @@
-# Chapter 5: Pretraining on Unlabeled Data
+# Bölüm 5: Etiketlenmemiş Veri Üzerinde Ön Eğitim (Pretraining)
+
+> 🇹🇷 **Türkçe çeviri.** Orijinal İngilizce sürüm: [README.md](https://github.com/rasbt/LLMs-from-scratch/blob/main/ch05/README.md)
 
 &nbsp;
-## Main Chapter Code
+## Ana Bölüm Kodu
 
-- [01_main-chapter-code](01_main-chapter-code) contains the main chapter code
-
-&nbsp;
-## Bonus Materials
-
-- [02_alternative_weight_loading](02_alternative_weight_loading) contains code to load the GPT model weights from alternative places in case the model weights become unavailable from OpenAI
-- [03_bonus_pretraining_on_gutenberg](03_bonus_pretraining_on_gutenberg) contains code to pretrain the LLM longer on the whole corpus of books from Project Gutenberg
-- [04_learning_rate_schedulers](04_learning_rate_schedulers) contains code implementing a more sophisticated training function including learning rate schedulers and gradient clipping
-- [05_bonus_hparam_tuning](05_bonus_hparam_tuning) contains an optional hyperparameter tuning script
-- [06_user_interface](06_user_interface) implements an interactive user interface to interact with the pretrained LLM
-- [08_memory_efficient_weight_loading](08_memory_efficient_weight_loading) contains a bonus notebook showing how to load model weights via PyTorch's `load_state_dict` method more efficiently
-- [09_extending-tokenizers](09_extending-tokenizers) contains a from-scratch implementation of the GPT-2 BPE tokenizer
-- [10_llm-training-speed](10_llm-training-speed) shows PyTorch performance tips to improve the LLM training speed
-- [18_muon](18_muon) explains how to use the Muon optimizer with the GPT model training setup
+- [01_main-chapter-code](01_main-chapter-code) ana bölüm kodunu içerir
 
 &nbsp;
-## LLM Architectures From Scratch
+## Bonus Materyaller
+
+- [02_alternative_weight_loading](02_alternative_weight_loading) model ağırlıklarının OpenAI üzerinden erişilemez hale gelmesi ihtimaline karşı GPT model ağırlıklarını alternatif kaynaklardan yüklemek için kod içerir
+- [03_bonus_pretraining_on_gutenberg](03_bonus_pretraining_on_gutenberg) LLM'i Project Gutenberg'deki tüm kitap derlemi üzerinde daha uzun süre ön eğitmek için kod içerir
+- [04_learning_rate_schedulers](04_learning_rate_schedulers) öğrenme oranı zamanlayıcıları (learning rate scheduler) ve gradyan kırpma (gradient clipping) dahil olmak üzere daha gelişmiş bir eğitim fonksiyonunu uygulayan kod içerir
+- [05_bonus_hparam_tuning](05_bonus_hparam_tuning) isteğe bağlı bir hiperparametre ayarlama betiği içerir
+- [06_user_interface](06_user_interface) önceden eğitilmiş LLM ile etkileşim kurmak için interaktif bir kullanıcı arayüzü uygular
+- [08_memory_efficient_weight_loading](08_memory_efficient_weight_loading) model ağırlıklarının PyTorch'un `load_state_dict` metodu aracılığıyla nasıl daha verimli yükleneceğini gösteren bir bonus not defteri içerir
+- [09_extending-tokenizers](09_extending-tokenizers) GPT-2 BPE tokenizer'ının sıfırdan bir uygulamasını içerir
+- [10_llm-training-speed](10_llm-training-speed) LLM eğitim hızını artırmak için PyTorch performans ipuçlarını gösterir
+- [18_muon](18_muon) Muon optimize edicisinin GPT model eğitim kurulumuyla nasıl kullanılacağını açıklar
+
+&nbsp;
+## Sıfırdan LLM Mimarileri
 
 <img src="https://sebastianraschka.com/images/LLMs-from-scratch-images/bonus/qwen/qwen-overview.webp">
 
 &nbsp;
 
 
-- [07_gpt_to_llama](07_gpt_to_llama) contains a step-by-step guide for converting a GPT architecture implementation to Llama 3.2 and loads pretrained weights from Meta AI
-- [11_qwen3](11_qwen3) A from-scratch implementation of Qwen3 0.6B and Qwen3 30B-A3B (Mixture-of-Experts) including code to load the pretrained weights of the base, reasoning, and coding model variants
-- [12_gemma3](12_gemma3) A from-scratch implementation of Gemma 3 270M and alternative with KV cache, including code to load the pretrained weights
-- [13_olmo3](13_olmo3) A from-scratch implementation of Olmo 3 7B and 32B (Base, Instruct, and Think variants) and alternative with KV cache, including code to load the pretrained weights
-- [17_gemma4](17_gemma4) A from-scratch implementation of the E2B and E4B dense variants of Gemma 4
+- [07_gpt_to_llama](07_gpt_to_llama) bir GPT mimarisi uygulamasını Llama 3.2'ye dönüştürmek için adım adım bir rehber içerir ve Meta AI'dan önceden eğitilmiş ağırlıkları yükler
+- [11_qwen3](11_qwen3) Qwen3 0.6B ve Qwen3 30B-A3B'nin (Uzmanlar Karışımı) sıfırdan bir uygulaması; temel (base), akıl yürütme (reasoning) ve kodlama model varyantlarının önceden eğitilmiş ağırlıklarını yükleyen kodu da içerir
+- [12_gemma3](12_gemma3) Gemma 3 270M'in sıfırdan bir uygulaması ve KV önbellekli alternatifi; önceden eğitilmiş ağırlıkları yükleyen kodu da içerir
+- [13_olmo3](13_olmo3) Olmo 3 7B ve 32B'nin (Base, Instruct ve Think varyantları) sıfırdan bir uygulaması ve KV önbellekli alternatifi; önceden eğitilmiş ağırlıkları yükleyen kodu da içerir
+- [17_gemma4](17_gemma4) Gemma 4'ün E2B ve E4B yoğun (dense) varyantlarının sıfırdan bir uygulaması
 
 &nbsp;
-## Code-Along Video for This Chapter
+## Bu Bölüm İçin Birlikte Kod Yazma Videosu
 
 <br>
 <br>
 
-[![Link to the video](https://img.youtube.com/vi/Zar2TJv-sE0/0.jpg)](https://www.youtube.com/watch?v=Zar2TJv-sE0)
+[![Videoya bağlantı](https://img.youtube.com/vi/Zar2TJv-sE0/0.jpg)](https://www.youtube.com/watch?v=Zar2TJv-sE0)

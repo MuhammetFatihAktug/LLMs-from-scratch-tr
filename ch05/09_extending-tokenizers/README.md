@@ -1,3 +1,5 @@
-# Extending the Tiktoken BPE Tokenizer with New Tokens
+# Tiktoken BPE Tokenizer'ını Yeni Token'larla Genişletmek
 
-- [extend-tiktoken.ipynb](extend-tiktoken.ipynb) contains optional (bonus) code to explain how we can add special tokens to a tokenizer implemented via `tiktoken` and how to update the LLM accordingly
+> 🇹🇷 **Türkçe çeviri.** Orijinal İngilizce sürüm: [README.md](https://github.com/rasbt/LLMs-from-scratch/blob/main/ch05/09_extending-tokenizers/README.md)
+
+- [extend-tiktoken.ipynb](extend-tiktoken.ipynb) `tiktoken` ile uygulanmış bir tokenizer'a özel token'ları nasıl ekleyebileceğimizi ve LLM'i buna göre nasıl güncelleyeceğimizi açıklayan isteğe bağlı (bonus) kod içerir

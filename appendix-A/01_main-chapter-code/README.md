@@ -1,12 +1,14 @@
-# Appendix A: Introduction to PyTorch
+# Ek A: PyTorch'a Giriş
 
-### Main Chapter Code
+> 🇹🇷 **Türkçe çeviri.** Orijinal İngilizce sürüm: [README.md](https://github.com/rasbt/LLMs-from-scratch/blob/main/appendix-A/01_main-chapter-code/README.md) · Komutlar birebir korunmuştur.
 
-- [code-part1.ipynb](code-part1.ipynb) contains all the section A.1 to A.8 code as it appears in the chapter
-- [code-part2.ipynb](code-part2.ipynb) contains all the section A.9 GPU code as it appears in the chapter 
-- [DDP-script.py](DDP-script.py) contains the script to demonstrate multi-GPU usage (note that Jupyter Notebooks only support single GPUs, so this is a script, not a notebook). You can run it as `python DDP-script.py`. If your machine has more than 2 GPUs, run it as `CUDA_VISIBLE_DEVIVES=0,1 python DDP-script.py`.
-- [exercise-solutions.ipynb](exercise-solutions.ipynb) contains the exercise solutions for this chapter
+### Ana Bölüm Kodu
 
-### Optional Code
+- [code-part1.ipynb](code-part1.ipynb) bölümde geçtiği haliyle A.1'den A.8'e kadar olan tüm kısımların kodunu içerir
+- [code-part2.ipynb](code-part2.ipynb) bölümde geçtiği haliyle A.9 kısmındaki tüm GPU kodunu içerir
+- [DDP-script.py](DDP-script.py) çoklu GPU kullanımını gösteren betiği içerir (Jupyter Notebook'ların yalnızca tek GPU'yu desteklediğini, bu nedenle bunun bir not defteri değil betik olduğunu unutmayın). `python DDP-script.py` şeklinde çalıştırabilirsiniz. Makinenizde 2'den fazla GPU varsa `CUDA_VISIBLE_DEVIVES=0,1 python DDP-script.py` şeklinde çalıştırın.
+- [exercise-solutions.ipynb](exercise-solutions.ipynb) bu bölüme ait alıştırma çözümlerini içerir
 
-- [DDP-script-torchrun.py](DDP-script-torchrun.py) is an optional version of the `DDP-script.py` script that runs via the PyTorch `torchrun` command instead of spawning and managing multiple processes ourselves via `multiprocessing.spawn`. The `torchrun` command has the advantage of automatically handling distributed initialization, including multi-node coordination, which slightly simplifies the setup process. You can use this script via `torchrun --nproc_per_node=2 DDP-script-torchrun.py`
+### İsteğe Bağlı Kod
+
+- [DDP-script-torchrun.py](DDP-script-torchrun.py), `DDP-script.py` betiğinin isteğe bağlı bir sürümüdür; birden çok süreci `multiprocessing.spawn` ile kendimiz oluşturup yönetmek yerine PyTorch'un `torchrun` komutu aracılığıyla çalışır. `torchrun` komutu, çok düğümlü (multi-node) koordinasyon dahil dağıtık başlatmayı otomatik olarak yönetme avantajına sahiptir; bu da kurulum sürecini biraz basitleştirir. Bu betiği `torchrun --nproc_per_node=2 DDP-script-torchrun.py` şeklinde kullanabilirsiniz

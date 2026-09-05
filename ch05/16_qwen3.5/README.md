@@ -1,20 +1,19 @@
-# Qwen3.5 0.8B From Scratch
+# Sıfırdan Qwen3.5 0.8B
 
-This folder contains a from-scratch style implementation of [Qwen/Qwen3.5-0.8B](https://huggingface.co/Qwen/Qwen3.5-0.8B).
+> 🇹🇷 **Türkçe çeviri.** Orijinal İngilizce sürüm: [README.md](https://github.com/rasbt/LLMs-from-scratch/blob/main/ch05/16_qwen3.5/README.md) · Bu klasör, [Qwen/Qwen3.5-0.8B](https://huggingface.co/Qwen/Qwen3.5-0.8B) modelinin sıfırdan tarzda bir uygulamasını içerir.
 
 <img src="https://sebastianraschka.com/images/LLMs-from-scratch-images/bonus/qwen3.5/03.webp">
 
-Qwen3.5 is based on the Qwen3-Next architecture, which I described in more detail in section [2. (Linear) Attention Hybrids](https://magazine.sebastianraschka.com/i/177848019/2-linear-attention-hybrids) of my [Beyond Standard LLMs](https://magazine.sebastianraschka.com/p/beyond-standard-llms) article
+Qwen3.5, [Beyond Standard LLMs](https://magazine.sebastianraschka.com/p/beyond-standard-llms) yazımın [2. (Linear) Attention Hybrids](https://magazine.sebastianraschka.com/i/177848019/2-linear-attention-hybrids) bölümünde daha ayrıntılı anlattığım Qwen3-Next mimarisine dayanır.
 
 <a href="https://magazine.sebastianraschka.com/p/beyond-standard-llms"><img src="https://sebastianraschka.com/images/LLMs-from-scratch-images/bonus/qwen3.5/02.webp" width="500px"></a>
 
-Note that Qwen3.5 alternates `linear_attention` and `full_attention` layers.  
-The notebooks keep the full model flow readable while reusing the linear-attention building blocks from the [qwen3_5_transformers.py](qwen3_5_transformers.py), which contains the linear attention code from Hugging Face under an Apache version 2.0 open source license.
+Qwen3.5'in `linear_attention` ve `full_attention` katmanlarını dönüşümlü olarak kullandığını unutmayın.  
+Not defterleri, doğrusal dikkat yapı taşlarını [qwen3_5_transformers.py](qwen3_5_transformers.py) dosyasından yeniden kullanırken modelin genel akışını okunabilir tutar; bu dosya, Hugging Face'ten alınan ve Apache 2.0 açık kaynak lisansı altında sunulan doğrusal dikkat kodunu içerir.
 
 &nbsp;
-## Files
+## Dosyalar
 
-- [qwen3.5.ipynb](qwen3.5.ipynb): Main Qwen3.5 0.8B notebook implementation.
-- [qwen3.5-plus-kv-cache.ipynb](qwen3.5-plus-kv-cache.ipynb): Same model with KV-cache decoding for efficiency.
-- [qwen3_5_transformers.py](qwen3_5_transformers.py): Some helper components from Hugging Face Transformers used for Qwen3.5 linear attention.
-
+- [qwen3.5.ipynb](qwen3.5.ipynb): Ana Qwen3.5 0.8B not defteri uygulaması.
+- [qwen3.5-plus-kv-cache.ipynb](qwen3.5-plus-kv-cache.ipynb): Verimlilik için KV önbellekli kod çözme kullanan aynı model.
+- [qwen3_5_transformers.py](qwen3_5_transformers.py): Qwen3.5 doğrusal dikkati için kullanılan, Hugging Face Transformers'tan bazı yardımcı bileşenler.
