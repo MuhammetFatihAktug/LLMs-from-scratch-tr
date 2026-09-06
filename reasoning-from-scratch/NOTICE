@@ -1,0 +1,43 @@
+Build a Reasoning Model (From Scratch) — Türkçe Çeviri
+======================================================
+
+Bu eser, aşağıdaki özgün çalışmanın Türkçeye çevrilmiş bir türevidir:
+
+    Build a Reasoning Model (From Scratch)
+    Copyright 2025-2026 Sebastian Raschka
+    https://github.com/rasbt/reasoning-from-scratch
+    Apache License, Version 2.0
+
+
+DEĞİŞİKLİK BİLDİRİMİ (Apache License 2.0, Bölüm 4(b))
+-----------------------------------------------------
+
+Bu depodaki dosyalar özgün hâlinden değiştirilmiştir. Yapılan değişiklikler
+yalnızca çeviriden ibarettir:
+
+  * Tüm Markdown (.md) dosyalarının metin içeriği Türkçeye çevrilmiştir.
+  * Jupyter not defterlerindeki (.ipynb) markdown hücrelerinin metinleri ile
+    kod hücrelerindeki ve Python (.py) kaynak dosyalarındaki açıklama
+    satırları (# ile başlayan yorumlar) Türkçeye çevrilmiştir.
+  * Depo köküne bu NOTICE dosyası eklenmiştir.
+
+Aşağıdakiler bilinçli olarak DEĞİŞTİRİLMEMİŞTİR:
+
+  * Çalıştırılabilir kodun kendisi: ifadeler, değişken ve fonksiyon adları,
+    kod içindeki metin sabitleri ve modele verilen istemler, sohbet şablonları.
+  * Not defterlerinde kayıtlı hücre çıktıları, eğitim günlükleri ve
+    başarım ölçüm tabloları.
+  * Markdown hücrelerindeki kod blokları (``` ile çevrelenen kod örnekleri,
+    komut satırı komutları ve konsol çıktıları).
+  * Python (.py) dosyalarındaki çalıştırılabilir kodun kendisi; yalnızca
+    yorum satırları çevrilmiştir.
+  * Lisans metinleri ve üçüncü taraf atıf satırları (ör. OpenAI MIT
+    lisansı, LitGPT Apache 2.0 atfı) ile PEP 723 betik üst verisi.
+  * LICENSE ve telif bildirimleri.
+
+Bu dizin, üst depoya (LLMs-from-scratch Türkçe çevirisi) klasör olarak
+gömülmüştür. Özgün İngilizce sürüm için üst deponun 'main' dalına ya da
+doğrudan https://github.com/rasbt/reasoning-from-scratch adresine bakınız.
+
+Bu, resmî bir çeviri değildir. Eserin yazarı veya yayıncısı (Manning)
+tarafından incelenmemiş ya da onaylanmamıştır.

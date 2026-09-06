@@ -8,12 +8,19 @@ Bu eser, aşağıdaki özgün çalışmanın Türkçeye çevrilmiş bir türevid
     https://github.com/rasbt/LLMs-from-scratch
     Apache License, Version 2.0
 
-Alt modül olarak yer alan reasoning-from-scratch dizini için:
+Bu depoya klasör olarak gömülmüş olan reasoning-from-scratch dizini,
+AYRI BİR ESERDİR ve kendi telif bildirimine sahiptir:
 
     Build a Reasoning Model (From Scratch)
     Copyright 2025-2026 Sebastian Raschka
     https://github.com/rasbt/reasoning-from-scratch
     Apache License, Version 2.0
+
+    Özgün eserde bu dizin ayrı bir depodur ve upstream'de bir git submodule
+    olarak bağlanır. Bu Türkçe sürümde, çevirinin tek bir 'git clone' ile
+    eksiksiz ulaşabilmesi için dizin olarak gömülmüştür; dosya içerikleri
+    upstream 'main' dalıyla birebir aynıdır (yalnızca çeviri farkı vardır).
+    Dizinin kendi LICENSE ve NOTICE dosyaları yerinde bırakılmıştır.
 
 
 DEĞİŞİKLİK BİLDİRİMİ (Apache License 2.0, Bölüm 4(b))

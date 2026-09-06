@@ -238,17 +238,16 @@ Kitabın finali: talimat veri kümesi biçimlendirme, özel `collate` fonksiyonu
 
 ## 🚀 Kitaptan Sonra: [reasoning-from-scratch/](reasoning-from-scratch/)
 
-Bu klasör, aynı yazarın devam kitabı [*Build A Reasoning Model (From Scratch)*](https://mng.bz/lZ5B) deposunun bir **git submodule**'üdür. Önceden eğitilmiş bir modelden başlayıp akıl yürütme (reasoning) yeteneği kazandırmayı anlatır.
+Bu klasör, aynı yazarın devam kitabı [*Build A Reasoning Model (From Scratch)*](https://mng.bz/lZ5B) deposunun Türkçeye çevrilmiş bir kopyasıdır. Önceden eğitilmiş bir modelden başlayıp akıl yürütme (reasoning) yeteneği kazandırmayı anlatır.
 
-Klasör boş görünüyorsa şu komutla doldur:
+Bu klasör **doğrudan bu deponun içindedir**; ayrı bir indirme ya da `git submodule` komutu
+gerekmez. `git clone -b tr ...` yaptığında hazır gelir.
 
-```bash
-git submodule update --init --recursive reasoning-from-scratch
-```
-
-Bu komut alt modülü doğrudan **Türkçe** sürümde açar: `tr` dalında kayıtlı submodule işaretçisi,
-alt deponun çevrilmiş commit'ini gösterir. (Alt deponun da kendi `main` ve `tr` dalları vardır;
-İngilizce aslı için `cd reasoning-from-scratch && git show main:<dosya>`.)
+> Özgün eserde bu klasör ayrı bir depodur ve upstream'de bir *git submodule* olarak bağlanır.
+> Bu Türkçe sürümde, çevirinin tek bir `git clone` ile eksiksiz ulaşabilmesi için klasör olarak
+> gömülmüştür. Kaynak sürüm: [rasbt/reasoning-from-scratch](https://github.com/rasbt/reasoning-from-scratch)
+> `main` dalı; klasörün kendi `LICENSE` ve [NOTICE](reasoning-from-scratch/NOTICE) dosyaları
+> yerinde durur.
 
 Önerilen sıra (o depo içinde):
 

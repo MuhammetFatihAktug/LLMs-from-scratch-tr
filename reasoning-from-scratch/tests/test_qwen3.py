@@ -1,0 +1,432 @@
+# Copyright (c) Sebastian Raschka under Apache License 2.0 (see LICENSE.txt)
+# Source for "Build a Reasoning Model (From Scratch)": https://mng.bz/lZ5B
+# Code repository: https://github.com/rasbt/reasoning-from-scratch
+
+import reasoning_from_scratch.qwen3 as qwen3_mod
+import reasoning_from_scratch.utils as utils_mod
+
+from reasoning_from_scratch.qwen3 import (
+    compute_rope_params,
+    apply_rope,
+    RMSNorm,
+    Qwen3Model,
+    Qwen3Tokenizer,
+    load_hf_weights_into_qwen,
+    download_qwen3_grpo_checkpoints,
+    download_qwen3_distill_checkpoints,
+)
+from reasoning_from_scratch.ch02 import (
+    generate_text_basic,
+    generate_text_basic_cache,
+)
+from reasoning_from_scratch.utils import download_file
+
+import importlib
+import os
+import requests
+import shutil
+import tempfile
+import pytest
+import torch
+import torch.nn as nn
+
+
+# CI'yi daha yinelenebilir ve dayanıklı kıl
+os.environ["MKL_NUM_THREADS"] = "1"
+os.environ["OMP_NUM_THREADS"] = "1"
+torch.backends.mkldnn.enabled = False
+torch.set_num_threads(1)
+torch.use_deterministic_algorithms(True)
+
+
+class Qwen3RMSNorm(nn.Module):
+    # Source: https://github.com/huggingface/transformers/blob/main/src/transformers/models/qwen3/modeling_qwen3.py
+    # License: Apache License, Version 2.0 (see file above)
+    def __init__(self, hidden_size, eps=1e-6):
+        """
+        Qwen3RMSNorm is equivalent to T5LayerNorm
+        """
+        super().__init__()
+        self.weight = nn.Parameter(torch.ones(hidden_size))
+        self.variance_epsilon = eps
+
+    def forward(self, hidden_states):
+        input_dtype = hidden_states.dtype
+        hidden_states = hidden_states.to(torch.float32)
+        variance = hidden_states.pow(2).mean(-1, keepdim=True)
+        hidden_states = hidden_states * torch.rsqrt(variance + self.variance_epsilon)
+        return self.weight * hidden_states.to(input_dtype)
+
+    def extra_repr(self):
+        return f"{tuple(self.weight.shape)}, eps={self.variance_epsilon}"
+
+
+class DummyDownloadResponse:
+    def __init__(self, size):
+        self.headers = {"Content-Length": str(size)}
+
+    def __enter__(self):
+        return self
+
+    def __exit__(self, exc_type, exc, tb):
+        return False
+
+    def raise_for_status(self):
+        return None
+
+    def iter_content(self, chunk_size):
+        yield b"unused"
+
+
+transformers_installed = importlib.util.find_spec("transformers") is not None
+run_real_download = os.environ.get("RUN_REAL_DOWNLOAD_TESTS", "0") == "1"
+skip_expensive = os.environ.get("SKIP_EXPENSIVE", "0") == "1"
+
+
+@pytest.mark.skipif(not transformers_installed, reason="transformers not installed")
+def test_rope():
+
+    from transformers.models.qwen3.modeling_qwen3 import Qwen3RotaryEmbedding, apply_rotary_pos_emb
+
+    # Ayarlar
+    batch_size = 1
+    context_len = 8192
+    num_heads = 4
+    head_dim = 16
+    rope_theta = 1_000_000
+
+    # RoPE parametrelerini örnekle
+    cos, sin = compute_rope_params(
+        head_dim=head_dim,
+        theta_base=rope_theta,
+        context_length=context_len,
+    )
+
+    # Yapay sorgu ve anahtar tensörleri
+    torch.manual_seed(123)
+    queries = torch.randn(batch_size, num_heads, context_len, head_dim)
+    keys = torch.randn(batch_size, num_heads, context_len, head_dim)
+
+    # Döner konum gömmelerini uygula
+    queries_rot = apply_rope(queries, cos, sin)
+    keys_rot = apply_rope(keys, cos, sin)
+
+    # HF üzerinden referans RoPE üret
+    class RoPEConfig:
+        factor = 1.0
+        dim: int = head_dim
+        rope_theta = 1_000_000
+        rope_parameters = {"rope_type": "default", "rope_theta": rope_theta}
+        max_position_embeddings: int = 8192
+        hidden_size = head_dim * num_heads
+        num_attention_heads = num_heads
+
+    config = RoPEConfig()
+
+    rot_emb = Qwen3RotaryEmbedding(config=config)
+    position_ids = torch.arange(context_len, dtype=torch.long).unsqueeze(0)
+    ref_cos, ref_sin = rot_emb(queries, position_ids)
+    ref_queries_rot, ref_keys_rot = apply_rotary_pos_emb(queries, keys, ref_cos, ref_sin)
+
+    torch.testing.assert_close(sin, ref_sin.squeeze(0))
+    torch.testing.assert_close(cos, ref_cos.squeeze(0))
+    torch.testing.assert_close(keys_rot, ref_keys_rot)
+    torch.testing.assert_close(queries_rot, ref_queries_rot)
+
+
+def test_rmsnorm_equivalence():
+    torch.manual_seed(42)
+
+    hidden_size = 64
+    batch_size = 8
+    seq_len = 16
+
+    rms_norm = RMSNorm(hidden_size)
+    ref_norm = Qwen3RMSNorm(hidden_size)
+
+    # Ağırlıkları eşitle
+    with torch.no_grad():
+        ref_norm.weight.copy_(ref_norm.weight)
+
+    x = torch.randn(batch_size, seq_len, hidden_size)
+
+    out1 = rms_norm(x)
+    out2 = ref_norm(x)
+
+    torch.testing.assert_close(out1, out2, atol=1e-5, rtol=1e-5)
+
+
+@pytest.mark.skipif(
+    skip_expensive or not run_real_download or not transformers_installed,
+    reason="Set RUN_REAL_DOWNLOAD_TESTS=1 and unset SKIP_EXPENSIVE to run real download tests",
+)
+def test_tokenizer_equivalence_real_download():
+    from transformers import AutoTokenizer
+
+    prompt = "Give me a short introduction to large language models."
+    messages = [
+        {"role": "user", "content": prompt},
+    ]
+
+    for apply_chat_template in (True, False):
+        for s in ("-Base", ""):
+            repo_id = f"Qwen/Qwen3-0.6B{s}"
+            tokenizer_ref = AutoTokenizer.from_pretrained(repo_id)
+            tokenizer_url = f"https://huggingface.co/Qwen/Qwen3-0.6B{s}/resolve/main/tokenizer.json"
+            download_file(tokenizer_url, out_dir=".")
+
+            old_name = "tokenizer.json"
+
+            if not s:
+                new_name = "tokenizer-reasoning.json"
+            else:
+                new_name = "tokenizer-base.json"
+
+            try:
+                shutil.move(old_name, new_name)
+            except Exception:
+                with tempfile.NamedTemporaryFile(delete=False, dir=".") as tmp_file:
+                    shutil.copyfile(old_name, tmp_file.name)
+                    os.replace(tmp_file.name, new_name)
+                os.remove(old_name)
+
+            for states in ((True, True), (False, False)):
+                tokenizer = Qwen3Tokenizer(
+                    tokenizer_file_path=new_name,
+                    apply_chat_template=apply_chat_template,
+                    add_generation_prompt=states[0],
+                    add_thinking=states[1]
+                )
+                input_token_ids = tokenizer.encode(prompt)
+
+                if apply_chat_template:
+                    input_token_ids_ref = tokenizer_ref.apply_chat_template(
+                        messages,
+                        tokenize=True,
+                        add_generation_prompt=states[0],
+                        enable_thinking=states[1],
+                        return_dict=False,
+                    )
+                else:
+                    input_token_ids_ref = input_token_ids
+
+                assert input_token_ids == input_token_ids_ref, states
+
+                output_text = tokenizer.decode(input_token_ids)
+                out_text_ref = tokenizer_ref.decode(input_token_ids_ref)
+                assert output_text == out_text_ref, states
+
+                assert tokenizer.encode("<|endoftext|>") == [tokenizer._special_to_id["<|endoftext|>"]]
+                assert tokenizer.encode("<|im_end|>") == [tokenizer._special_to_id["<|im_end|>"]]
+
+                expected_eos_token = "<|im_end|>" if "base" not in new_name else "<|endoftext|>"
+                expected_pad_token = "<|endoftext|>"
+                assert tokenizer.decode([tokenizer.eos_token_id]) == expected_eos_token
+                assert tokenizer.decode([tokenizer.pad_token_id]) == expected_pad_token
+
+
+def test_download_qwen3_grpo_checkpoints_legacy_no_kl(monkeypatch):
+    calls = []
+
+    def fake_download_file(url, out_dir=".", backup_url=None):
+        calls.append((url, out_dir, backup_url))
+        return "downloaded-path"
+
+    monkeypatch.setattr(qwen3_mod, "download_file", fake_download_file)
+
+    path = download_qwen3_grpo_checkpoints(grpo_type="no_kl", step="00050", out_dir="qwen3")
+    assert path == "downloaded-path"
+    assert calls == [(
+        "https://huggingface.co/rasbt/qwen3-from-scratch-grpo-checkpoints/resolve/main/"
+        "grpo_original_no_kl/qwen3-0.6B-rlvr-grpo-step00050.pth",
+        "qwen3",
+        "https://f001.backblazeb2.com/file/reasoning-from-scratch/qwen3-0.6B-checkpoints/"
+        "grpo_original_no_kl/qwen3-0.6B-rlvr-grpo-step00050.pth",
+    )]
+
+
+def test_download_qwen3_grpo_checkpoints_chapter_7(monkeypatch):
+    calls = []
+
+    def fake_download_file(url, out_dir=".", backup_url=None):
+        calls.append((url, out_dir, backup_url))
+        return "downloaded-path"
+
+    monkeypatch.setattr(qwen3_mod, "download_file", fake_download_file)
+
+    path = download_qwen3_grpo_checkpoints(
+        grpo_type="clip_ratio",
+        step=150,
+        out_dir="qwen3",
+    )
+
+    assert path == "downloaded-path"
+    assert calls == [(
+        "https://huggingface.co/rasbt/qwen3-from-scratch-grpo-checkpoints/resolve/main/"
+        "7_4_plus_clip_ratio/checkpoints/qwen3-0.6B-rlvr-grpo-step00150.pth",
+        "qwen3",
+        None,
+    )]
+
+
+def test_download_qwen3_distill_checkpoints(monkeypatch):
+    calls = []
+
+    def fake_download_file(url, out_dir=".", backup_url=None):
+        calls.append((url, out_dir, backup_url))
+        return "downloaded-path"
+
+    monkeypatch.setattr(qwen3_mod, "download_file", fake_download_file)
+
+    path = download_qwen3_distill_checkpoints(
+        distill_type="deepseek_r1",
+        step="13364",
+        out_dir="qwen3",
+    )
+
+    assert path == "downloaded-path"
+    assert calls == [(
+        "https://huggingface.co/rasbt/qwen3-from-scratch-distill-checkpoints/resolve/main/"
+        "ch08_distill_deepseek_r1/checkpoints/qwen3-0.6B-distill-step13364-epoch2.pth",
+        "qwen3",
+        None,
+    )]
+
+
+def test_download_file_error_message_points_to_troubleshooting(tmp_path, monkeypatch):
+    calls = []
+
+    def fake_get(url, stream=True, timeout=30):
+        calls.append(url)
+        raise requests.exceptions.SSLError("CERTIFICATE_VERIFY_FAILED")
+
+    monkeypatch.setattr(utils_mod.requests, "get", fake_get)
+
+    with pytest.raises(RuntimeError) as excinfo:
+        download_file(
+            "https://primary.example.com/qwen3-0.6B-base.pth",
+            out_dir=tmp_path,
+            backup_url="https://backup.example.com/qwen3-0.6B-base.pth",
+        )
+
+    message = str(excinfo.value)
+    assert "Primary URL failed" in message
+    assert "Backup URL failed" in message
+    assert "CERTIFICATE_VERIFY_FAILED" in message
+    assert "https://github.com/rasbt/reasoning-from-scratch/blob/main/troubleshooting.md" in message
+    assert "VPN, proxy, or antivirus" in message
+    assert calls == [
+        "https://primary.example.com/qwen3-0.6B-base.pth",
+        "https://backup.example.com/qwen3-0.6B-base.pth",
+    ]
+
+
+def test_download_file_cached_file_returns_existing_path(tmp_path, monkeypatch):
+    calls = []
+    existing = tmp_path / "tokenizer-base.json"
+    existing.write_bytes(b"1234")
+
+    def fake_get(url, stream=True, timeout=30):
+        calls.append(url)
+        return DummyDownloadResponse(size=4)
+
+    monkeypatch.setattr(utils_mod.requests, "get", fake_get)
+
+    returned = download_file(
+        "https://primary.example.com/tokenizer-base.json",
+        out_dir=tmp_path,
+    )
+
+    assert returned == existing
+    assert existing.read_bytes() == b"1234"
+    assert calls == ["https://primary.example.com/tokenizer-base.json"]
+
+
+def check_model_generation(ModelClass, generate_fn):
+    cfg = {
+        "vocab_size": 32,
+        "context_length": 8,
+        "emb_dim": 16,
+        "n_heads": 4,
+        "n_layers": 2,
+        "hidden_dim": 32,
+        "head_dim": 4,
+        "qk_norm": True,
+        "n_kv_groups": 2,
+        "rope_base": 1_000_000.0,
+        "dtype": torch.float32,
+    }
+    model = ModelClass(cfg)
+
+    # Tohumlanmış değerler PyTorch sürümleri arasında değişebildiği için
+    # rastgele ilklendirmeden kaçın.
+    with torch.no_grad():
+        for param_idx, param in enumerate(model.parameters()):
+            values = torch.arange(param.numel(), dtype=torch.float32)
+            values = ((values + 7 * param_idx) % 23 - 11) / 32
+            param.copy_(values.reshape_as(param))
+
+    model.eval()
+
+    input_token_ids = torch.tensor([[1, 2, 3]])
+    expected = torch.tensor([[15, 11, 1, 1, 1]])
+    out = generate_fn(
+        model=model,
+        token_ids=input_token_ids.clone(),
+        max_new_tokens=5,
+    )
+
+    assert torch.equal(out, expected)
+
+
+@pytest.mark.parametrize("generate_fn", [generate_text_basic, generate_text_basic_cache])
+def test_model(generate_fn):
+    check_model_generation(Qwen3Model, generate_fn)
+
+
+@torch.inference_mode()
+@pytest.mark.skipif(not transformers_installed, reason="transformers not installed")
+def test_qwen3_base_equivalence_with_transformers():
+
+    from transformers.models.qwen3 import Qwen3Config, Qwen3ForCausalLM
+
+    # Testin hızlı olması için küçücük yapılandırma
+    cfg = {
+        "vocab_size": 257,
+        "context_length": 8,
+        "emb_dim": 32,
+        "n_heads": 4,
+        "n_layers": 2,
+        "hidden_dim": 64,
+        "head_dim": 8,
+        "qk_norm": True,
+        "n_kv_groups": 2,
+        "rope_base": 1_000_000.0,
+        "dtype": torch.float32,
+    }
+    model = Qwen3Model(cfg)
+
+    hf_cfg = Qwen3Config(
+        vocab_size=cfg["vocab_size"],
+        max_position_embeddings=cfg["context_length"],
+        hidden_size=cfg["emb_dim"],
+        num_attention_heads=cfg["n_heads"],
+        num_hidden_layers=cfg["n_layers"],
+        intermediate_size=cfg["hidden_dim"],
+        head_dim=cfg["head_dim"],
+        num_key_value_heads=cfg["n_kv_groups"],
+        rope_theta=cfg["rope_base"],
+        tie_word_embeddings=False,
+        attn_implementation="eager",
+        torch_dtype=torch.float32,
+    )
+    hf_model = Qwen3ForCausalLM(hf_cfg)
+
+    hf_state = hf_model.state_dict()
+    param_config = {"n_layers": cfg["n_layers"], "hidden_dim": cfg["hidden_dim"]}
+    load_hf_weights_into_qwen(model, param_config, hf_state)
+
+    x = torch.randint(0, cfg["vocab_size"], (2, cfg["context_length"]), dtype=torch.long)
+    ours_logits = model(x)
+    theirs_logits = hf_model(x).logits
+    torch.testing.assert_close(ours_logits, theirs_logits, rtol=1e-5, atol=1e-5)

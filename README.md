@@ -143,7 +143,7 @@ Bu kitabın ana bölümlerindeki kod, sıradan dizüstü bilgisayarlarda makul b
 - [Manning bağlantısı](https://mng.bz/lZ5B)
 - [GitHub deposu](https://github.com/rasbt/reasoning-from-scratch)
 
-> ℹ️ Bu deponun içindeki [reasoning-from-scratch](./reasoning-from-scratch) klasörü, yukarıdaki deponun bir git submodule'üdür ve bu çalışma kopyasında sabitlenmiş sürüme (commit `0acaa28`) göre doldurulmuştur.
+> ℹ️ Bu deponun içindeki [reasoning-from-scratch](./reasoning-from-scratch) klasörü, yukarıdaki deponun Türkçeye çevrilmiş kopyasıdır. Özgün eserde ayrı bir depodur (upstream'de *git submodule* olarak bağlanır); bu Türkçe sürümde tek bir `git clone` yetsin diye klasör olarak gömülmüştür. Kendi `LICENSE` ve [NOTICE](./reasoning-from-scratch/NOTICE) dosyaları yerinde durur.
 
 <br>
 
