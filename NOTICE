@@ -37,6 +37,8 @@ Aşağıdakiler bilinçli olarak DEĞİŞTİRİLMEMİŞTİR:
     sohbet şablonları.
   * Not defterlerinde kayıtlı hücre çıktıları, eğitim günlükleri ve
     başarım ölçüm tabloları.
+  * Markdown hücrelerindeki kod blokları (``` ile çevrelenen kod örnekleri,
+    komut satırı komutları ve konsol çıktıları).
   * Python (.py) kaynak dosyaları.
   * LICENSE.txt ve telif bildirimleri.
   * Not defterlerinin başındaki özgün atıf tablosu.
