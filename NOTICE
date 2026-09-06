@@ -25,8 +25,8 @@ yalnızca çeviriden ibarettir:
   * Tüm Markdown (.md) dosyalarının metin içeriği Türkçeye çevrilmiştir.
   * Jupyter not defterlerindeki (.ipynb) markdown hücrelerinin metinleri
     Türkçeye çevrilmiştir.
-  * Kod hücrelerindeki açıklama satırları (# ile başlayan yorumlar)
-    Türkçeye çevrilmiştir.
+  * Kod hücrelerindeki ve Python (.py) kaynak dosyalarındaki açıklama
+    satırları (# ile başlayan yorumlar) Türkçeye çevrilmiştir.
   * Depo köküne bu NOTICE dosyası, OKUMA_SIRASI.md (okuma rehberi) ve
     SOZLUK.md (terim karşılıkları) eklenmiştir.
 
@@ -39,7 +39,10 @@ Aşağıdakiler bilinçli olarak DEĞİŞTİRİLMEMİŞTİR:
     başarım ölçüm tabloları.
   * Markdown hücrelerindeki kod blokları (``` ile çevrelenen kod örnekleri,
     komut satırı komutları ve konsol çıktıları).
-  * Python (.py) kaynak dosyaları.
+  * Python (.py) dosyalarındaki çalıştırılabilir kodun kendisi; yalnızca
+    yorum satırları çevrilmiştir.
+  * Lisans metinleri ve üçüncü taraf atıf satırları (ör. OpenAI MIT
+    lisansı, LitGPT Apache 2.0 atfı) ile PEP 723 betik üst verisi.
   * LICENSE.txt ve telif bildirimleri.
   * Not defterlerinin başındaki özgün atıf tablosu.
 
