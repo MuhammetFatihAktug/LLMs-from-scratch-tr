@@ -69,7 +69,7 @@ def estimate_totals(context_length, sliding_window_size, emb_dim, n_heads, n_lay
     per_mha_swa = calc_kv_bytes_per_layer(batch_size, eff_W, head_dim, n_kv_heads_mha, bytes_per_elem)
     per_gqa_swa = calc_kv_bytes_per_layer(batch_size, eff_W, head_dim, n_kv_heads_gqa, bytes_per_elem)
 
-    # Totals
+    # Toplamlar
     total_mha_allfull = per_mha_full * n_layers
     total_gqa_allfull = per_gqa_full * n_layers
     total_mixed_mha = n_swa_layers * per_mha_swa + n_full_layers * per_mha_full

@@ -80,7 +80,7 @@ def main():
     dnet_gb = convert_to_gb(dnet_bytes)
     mix_gb = convert_to_gb(mix_bytes)
 
-    # Plot
+    # Grafik
     fig, ax = plt.subplots(figsize=(7, 4.5))
     ax.plot(ctx, mha_gb, label="Full Attention (MHA) KV cache")
     ax.plot(ctx, dnet_gb, label="All Gated DeltaNet (no conv)")
