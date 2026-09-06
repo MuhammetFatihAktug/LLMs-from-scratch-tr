@@ -296,6 +296,9 @@ Yukarıdakiler + `ch06` + `appendix-E` (LoRA) + `ch07` + `ch07/04_preference-tun
 - **Tensör şekillerini yazdır.** Özellikle ch03'te `print(x.shape)` en iyi arkadaşın.
 - **GPU şart değil.** Ana bölümler dizüstü bilgisayarda çalışır. GPU sadece ch05–ch07'yi hızlandırır.
 - **Takılırsan:** [troubleshooting.md](troubleshooting.md) ve [GitHub Discussions](https://github.com/rasbt/LLMs-from-scratch/discussions).
+- **Türkçe veriyle denemek istersen:** [TURKCE_VERI.md](TURKCE_VERI.md) — her bölümün İngilizce veri
+  dosyasının yanına Türkçe bir karşılığı eklendi (`karar.txt`, `talimat-verisi.json` vb.). Aynı deneyi
+  Türkçe metinle tekrarlamak, tokenizer'ın dile ne kadar bağımlı olduğunu somut olarak gösterir.
 - **Paket olarak kullanmak istersen:** [pkg/llms_from_scratch/README.md](pkg/llms_from_scratch/README.md) — `pip install llms-from-scratch`.
 
 ---

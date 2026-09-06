@@ -1,0 +1,212 @@
+[
+    {
+        "instruction": "Aşağıdaki ifadeyi verilen yazıma dönüştürerek değerlendir.",
+        "input": "yalnış --> yanlış",
+        "output": "Verilen ifadedeki \"yalnış\" yazımı hatalıdır; doğru yazım \"yanlış\" biçimindedir.",
+        "model 1 response": "\nVerilen ifadedeki \"yalnış\" yazımı hatalıdır; doğru yazım \"yanlış\" biçimindedir.",
+        "model 2 response": "\nYazım zaten doğru görünüyor."
+    },
+    {
+        "instruction": "Aşağıdaki kelimenin doğru yazımını belirle.",
+        "input": "herkez",
+        "output": "Kelimenin doğru yazımı \"herkes\" şeklindedir.",
+        "model 1 response": "\nKelimenin doğru yazımı \"herkes\" şeklindedir.",
+        "model 2 response": "\nDoğru yazım \"herkez\" olmalı."
+    },
+    {
+        "instruction": "Aşağıdaki kelimenin doğru yazımını belirle.",
+        "input": "yanlız",
+        "output": "Kelimenin doğru yazımı \"yalnız\" şeklindedir.",
+        "model 1 response": "\nKelimenin doğru yazımı \"yalnız\" şeklindedir.",
+        "model 2 response": "\nKelimenin doğru yazımı \"yalnız\"."
+    },
+    {
+        "instruction": "Aşağıdaki cümledeki yazım hatasını düzelt.",
+        "input": "Bu gün hava çok güzel.",
+        "output": "Düzeltilmiş cümle: \"Bugün hava çok güzel.\"",
+        "model 1 response": "\nDüzeltilmiş cümle: \"Bugün hava çok güzel.\"",
+        "model 2 response": "\nCümlede bir hata yok."
+    },
+    {
+        "instruction": "Aşağıdaki cümledeki fiili bul.",
+        "input": "Kedi kanepede uyuyor.",
+        "output": "Cümledeki fiil \"uyuyor\" kelimesidir.",
+        "model 1 response": "\nCümledeki fiil \"uyuyor\" kelimesidir.",
+        "model 2 response": "\nCümledeki fiil \"kanepede\"."
+    },
+    {
+        "instruction": "Aşağıdaki cümledeki özneyi bul.",
+        "input": "Çocuklar bahçede oynuyor.",
+        "output": "Cümledeki özne \"Çocuklar\" kelimesidir.",
+        "model 1 response": "\nCümledeki özne \"Çocuklar\" kelimesidir.",
+        "model 2 response": "\nÖzne \"bahçede\" kelimesidir."
+    },
+    {
+        "instruction": "Aşağıdaki cümledeki nesneyi belirt.",
+        "input": "Ali kitabı masaya bıraktı.",
+        "output": "Cümledeki nesne \"kitabı\" kelimesidir.",
+        "model 1 response": "\nCümledeki nesne \"kitabı\" kelimesidir.",
+        "model 2 response": "\nNesne \"masaya\" kelimesidir."
+    },
+    {
+        "instruction": "Aşağıdaki cümleyi edilgen çatıya çevir.",
+        "input": "Aşçı yemeği her gün pişirir.",
+        "output": "Yemek her gün aşçı tarafından pişirilir.",
+        "model 1 response": "\nYemek her gün aşçı tarafından pişirilir.",
+        "model 2 response": "\nYemek aşçı tarafından pişirilir."
+    },
+    {
+        "instruction": "Aşağıdaki cümleyi edilgen çatıya çevir.",
+        "input": "Öğretmen sınavları akşam okudu.",
+        "output": "Sınavlar akşam öğretmen tarafından okundu.",
+        "model 1 response": "\nSınavlar akşam öğretmen tarafından okundu.",
+        "model 2 response": "\nSınavlar öğretmen tarafından okundu."
+    },
+    {
+        "instruction": "Aşağıdaki cümleyi etken çatıya çevir.",
+        "input": "Mektup postacı tarafından getirildi.",
+        "output": "Postacı mektubu getirdi.",
+        "model 1 response": "\nPostacı mektubu getirdi.",
+        "model 2 response": "\nMektubu postacı getirmişti."
+    },
+    {
+        "instruction": "Aşağıdaki cümleyi soru cümlesine dönüştür.",
+        "input": "Tren saat sekizde kalkıyor.",
+        "output": "Tren saat sekizde mi kalkıyor?",
+        "model 1 response": "\nTren saat sekizde mi kalkıyor?",
+        "model 2 response": "\nTren sekizde kalkıyor mu acaba?"
+    },
+    {
+        "instruction": "Aşağıdaki cümleyi olumsuz hâle getir.",
+        "input": "Bu kitabı okudum.",
+        "output": "Bu kitabı okumadım.",
+        "model 1 response": "\nBu kitabı okumadım.",
+        "model 2 response": "\nBu kitabı okumuş değilim."
+    },
+    {
+        "instruction": "\"hızlı\" kelimesinin bir eş anlamlısını ver.",
+        "input": "",
+        "output": "\"hızlı\" kelimesinin eş anlamlısı \"süratli\" kelimesidir.",
+        "model 1 response": "\n\"hızlı\" kelimesinin eş anlamlısı \"süratli\" kelimesidir.",
+        "model 2 response": "\nEş anlamlısı \"çabuk\"."
+    },
+    {
+        "instruction": "\"güzel\" kelimesinin bir eş anlamlısını ver.",
+        "input": "",
+        "output": "\"güzel\" kelimesinin eş anlamlısı \"hoş\" kelimesidir.",
+        "model 1 response": "\n\"güzel\" kelimesinin eş anlamlısı \"hoş\" kelimesidir.",
+        "model 2 response": "\nEş anlamlısı \"iyi\"."
+    },
+    {
+        "instruction": "\"zengin\" kelimesinin zıt anlamlısını yaz.",
+        "input": "",
+        "output": "\"zengin\" kelimesinin zıt anlamlısı \"yoksul\" kelimesidir.",
+        "model 1 response": "\n\"zengin\" kelimesinin zıt anlamlısı \"yoksul\" kelimesidir.",
+        "model 2 response": "\nZıt anlamlısı \"fakir\"."
+    },
+    {
+        "instruction": "\"uzun\" kelimesinin zıt anlamlısını yaz.",
+        "input": "",
+        "output": "\"uzun\" kelimesinin zıt anlamlısı \"kısa\" kelimesidir.",
+        "model 1 response": "\n\"uzun\" kelimesinin zıt anlamlısı \"kısa\" kelimesidir.",
+        "model 2 response": "\nZıt anlamlısı \"küçük\"."
+    },
+    {
+        "instruction": "Aşağıdaki cümleyi bir benzetme kullanarak yeniden yaz.",
+        "input": "Araba çok hızlı.",
+        "output": "Araba şimşek kadar hızlı.",
+        "model 1 response": "\nAraba şimşek kadar hızlı.",
+        "model 2 response": "\nAraba çok hızlıdır."
+    },
+    {
+        "instruction": "Aşağıdaki cümleyi bir benzetme kullanarak yeniden yaz.",
+        "input": "Oda çok sessizdi.",
+        "output": "Oda mezar kadar sessizdi.",
+        "model 1 response": "\nOda mezar kadar sessizdi.",
+        "model 2 response": "\nOda sessizdi."
+    },
+    {
+        "instruction": "Aşağıdaki cümleyi daha kısa ve derli toplu hâle getir.",
+        "input": "Yaptığım deneyin sonucundan memnun kalmadım.",
+        "output": "Deneyimin sonucundan memnun kalmadım.",
+        "model 1 response": "\nDeneyimin sonucundan memnun kalmadım.",
+        "model 2 response": "\nDeney sonucundan memnun değilim."
+    },
+    {
+        "instruction": "Aşağıdaki cümleyi daha resmî bir dille yeniden yaz.",
+        "input": "Toplantıya gelemem, işim var.",
+        "output": "Yoğun iş programım nedeniyle toplantıya katılamayacağım.",
+        "model 1 response": "\nYoğun iş programım nedeniyle toplantıya katılamayacağım.",
+        "model 2 response": "\nToplantıya gelemeyeceğim, işim var."
+    },
+    {
+        "instruction": "Aşağıdaki cümleyi günlük konuşma diline çevir.",
+        "input": "Söz konusu talebiniz tarafımızca değerlendirilecektir.",
+        "output": "İsteğinizi değerlendireceğiz.",
+        "model 1 response": "\nİsteğinizi değerlendireceğiz.",
+        "model 2 response": "\nTalebinizi değerlendireceğiz."
+    },
+    {
+        "instruction": "Türkiye'nin başkentini söyle.",
+        "input": "",
+        "output": "Türkiye'nin başkenti Ankara'dır.",
+        "model 1 response": "\nTürkiye'nin başkenti Ankara'dır.",
+        "model 2 response": "\nTürkiye'nin başkenti İstanbul'dur."
+    },
+    {
+        "instruction": "Fransa'nın başkentini söyle.",
+        "input": "",
+        "output": "Fransa'nın başkenti Paris'tir.",
+        "model 1 response": "\nFransa'nın başkenti Paris'tir.",
+        "model 2 response": "\nBaşkenti Paris."
+    },
+    {
+        "instruction": "Japonya'nın başkenti neresidir?",
+        "input": "",
+        "output": "Japonya'nın başkenti Tokyo'dur.",
+        "model 1 response": "\nJaponya'nın başkenti Tokyo'dur.",
+        "model 2 response": "\nJaponya'nın başkenti Kyoto'dur."
+    },
+    {
+        "instruction": "\"Kürk Mantolu Madonna\" romanının yazarını söyle.",
+        "input": "",
+        "output": "\"Kürk Mantolu Madonna\" romanının yazarı Sabahattin Ali'dir.",
+        "model 1 response": "\n\"Kürk Mantolu Madonna\" romanının yazarı Sabahattin Ali'dir.",
+        "model 2 response": "\nYazarı Sabahattin Ali."
+    },
+    {
+        "instruction": "\"Çalıkuşu\" romanının yazarını söyle.",
+        "input": "",
+        "output": "\"Çalıkuşu\" romanının yazarı Reşat Nuri Güntekin'dir.",
+        "model 1 response": "\n\"Çalıkuşu\" romanının yazarı Reşat Nuri Güntekin'dir.",
+        "model 2 response": "\nYazarı Halide Edip Adıvar'dır."
+    },
+    {
+        "instruction": "Helyumun atom numarasını söyle.",
+        "input": "",
+        "output": "Helyumun atom numarası 2'dir.",
+        "model 1 response": "\nHelyumun atom numarası 2'dir.",
+        "model 2 response": "\nHelyumun atom numarası 4'tür."
+    },
+    {
+        "instruction": "Suyun kimyasal formülünü yaz.",
+        "input": "",
+        "output": "Suyun kimyasal formülü H2O'dur.",
+        "model 1 response": "\nSuyun kimyasal formülü H2O'dur.",
+        "model 2 response": "\nSuyun formülü H2O."
+    },
+    {
+        "instruction": "Karbondioksitin kimyasal formülünü yaz.",
+        "input": "",
+        "output": "Karbondioksitin kimyasal formülü CO2'dir.",
+        "model 1 response": "\nKarbondioksitin kimyasal formülü CO2'dir.",
+        "model 2 response": "\nKarbondioksitin formülü CO'dur."
+    },
+    {
+        "instruction": "45 kilometreyi metreye çevir.",
+        "input": "",
+        "output": "45 kilometre 45.000 metredir.",
+        "model 1 response": "\n45 kilometre 45.000 metredir.",
+        "model 2 response": "\n45 kilometre 4.500 metredir."
+    }
+]

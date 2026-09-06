@@ -1,0 +1,22 @@
+[
+    {
+        "instruction": "\"hızlı\" kelimesinin bir eş anlamlısını ver.",
+        "output": "\"hızlı\" kelimesinin eş anlamlısı \"süratli\" kelimesidir."
+    },
+    {
+        "instruction": "\"güzel\" kelimesinin bir eş anlamlısını ver.",
+        "output": "\"güzel\" kelimesinin eş anlamlısı \"hoş\" kelimesidir."
+    },
+    {
+        "instruction": "\"zengin\" kelimesinin zıt anlamlısını yaz.",
+        "output": "\"zengin\" kelimesinin zıt anlamlısı \"yoksul\" kelimesidir."
+    },
+    {
+        "instruction": "\"uzun\" kelimesinin zıt anlamlısını yaz.",
+        "output": "\"uzun\" kelimesinin zıt anlamlısı \"kısa\" kelimesidir."
+    },
+    {
+        "instruction": "Türkiye'nin başkentini söyle.",
+        "output": "Türkiye'nin başkenti Ankara'dır."
+    }
+]

@@ -27,8 +27,16 @@ yalnızca çeviriden ibarettir:
     Türkçeye çevrilmiştir.
   * Kod hücrelerindeki ve Python (.py) kaynak dosyalarındaki açıklama
     satırları (# ile başlayan yorumlar) Türkçeye çevrilmiştir.
-  * Depo köküne bu NOTICE dosyası, OKUMA_SIRASI.md (okuma rehberi) ve
-    SOZLUK.md (terim karşılıkları) eklenmiştir.
+  * Depo köküne bu NOTICE dosyası, OKUMA_SIRASI.md (okuma rehberi),
+    SOZLUK.md (terim karşılıkları) ve TURKCE_VERI.md (Türkçe örnek veri
+    rehberi) eklenmiştir.
+  * Bölüm klasörlerine, özgün İngilizce veri dosyalarının YANINA Türkçe
+    örnek veri dosyaları eklenmiştir (karar.txt, kucuk-metin-ornegi.txt,
+    talimat-verisi.json, talimat-ornekleri.json,
+    degerlendirme-ornek-verisi.json, talimat-verisi-tercihli.json,
+    talimat-verisi-llama3-8b.json). Bu dosyalar bu depo için özgün olarak
+    üretilmiştir; çeviri ya da alıntı değildir. Özgün veri dosyaları
+    değiştirilmemiş ve silinmemiştir. Ayrıntı: TURKCE_VERI.md
 
 Aşağıdakiler bilinçli olarak DEĞİŞTİRİLMEMİŞTİR:
 

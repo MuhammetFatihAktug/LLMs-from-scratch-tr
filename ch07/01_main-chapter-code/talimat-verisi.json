@@ -1,0 +1,802 @@
+[
+    {
+        "instruction": "Aşağıdaki ifadeyi verilen yazıma dönüştürerek değerlendir.",
+        "input": "yalnış --> yanlış",
+        "output": "Verilen ifadedeki \"yalnış\" yazımı hatalıdır; doğru yazım \"yanlış\" biçimindedir."
+    },
+    {
+        "instruction": "Aşağıdaki kelimenin doğru yazımını belirle.",
+        "input": "herkez",
+        "output": "Kelimenin doğru yazımı \"herkes\" şeklindedir."
+    },
+    {
+        "instruction": "Aşağıdaki kelimenin doğru yazımını belirle.",
+        "input": "yanlız",
+        "output": "Kelimenin doğru yazımı \"yalnız\" şeklindedir."
+    },
+    {
+        "instruction": "Aşağıdaki cümledeki yazım hatasını düzelt.",
+        "input": "Bu gün hava çok güzel.",
+        "output": "Düzeltilmiş cümle: \"Bugün hava çok güzel.\""
+    },
+    {
+        "instruction": "Aşağıdaki cümledeki fiili bul.",
+        "input": "Kedi kanepede uyuyor.",
+        "output": "Cümledeki fiil \"uyuyor\" kelimesidir."
+    },
+    {
+        "instruction": "Aşağıdaki cümledeki özneyi bul.",
+        "input": "Çocuklar bahçede oynuyor.",
+        "output": "Cümledeki özne \"Çocuklar\" kelimesidir."
+    },
+    {
+        "instruction": "Aşağıdaki cümledeki nesneyi belirt.",
+        "input": "Ali kitabı masaya bıraktı.",
+        "output": "Cümledeki nesne \"kitabı\" kelimesidir."
+    },
+    {
+        "instruction": "Aşağıdaki cümleyi edilgen çatıya çevir.",
+        "input": "Aşçı yemeği her gün pişirir.",
+        "output": "Yemek her gün aşçı tarafından pişirilir."
+    },
+    {
+        "instruction": "Aşağıdaki cümleyi edilgen çatıya çevir.",
+        "input": "Öğretmen sınavları akşam okudu.",
+        "output": "Sınavlar akşam öğretmen tarafından okundu."
+    },
+    {
+        "instruction": "Aşağıdaki cümleyi etken çatıya çevir.",
+        "input": "Mektup postacı tarafından getirildi.",
+        "output": "Postacı mektubu getirdi."
+    },
+    {
+        "instruction": "Aşağıdaki cümleyi soru cümlesine dönüştür.",
+        "input": "Tren saat sekizde kalkıyor.",
+        "output": "Tren saat sekizde mi kalkıyor?"
+    },
+    {
+        "instruction": "Aşağıdaki cümleyi olumsuz hâle getir.",
+        "input": "Bu kitabı okudum.",
+        "output": "Bu kitabı okumadım."
+    },
+    {
+        "instruction": "\"hızlı\" kelimesinin bir eş anlamlısını ver.",
+        "input": "",
+        "output": "\"hızlı\" kelimesinin eş anlamlısı \"süratli\" kelimesidir."
+    },
+    {
+        "instruction": "\"güzel\" kelimesinin bir eş anlamlısını ver.",
+        "input": "",
+        "output": "\"güzel\" kelimesinin eş anlamlısı \"hoş\" kelimesidir."
+    },
+    {
+        "instruction": "\"zengin\" kelimesinin zıt anlamlısını yaz.",
+        "input": "",
+        "output": "\"zengin\" kelimesinin zıt anlamlısı \"yoksul\" kelimesidir."
+    },
+    {
+        "instruction": "\"uzun\" kelimesinin zıt anlamlısını yaz.",
+        "input": "",
+        "output": "\"uzun\" kelimesinin zıt anlamlısı \"kısa\" kelimesidir."
+    },
+    {
+        "instruction": "Aşağıdaki cümleyi bir benzetme kullanarak yeniden yaz.",
+        "input": "Araba çok hızlı.",
+        "output": "Araba şimşek kadar hızlı."
+    },
+    {
+        "instruction": "Aşağıdaki cümleyi bir benzetme kullanarak yeniden yaz.",
+        "input": "Oda çok sessizdi.",
+        "output": "Oda mezar kadar sessizdi."
+    },
+    {
+        "instruction": "Aşağıdaki cümleyi daha kısa ve derli toplu hâle getir.",
+        "input": "Yaptığım deneyin sonucundan memnun kalmadım.",
+        "output": "Deneyimin sonucundan memnun kalmadım."
+    },
+    {
+        "instruction": "Aşağıdaki cümleyi daha resmî bir dille yeniden yaz.",
+        "input": "Toplantıya gelemem, işim var.",
+        "output": "Yoğun iş programım nedeniyle toplantıya katılamayacağım."
+    },
+    {
+        "instruction": "Aşağıdaki cümleyi günlük konuşma diline çevir.",
+        "input": "Söz konusu talebiniz tarafımızca değerlendirilecektir.",
+        "output": "İsteğinizi değerlendireceğiz."
+    },
+    {
+        "instruction": "Türkiye'nin başkentini söyle.",
+        "input": "",
+        "output": "Türkiye'nin başkenti Ankara'dır."
+    },
+    {
+        "instruction": "Fransa'nın başkentini söyle.",
+        "input": "",
+        "output": "Fransa'nın başkenti Paris'tir."
+    },
+    {
+        "instruction": "Japonya'nın başkenti neresidir?",
+        "input": "",
+        "output": "Japonya'nın başkenti Tokyo'dur."
+    },
+    {
+        "instruction": "\"Kürk Mantolu Madonna\" romanının yazarını söyle.",
+        "input": "",
+        "output": "\"Kürk Mantolu Madonna\" romanının yazarı Sabahattin Ali'dir."
+    },
+    {
+        "instruction": "\"Çalıkuşu\" romanının yazarını söyle.",
+        "input": "",
+        "output": "\"Çalıkuşu\" romanının yazarı Reşat Nuri Güntekin'dir."
+    },
+    {
+        "instruction": "Helyumun atom numarasını söyle.",
+        "input": "",
+        "output": "Helyumun atom numarası 2'dir."
+    },
+    {
+        "instruction": "Suyun kimyasal formülünü yaz.",
+        "input": "",
+        "output": "Suyun kimyasal formülü H2O'dur."
+    },
+    {
+        "instruction": "Karbondioksitin kimyasal formülünü yaz.",
+        "input": "",
+        "output": "Karbondioksitin kimyasal formülü CO2'dir."
+    },
+    {
+        "instruction": "45 kilometreyi metreye çevir.",
+        "input": "",
+        "output": "45 kilometre 45.000 metredir."
+    },
+    {
+        "instruction": "2,5 saati dakikaya çevir.",
+        "input": "",
+        "output": "2,5 saat 150 dakikadır."
+    },
+    {
+        "instruction": "3 kilogramı grama çevir.",
+        "input": "",
+        "output": "3 kilogram 3.000 gramdır."
+    },
+    {
+        "instruction": "Bir dik üçgenin dik kenarları 6 cm ve 8 cm ise hipotenüsünü hesapla.",
+        "input": "",
+        "output": "Üçgenin hipotenüsü 10 cm'dir."
+    },
+    {
+        "instruction": "Aşağıdaki sayıların ortalamasını hesapla.",
+        "input": "4, 8, 15, 16, 23, 42",
+        "output": "Sayıların ortalaması 18'dir."
+    },
+    {
+        "instruction": "120'nin yüzde 25'ini hesapla.",
+        "input": "",
+        "output": "120'nin yüzde 25'i 30'dur."
+    },
+    {
+        "instruction": "Aşağıdaki kesri ondalık sayıya çevir.",
+        "input": "3/4",
+        "output": "3/4 kesrinin ondalık karşılığı 0,75'tir."
+    },
+    {
+        "instruction": "Bir yılın kaç gün olduğunu söyle.",
+        "input": "",
+        "output": "Artık olmayan bir yıl 365 gündür; artık yıl ise 366 gündür."
+    },
+    {
+        "instruction": "Gök gürültülü fırtınayla en çok hangi bulut türü ilişkilendirilir?",
+        "input": "",
+        "output": "Gök gürültülü fırtınayla en çok kümülonimbus bulutu ilişkilendirilir."
+    },
+    {
+        "instruction": "Fotosentezi bir cümleyle açıkla.",
+        "input": "",
+        "output": "Fotosentez, bitkilerin güneş ışığını kullanarak su ve karbondioksitten besin ve oksijen ürettiği süreçtir."
+    },
+    {
+        "instruction": "Yerçekimini kısaca tanımla.",
+        "input": "",
+        "output": "Yerçekimi, kütlesi olan cisimlerin birbirini çekmesine yol açan temel kuvvettir."
+    },
+    {
+        "instruction": "Aşağıdaki hayvanı sınıflandır.",
+        "input": "Yunus",
+        "output": "Yunus bir memelidir."
+    },
+    {
+        "instruction": "Aşağıdaki hayvanı sınıflandır.",
+        "input": "Kartal",
+        "output": "Kartal bir kuştur."
+    },
+    {
+        "instruction": "Aşağıdaki besini sınıflandır.",
+        "input": "Domates",
+        "output": "Domates botanik olarak bir meyvedir, mutfakta ise sebze gibi kullanılır."
+    },
+    {
+        "instruction": "Aşağıdaki kelimenin hangi sözcük türüne ait olduğunu belirt.",
+        "input": "koşmak",
+        "output": "\"koşmak\" bir fiildir."
+    },
+    {
+        "instruction": "Aşağıdaki kelimenin hangi sözcük türüne ait olduğunu belirt.",
+        "input": "mavi",
+        "output": "\"mavi\" bir sıfattır."
+    },
+    {
+        "instruction": "Aşağıdaki cümlenin olumlu mu olumsuz mu olduğunu belirt.",
+        "input": "Bu filmi hiç beğenmedim.",
+        "output": "Cümle olumsuzdur."
+    },
+    {
+        "instruction": "Aşağıdaki metnin duygusunu belirle.",
+        "input": "Bugün sınavdan çok iyi bir not aldım!",
+        "output": "Metnin duygusu olumludur."
+    },
+    {
+        "instruction": "Aşağıdaki metnin duygusunu belirle.",
+        "input": "Kargom yine kayboldu, çok sinirliyim.",
+        "output": "Metnin duygusu olumsuzdur."
+    },
+    {
+        "instruction": "Aşağıdaki listeyi alfabetik sıraya diz.",
+        "input": "erik, armut, kiraz, ayva",
+        "output": "Alfabetik sıralama: armut, ayva, erik, kiraz."
+    },
+    {
+        "instruction": "Aşağıdaki sayıları küçükten büyüğe sırala.",
+        "input": "12, 3, 45, 7",
+        "output": "Sıralama: 3, 7, 12, 45."
+    },
+    {
+        "instruction": "Aşağıdaki cümleyi geçmiş zamana çevir.",
+        "input": "Ali her sabah koşuyor.",
+        "output": "Ali her sabah koşuyordu."
+    },
+    {
+        "instruction": "Aşağıdaki cümleyi gelecek zamana çevir.",
+        "input": "Yarın erken kalkıyorum.",
+        "output": "Yarın erken kalkacağım."
+    },
+    {
+        "instruction": "Aşağıdaki cümledeki zaman kipini belirt.",
+        "input": "Dün akşam sinemaya gittik.",
+        "output": "Cümlede görülen geçmiş zaman kipi kullanılmıştır."
+    },
+    {
+        "instruction": "Aşağıdaki kelimenin kökünü ve eklerini ayır.",
+        "input": "kitaplardan",
+        "output": "Kök: kitap, ekler: -lar (çoğul), -dan (ayrılma hâli)."
+    },
+    {
+        "instruction": "Aşağıdaki kelimenin kökünü ve eklerini ayır.",
+        "input": "gözlükçüler",
+        "output": "Kök: göz, ekler: -lük (isimden isim yapma), -çü (meslek), -ler (çoğul)."
+    },
+    {
+        "instruction": "Aşağıdaki kelimeyi hecelerine ayır.",
+        "input": "üniversite",
+        "output": "ü-ni-ver-si-te"
+    },
+    {
+        "instruction": "Aşağıdaki cümlede kaç kelime olduğunu say.",
+        "input": "Yağmur bütün gece durmadan yağdı.",
+        "output": "Cümlede 5 kelime vardır."
+    },
+    {
+        "instruction": "Aşağıdaki metni tek cümleyle özetle.",
+        "input": "Kasabaya yeni bir kütüphane açıldı. Açılışa kalabalık bir grup katıldı. Kütüphanede beş bin kitap bulunuyor.",
+        "output": "Kasabada, beş bin kitaplık yeni bir kütüphane kalabalık bir törenle açıldı."
+    },
+    {
+        "instruction": "Aşağıdaki paragrafın ana fikrini yaz.",
+        "input": "Düzenli uyku, hafızayı güçlendirir, bağışıklığı destekler ve gün içindeki dikkati artırır. Uykusuzluk ise bu üç alanda da olumsuz etkiler yaratır.",
+        "output": "Paragrafın ana fikri, düzenli uykunun sağlık ve zihinsel performans için gerekli olduğudur."
+    },
+    {
+        "instruction": "Aşağıdaki metne uygun bir başlık öner.",
+        "input": "Şehirde bisiklet yollarının uzunluğu son üç yılda iki katına çıktı. Belediye, bu yıl otuz kilometre daha eklemeyi planlıyor.",
+        "output": "Önerilen başlık: \"Bisiklet Yolları Üç Yılda İkiye Katlandı\""
+    },
+    {
+        "instruction": "İki cümleyi tek cümlede birleştir.",
+        "input": "Hava soğuktu. Yine de yürüyüşe çıktık.",
+        "output": "Hava soğuk olmasına rağmen yürüyüşe çıktık."
+    },
+    {
+        "instruction": "Aşağıdaki cümleyi ikiye böl.",
+        "input": "Toplantı uzun sürdü ve herkes yorgun düştü.",
+        "output": "Toplantı uzun sürdü. Herkes yorgun düştü."
+    },
+    {
+        "instruction": "Aşağıdaki cümledeki noktalama hatasını düzelt.",
+        "input": "Nereye gidiyorsun.",
+        "output": "Düzeltilmiş cümle: \"Nereye gidiyorsun?\""
+    },
+    {
+        "instruction": "Aşağıdaki cümleye uygun noktalama işaretlerini ekle.",
+        "input": "ne kadar güzel bir gün",
+        "output": "Ne kadar güzel bir gün!"
+    },
+    {
+        "instruction": "Aşağıdaki atasözünün anlamını açıkla.",
+        "input": "Damlaya damlaya göl olur.",
+        "output": "Bu atasözü, küçük birikimlerin zamanla büyük bir sonuca ulaşacağını anlatır."
+    },
+    {
+        "instruction": "Aşağıdaki atasözünün anlamını açıkla.",
+        "input": "Sakla samanı, gelir zamanı.",
+        "output": "Bu atasözü, şu an değersiz görünen şeylerin ileride işe yarayabileceğini anlatır."
+    },
+    {
+        "instruction": "Aşağıdaki deyimin anlamını yaz.",
+        "input": "göz atmak",
+        "output": "\"Göz atmak\" deyimi, bir şeye kısaca ve hızlıca bakmak anlamına gelir."
+    },
+    {
+        "instruction": "Aşağıdaki deyimin anlamını yaz.",
+        "input": "eli kulağında",
+        "output": "\"Eli kulağında\" deyimi, bir şeyin gerçekleşmesine çok az kaldığını anlatır."
+    },
+    {
+        "instruction": "Verilen konuda üç madde yaz.",
+        "input": "Düzenli yürüyüşün faydaları",
+        "output": "1. Kalp sağlığını destekler. 2. Stresi azaltır. 3. Uyku kalitesini artırır."
+    },
+    {
+        "instruction": "Verilen konuda üç öneri sun.",
+        "input": "Yeni bir dil öğrenmek",
+        "output": "1. Her gün kısa ama düzenli çalış. 2. Öğrendiklerini konuşarak kullan. 3. İlgini çeken konularda içerik takip et."
+    },
+    {
+        "instruction": "Aşağıdaki listeden tek olanı bul.",
+        "input": "elma, armut, havuç, muz",
+        "output": "Tek olan \"havuç\"tur; diğerleri meyve, havuç ise sebzedir."
+    },
+    {
+        "instruction": "Aşağıdaki listeden tek olanı bul.",
+        "input": "İstanbul, Ankara, İzmir, Paris",
+        "output": "Tek olan \"Paris\"tir; diğerleri Türkiye'deki şehirlerdir."
+    },
+    {
+        "instruction": "Aşağıdaki iki kavramı karşılaştır.",
+        "input": "Deniz ve göl",
+        "output": "Deniz tuzlu ve çok daha geniş bir su kütlesidir; göl ise genellikle tatlı sulu ve karayla çevrilidir."
+    },
+    {
+        "instruction": "Aşağıdaki iki kavramı karşılaştır.",
+        "input": "Roman ve hikâye",
+        "output": "Roman uzun soluklu, çok karakterli bir anlatıdır; hikâye ise daha kısadır ve genellikle tek bir olaya odaklanır."
+    },
+    {
+        "instruction": "Aşağıdaki terimi kısaca tanımla.",
+        "input": "algoritma",
+        "output": "Algoritma, bir problemi çözmek için izlenen sıralı adımlar bütünüdür."
+    },
+    {
+        "instruction": "Aşağıdaki terimi kısaca tanımla.",
+        "input": "veri kümesi",
+        "output": "Veri kümesi, belirli bir amaç için bir araya getirilmiş, düzenli biçimde saklanan verilerin bütünüdür."
+    },
+    {
+        "instruction": "Aşağıdaki soruyu tek cümleyle yanıtla.",
+        "input": "Neden mevsimler oluşur?",
+        "output": "Mevsimler, Dünya'nın eksen eğikliği nedeniyle güneş ışınlarının yıl boyunca farklı açılarla gelmesinden oluşur."
+    },
+    {
+        "instruction": "Aşağıdaki soruyu tek cümleyle yanıtla.",
+        "input": "Ay neden evrelere sahiptir?",
+        "output": "Ay, Dünya çevresinde dönerken güneş ışığı alan yüzünün bize farklı oranlarda görünmesi nedeniyle evrelere sahiptir."
+    },
+    {
+        "instruction": "Bir e-postaya uygun kibar bir açılış cümlesi yaz.",
+        "input": "",
+        "output": "Merhaba, umarım iyisinizdir; kısa bir konuda bilginize başvurmak istiyorum."
+    },
+    {
+        "instruction": "Bir toplantı davetine kısa ve kibar bir ret yanıtı yaz.",
+        "input": "",
+        "output": "Daveti için teşekkür ederim; ne yazık ki o saatte başka bir programım olduğu için katılamayacağım."
+    },
+    {
+        "instruction": "Aşağıdaki cümlenin öznesini ve yüklemini ayrı ayrı yaz.",
+        "input": "Küçük çocuk topu attı.",
+        "output": "Özne: Küçük çocuk. Yüklem: attı."
+    },
+    {
+        "instruction": "Aşağıdaki cümleyi emir kipine çevir.",
+        "input": "Kapıyı kapatman gerekiyor.",
+        "output": "Kapıyı kapat."
+    },
+    {
+        "instruction": "Aşağıdaki cümleyi rica kipine çevir.",
+        "input": "Pencereyi aç.",
+        "output": "Pencereyi açar mısınız?"
+    },
+    {
+        "instruction": "Aşağıdaki sayıyı yazıyla yaz.",
+        "input": "247",
+        "output": "İki yüz kırk yedi."
+    },
+    {
+        "instruction": "Aşağıdaki sayıyı rakamla yaz.",
+        "input": "bin dokuz yüz doksan sekiz",
+        "output": "1998"
+    },
+    {
+        "instruction": "Aşağıdaki tarihi uzun biçimde yaz.",
+        "input": "29.10.1923",
+        "output": "29 Ekim 1923"
+    },
+    {
+        "instruction": "Aşağıdaki metinde geçen üç anahtar kelimeyi çıkar.",
+        "input": "Yenilenebilir enerji kaynakları arasında güneş ve rüzgâr, maliyetlerinin düşmesi sayesinde hızla yaygınlaşıyor.",
+        "output": "Anahtar kelimeler: yenilenebilir enerji, güneş, rüzgâr."
+    },
+    {
+        "instruction": "Aşağıdaki cümleyi daha nazik bir dille yeniden yaz.",
+        "input": "Bu raporu hemen düzelt.",
+        "output": "Bu raporu uygun bir zamanda gözden geçirebilir misiniz?"
+    },
+    {
+        "instruction": "Aşağıdaki ifadeyi olumlu bir dille yeniden yaz.",
+        "input": "Bu işi asla zamanında bitiremezsin.",
+        "output": "Bu işi zamanında bitirmek için birlikte bir plan yapabiliriz."
+    },
+    {
+        "instruction": "Bir çocuğa anlatır gibi açıkla.",
+        "input": "Bulut nasıl oluşur?",
+        "output": "Güneş suyu ısıtır, su buharlaşıp yukarı çıkar; yukarısı soğuk olduğu için buhar küçük damlacıklara dönüşür ve bir araya gelip bulutu oluşturur."
+    },
+    {
+        "instruction": "Bir çocuğa anlatır gibi açıkla.",
+        "input": "Gökkuşağı neden renklidir?",
+        "output": "Güneş ışığı yağmur damlalarının içinden geçerken kırılır ve içindeki renklere ayrılır; biz de bunu bir yay gibi görürüz."
+    },
+    {
+        "instruction": "Aşağıdaki cümlede kaç hece olduğunu say.",
+        "input": "Kelebekler bahçede uçuyor.",
+        "output": "Cümlede toplam 10 hece vardır."
+    },
+    {
+        "instruction": "Aşağıdaki kelimeyi cümle içinde kullan.",
+        "input": "özveri",
+        "output": "Ekibin başarısı, herkesin gösterdiği özveri sayesinde mümkün oldu."
+    },
+    {
+        "instruction": "Aşağıdaki kelimeyi cümle içinde kullan.",
+        "input": "tutarlı",
+        "output": "Verdiği kararlar yıllardır tutarlı olduğu için ona güveniyoruz."
+    },
+    {
+        "instruction": "Aşağıdaki iki cümleden hangisinin daha resmî olduğunu belirt.",
+        "input": "1) Yarın uğrarım. 2) Yarın tarafınıza uğrayacağım.",
+        "output": "İkinci cümle daha resmîdir."
+    },
+    {
+        "instruction": "Aşağıdaki metni maddeler hâline getir.",
+        "input": "Önce malzemeleri hazırla, sonra fırını ısıt, en son hamuru yoğur.",
+        "output": "1. Malzemeleri hazırla. 2. Fırını ısıt. 3. Hamuru yoğur."
+    },
+    {
+        "instruction": "Aşağıdaki bilgiyi bir cümlede topla.",
+        "input": "Kitap 320 sayfa. Yazarı Ayşe Kaya. 2019'da yayımlandı.",
+        "output": "Ayşe Kaya'nın 320 sayfalık kitabı 2019 yılında yayımlanmıştır."
+    },
+    {
+        "instruction": "Aşağıdaki cümledeki tekrarı gider.",
+        "input": "Bugün bugün çok yorgunum.",
+        "output": "Bugün çok yorgunum."
+    },
+    {
+        "instruction": "Aşağıdaki cümlede eksik olan noktalama işaretini ekle.",
+        "input": "Ahmet Ayşe ve Mehmet geldi",
+        "output": "Ahmet, Ayşe ve Mehmet geldi."
+    },
+    {
+        "instruction": "Bir haber metni için tek cümlelik özet yaz.",
+        "input": "Belediye, şehir merkezindeki üç caddeyi yayalaştırma kararı aldı. Çalışmalar önümüzdeki ay başlayacak.",
+        "output": "Belediye, şehir merkezindeki üç caddeyi yayalaştırmaya karar verdi ve çalışmalar gelecek ay başlıyor."
+    },
+    {
+        "instruction": "Bir haftada kaç saat olduğunu hesapla.",
+        "input": "",
+        "output": "Bir haftada 168 saat vardır."
+    },
+    {
+        "instruction": "Bir futbol takımının sahada kaç oyuncuyla oynadığını söyle.",
+        "input": "",
+        "output": "Bir futbol takımı sahada 11 oyuncuyla oynar."
+    },
+    {
+        "instruction": "Dünyanın en büyük okyanusunu söyle.",
+        "input": "",
+        "output": "Dünyanın en büyük okyanusu Büyük Okyanus'tur (Pasifik Okyanusu)."
+    },
+    {
+        "instruction": "Türkiye'nin en uzun nehrini söyle.",
+        "input": "",
+        "output": "Türkiye'nin en uzun nehri Kızılırmak'tır."
+    },
+    {
+        "instruction": "Bir üçgenin iç açıları toplamını söyle.",
+        "input": "",
+        "output": "Bir üçgenin iç açıları toplamı 180 derecedir."
+    },
+    {
+        "instruction": "Bir karenin kaç kenarı olduğunu söyle.",
+        "input": "",
+        "output": "Bir karenin 4 kenarı vardır."
+    },
+    {
+        "instruction": "İnsan vücudundaki en büyük organı söyle.",
+        "input": "",
+        "output": "İnsan vücudundaki en büyük organ deridir."
+    },
+    {
+        "instruction": "Işığın boşluktaki hızını yaklaşık olarak söyle.",
+        "input": "",
+        "output": "Işığın boşluktaki hızı yaklaşık saniyede 300.000 kilometredir."
+    },
+    {
+        "instruction": "Bir yılın kaç mevsimden oluştuğunu söyle.",
+        "input": "",
+        "output": "Bir yıl dört mevsimden oluşur: ilkbahar, yaz, sonbahar ve kış."
+    },
+    {
+        "instruction": "Alfabemizde kaç harf olduğunu söyle.",
+        "input": "",
+        "output": "Türk alfabesinde 29 harf vardır."
+    },
+    {
+        "instruction": "Suyun kaç derecede kaynadığını söyle.",
+        "input": "",
+        "output": "Su, deniz seviyesinde 100 santigrat derecede kaynar."
+    },
+    {
+        "instruction": "Suyun kaç derecede donduğunu söyle.",
+        "input": "",
+        "output": "Su, deniz seviyesinde 0 santigrat derecede donar."
+    },
+    {
+        "instruction": "Bir günün kaç saniye olduğunu hesapla.",
+        "input": "",
+        "output": "Bir gün 86.400 saniyedir."
+    },
+    {
+        "instruction": "Dünyanın Güneş çevresindeki bir turunun ne kadar sürdüğünü söyle.",
+        "input": "",
+        "output": "Dünya, Güneş çevresindeki bir turunu yaklaşık 365,25 günde tamamlar."
+    },
+    {
+        "instruction": "Ayın Dünya çevresindeki bir turunun ne kadar sürdüğünü söyle.",
+        "input": "",
+        "output": "Ay, Dünya çevresindeki bir turunu yaklaşık 27,3 günde tamamlar."
+    },
+    {
+        "instruction": "Bir düzinenin kaç adet olduğunu söyle.",
+        "input": "",
+        "output": "Bir düzine 12 adettir."
+    },
+    {
+        "instruction": "Kalbin görevini bir cümleyle açıkla.",
+        "input": "",
+        "output": "Kalp, kanı vücuda pompalayarak oksijen ve besinlerin dokulara ulaşmasını sağlar."
+    },
+    {
+        "instruction": "Akciğerlerin görevini bir cümleyle açıkla.",
+        "input": "",
+        "output": "Akciğerler, soluduğumuz havadaki oksijeni kana geçirir ve kandaki karbondioksiti dışarı atar."
+    },
+    {
+        "instruction": "Buharlaşmayı kısaca tanımla.",
+        "input": "",
+        "output": "Buharlaşma, sıvı hâldeki maddenin ısı alarak gaz hâline geçmesidir."
+    },
+    {
+        "instruction": "Yoğuşmayı kısaca tanımla.",
+        "input": "",
+        "output": "Yoğuşma, gaz hâldeki maddenin ısı vererek sıvı hâline geçmesidir."
+    },
+    {
+        "instruction": "Ekosistemi kısaca tanımla.",
+        "input": "",
+        "output": "Ekosistem, belirli bir alandaki canlıların birbiriyle ve cansız çevreyle kurduğu ilişkiler bütünüdür."
+    },
+    {
+        "instruction": "Geri dönüşümün önemini iki cümleyle açıkla.",
+        "input": "",
+        "output": "Geri dönüşüm, doğal kaynakların daha az tüketilmesini sağlar. Ayrıca atık miktarını azaltarak çevre kirliliğini düşürür."
+    },
+    {
+        "instruction": "Sağlıklı beslenme için üç öneri ver.",
+        "input": "",
+        "output": "1. Günlük öğünlerde sebze ve meyveye yer verin. 2. Su tüketimini ihmal etmeyin. 3. İşlenmiş gıdaları sınırlandırın."
+    },
+    {
+        "instruction": "Zaman yönetimi için üç öneri ver.",
+        "input": "",
+        "output": "1. Günü önceden planlayın. 2. İşleri önem sırasına dizin. 3. Uzun işleri küçük adımlara bölün."
+    },
+    {
+        "instruction": "Kitap okuma alışkanlığı kazanmak için bir öneri yaz.",
+        "input": "",
+        "output": "Her gün aynı saatte, kısa da olsa düzenli bir okuma zamanı ayırmak alışkanlık kazanmayı kolaylaştırır."
+    },
+    {
+        "instruction": "Bir sunum yaparken dikkat edilmesi gereken üç şeyi yaz.",
+        "input": "",
+        "output": "1. Ana mesajı baştan net söyleyin. 2. Görselleri sade tutun. 3. Süreyi önceden prova edin."
+    },
+    {
+        "instruction": "İyi bir ekip çalışmasının üç özelliğini yaz.",
+        "input": "",
+        "output": "1. Açık iletişim. 2. Görevlerin net paylaşımı. 3. Karşılıklı güven."
+    },
+    {
+        "instruction": "Bir teşekkür mesajı yaz.",
+        "input": "",
+        "output": "Gösterdiğiniz ilgi ve ayırdığınız zaman için içtenlikle teşekkür ederim."
+    },
+    {
+        "instruction": "Bir özür mesajı yaz.",
+        "input": "",
+        "output": "Yaşanan gecikme için özür dilerim; sorunu en kısa sürede çözmek için gerekli adımları atıyorum."
+    },
+    {
+        "instruction": "Bir doğum günü kutlaması yaz.",
+        "input": "",
+        "output": "Doğum günün kutlu olsun; yeni yaşın sağlık, huzur ve güzel sürprizlerle dolsun."
+    },
+    {
+        "instruction": "Yağmurlu bir günü iki cümleyle betimle.",
+        "input": "",
+        "output": "Damlalar cama düzensiz bir ritimle vuruyordu. Sokak lambalarının ışığı ıslak asfaltta uzayıp kısalıyordu."
+    },
+    {
+        "instruction": "Bir sonbahar sabahını iki cümleyle betimle.",
+        "input": "",
+        "output": "Hava, üzerinde durulmayacak kadar hafif bir serinlik taşıyordu. Kaldırımdaki yapraklar, adımların altında kuru bir ses çıkarıyordu."
+    },
+    {
+        "instruction": "Kısa bir hikâye başlangıcı yaz.",
+        "input": "",
+        "output": "Kapının önünde, üzerinde hiçbir isim yazmayan bir kutu duruyordu ve komşuların hiçbiri onu oraya kimin bıraktığını görmemişti."
+    },
+    {
+        "instruction": "İki satırlık bir şiir yaz.",
+        "input": "",
+        "output": "Akşam, penceremden içeri sığmayan bir maviydi;\nbense ona bakmakla yetinen bir sessizlik."
+    },
+    {
+        "instruction": "Bir bulmaca sorusu yaz ve cevabını ver.",
+        "input": "",
+        "output": "Soru: Ağzı vardır konuşmaz, yatağı vardır uyumaz. Nedir? Cevap: Nehir."
+    },
+    {
+        "instruction": "Yapay zekâyı bir cümleyle tanımla.",
+        "input": "",
+        "output": "Yapay zekâ, makinelerin veriden öğrenerek insan zekâsı gerektiren görevleri yerine getirmesini sağlayan alandır."
+    },
+    {
+        "instruction": "Makine öğrenmesini bir cümleyle tanımla.",
+        "input": "",
+        "output": "Makine öğrenmesi, bir modelin açık kurallar yazılmadan veriden örüntü öğrenmesini sağlayan yöntemler bütünüdür."
+    },
+    {
+        "instruction": "Büyük dil modelini bir cümleyle tanımla.",
+        "input": "",
+        "output": "Büyük dil modeli, çok miktarda metin üzerinde eğitilerek bir sonraki kelimeyi tahmin etmeyi öğrenen ve böylece metin üretebilen bir yapay sinir ağıdır."
+    },
+    {
+        "instruction": "Token kavramını bir cümleyle açıkla.",
+        "input": "",
+        "output": "Token, bir metnin model tarafından işlenebilmesi için bölündüğü en küçük parçadır; bir kelime, kelime parçası ya da noktalama işareti olabilir."
+    },
+    {
+        "instruction": "Aşırı öğrenmeyi (overfitting) bir cümleyle açıkla.",
+        "input": "",
+        "output": "Aşırı öğrenme, modelin eğitim verisini ezberleyip yeni verilerde başarısını kaybetmesidir."
+    },
+    {
+        "instruction": "Doğrulama kümesinin ne işe yaradığını açıkla.",
+        "input": "",
+        "output": "Doğrulama kümesi, model eğitim sırasında görmediği veriler üzerinde nasıl davrandığını ölçerek aşırı öğrenmeyi fark etmemizi sağlar."
+    },
+    {
+        "instruction": "Bilgisayarda dosya yedeklemenin önemini bir cümleyle anlat.",
+        "input": "",
+        "output": "Yedekleme, donanım arızası ya da insan hatası durumunda verilerin geri getirilebilmesini sağladığı için kritik öneme sahiptir."
+    },
+    {
+        "instruction": "Güçlü bir parolanın üç özelliğini yaz.",
+        "input": "",
+        "output": "1. Yeterince uzun olması. 2. Harf, rakam ve sembol içermesi. 3. Başka hesaplarda tekrar kullanılmaması."
+    },
+    {
+        "instruction": "İnternette bilgi doğruluğunu kontrol etmek için bir yöntem öner.",
+        "input": "",
+        "output": "Aynı bilgiyi birbirinden bağımsız en az iki güvenilir kaynakta doğrulamak iyi bir yöntemdir."
+    },
+    {
+        "instruction": "Bir alışveriş listesi örneği yaz.",
+        "input": "",
+        "output": "1. Ekmek 2. Süt 3. Yumurta 4. Domates 5. Zeytinyağı"
+    },
+    {
+        "instruction": "Sabah rutini için kısa bir plan yaz.",
+        "input": "",
+        "output": "1. Bir bardak su iç. 2. On dakika esneme yap. 3. Günün üç önceliğini yaz."
+    },
+    {
+        "instruction": "Bir bitkinin bakımı için üç madde yaz.",
+        "input": "",
+        "output": "1. Toprağı kuruyunca sula. 2. Doğrudan güneşten koru. 3. Kuruyan yaprakları temizle."
+    },
+    {
+        "instruction": "Yeni bir şehre taşınan birine üç tavsiye ver.",
+        "input": "",
+        "output": "1. Önce mahalleyi yürüyerek tanı. 2. Toplu taşıma kartını ilk gün al. 3. Yakındaki pazarın gününü öğren."
+    },
+    {
+        "instruction": "Bir mülakat öncesi hazırlık için üç madde yaz.",
+        "input": "",
+        "output": "1. Kurumu araştır. 2. Kendi deneyimlerini örneklerle anlatmaya hazırlan. 3. Sormak istediğin soruları yaz."
+    },
+    {
+        "instruction": "Ekip toplantısı için kısa bir gündem yaz.",
+        "input": "",
+        "output": "1. Geçen haftanın özeti. 2. Devam eden işler. 3. Engeller. 4. Bu haftanın öncelikleri."
+    },
+    {
+        "instruction": "Bir ürün açıklaması için tek cümlelik tanıtım yaz.",
+        "input": "",
+        "output": "Günlük kullanım için tasarlanmış, hafif gövdesi ve uzun pil ömrüyle gün boyu yanınızda kalan bir cihaz."
+    },
+    {
+        "instruction": "Bir kütüphane için kısa duyuru metni yaz.",
+        "input": "",
+        "output": "Kütüphanemiz cumartesi günleri 10.00-16.00 saatleri arasında hizmet verecektir; üyelik işlemleri danışmadan yapılabilir."
+    },
+    {
+        "instruction": "Bir etkinlik davetiyesi için kısa metin yaz.",
+        "input": "",
+        "output": "Cuma günü saat 18.00'de düzenleyeceğimiz söyleşiye sizi de aramızda görmekten mutluluk duyarız."
+    },
+    {
+        "instruction": "Bir anket için üç soru yaz.",
+        "input": "",
+        "output": "1. Hizmetimizden genel memnuniyetiniz nedir? 2. Hangi bölümü geliştirmemizi istersiniz? 3. Bizi başkasına önerir misiniz?"
+    },
+    {
+        "instruction": "Trafikte güvenlik için üç kural yaz.",
+        "input": "",
+        "output": "1. Emniyet kemerini her zaman tak. 2. Hız sınırlarına uy. 3. Sürüş sırasında telefonla ilgilenme."
+    },
+    {
+        "instruction": "Depremde alınacak üç önlemi yaz.",
+        "input": "",
+        "output": "1. Ağır eşyaları duvara sabitle. 2. Acil durum çantası hazırla. 3. Evde güvenli alanları önceden belirle."
+    },
+    {
+        "instruction": "Su tasarrufu için üç öneri yaz.",
+        "input": "",
+        "output": "1. Diş fırçalarken musluğu kapat. 2. Sızdıran muslukları onar. 3. Çamaşır ve bulaşık makinesini dolu çalıştır."
+    },
+    {
+        "instruction": "Enerji tasarrufu için üç öneri yaz.",
+        "input": "",
+        "output": "1. Kullanılmayan odaların ışığını kapat. 2. Cihazları bekleme modunda bırakma. 3. Yalıtımı iyileştir."
+    },
+    {
+        "instruction": "Bir günlük yazısı için ilk cümleyi yaz.",
+        "input": "",
+        "output": "Bugün, uzun zamandır ertelediğim o mektubu nihayet yazdım ve zarfı kapatırken elimin titrediğini fark ettim."
+    },
+    {
+        "instruction": "Bir kitabı önerirken kullanılabilecek tek cümlelik yorum yaz.",
+        "input": "",
+        "output": "Yavaş ilerleyen ama her sayfada insanı düşündüren, bitirdikten sonra bir süre üzerinde kalacağınız türden bir kitap."
+    }
+]
