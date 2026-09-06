@@ -95,31 +95,31 @@ def download_file(url, destination, backup_url=None):
 # `requests` kullanan alternatif yol
 """
 def download_file(url, destination):
-    # Dosyayı akış kipinde indirmek için bir GET isteği gönder
+    # Send a GET request to download the file in streaming mode
     response = requests.get(url, stream=True)
 
-    # Toplam dosya boyutunu başlıklardan al; yoksa varsayılan olarak 0 kabul et
+    # Get the total file size from headers, defaulting to 0 if not present
     file_size = int(response.headers.get("content-length", 0))
 
-    # Dosya var mı ve boyutu aynı mı diye bak
+    # Check if file exists and has the same size
     if os.path.exists(destination):
         file_size_local = os.path.getsize(destination)
         if file_size == file_size_local:
             print(f"File already exists and is up-to-date: {destination}")
             return
 
-    # Dosyayı okumak için blok boyutunu tanımla
-    block_size = 1024  # 1 Kilobayt
+    # Define the block size for reading the file
+    block_size = 1024  # 1 Kilobyte
 
-    # İlerleme çubuğunu toplam dosya boyutuyla başlat
-    progress_bar_description = url.split("/")[-1]  # Dosya adını URL'den ayıkla
+    # Initialize the progress bar with total file size
+    progress_bar_description = url.split("/")[-1]  # Extract filename from URL
     with tqdm(total=file_size, unit="iB", unit_scale=True, desc=progress_bar_description) as progress_bar:
-        # Hedef dosyayı ikili yazma kipinde aç
+        # Open the destination file in binary write mode
         with open(destination, "wb") as file:
-            # Dosya verisini parçalar hâlinde dolaş
+            # Iterate over the file data in chunks
             for chunk in response.iter_content(block_size):
-                progress_bar.update(len(chunk))  # İlerleme çubuğunu güncelle
-                file.write(chunk)  # Parçayı dosyaya yaz
+                progress_bar.update(len(chunk))  # Update progress bar
+                file.write(chunk)  # Write the chunk to the file
 """
 
 
