@@ -6,7 +6,7 @@
 import torch
 import chainlit
 
-# For llms_from_scratch installation instructions, see:
+# llms_from_scratch kurulum talimatları için bkz.:
 # https://github.com/rasbt/LLMs-from-scratch/tree/main/pkg
 from llms_from_scratch.kv_cache.qwen3 import (
     Qwen3Model,

@@ -62,19 +62,19 @@ class TransformerBlock(nn.Module):
         self.drop_resid = nn.Dropout(cfg["drop_rate"])
 
     def forward(self, x):
-        # Shortcut connection for attention block
+        # Dikkat bloğu için kestirme (shortcut) bağlantı
         shortcut = x
         x = self.norm1(x)
-        x = self.att(x)   # Shape [batch_size, num_tokens, emb_size]
+        x = self.att(x)   # Şekil [batch_size, num_tokens, emb_size]
         x = self.drop_resid(x)
-        x = x + shortcut  # Add the original input back
+        x = x + shortcut  # Özgün girdiyi geri ekle
 
-        # Shortcut connection for feed-forward block
+        # İleri beslemeli blok için kestirme (shortcut) bağlantı
         shortcut = x
         x = self.norm2(x)
         x = self.ff(x)
         x = self.drop_resid(x)
-        x = x + shortcut  # Add the original input back
+        x = x + shortcut  # Özgün girdiyi geri ekle
 
         return x
 
@@ -96,7 +96,7 @@ class GPTModel(nn.Module):
         batch_size, seq_len = in_idx.shape
         tok_embeds = self.tok_emb(in_idx)
         pos_embeds = self.pos_emb(torch.arange(seq_len, device=in_idx.device))
-        x = tok_embeds + pos_embeds  # Shape [batch_size, num_tokens, emb_size]
+        x = tok_embeds + pos_embeds  # Şekil [batch_size, num_tokens, emb_size]
         x = self.drop_emb(x)
         x = self.trf_blocks(x)
         x = self.final_norm(x)
@@ -105,26 +105,26 @@ class GPTModel(nn.Module):
 
 
 def generate_text_simple(model, idx, max_new_tokens, context_size):
-    # idx is (B, T) array of indices in the current context
+    # idx, mevcut bağlamdaki indekslerin (B, T) boyutlu dizisidir
     for _ in range(max_new_tokens):
 
-        # Crop current context if it exceeds the supported context size
-        # E.g., if LLM supports only 5 tokens, and the context size is 10
-        # then only the last 5 tokens are used as context
+        # Desteklenen bağlam boyutunu aşıyorsa mevcut bağlamı kırp
+        # Ör. LLM yalnızca 5 token destekliyorsa ve bağlam boyutu 10 ise
+        # bağlam olarak yalnızca son 5 token kullanılır
         idx_cond = idx[:, -context_size:]
 
-        # Get the predictions
+        # Tahminleri al
         with torch.no_grad():
             logits = model(idx_cond)
 
-        # Focus only on the last time step
-        # (batch, n_token, vocab_size) becomes (batch, vocab_size)
+        # Yalnızca son zaman adımına odaklan
+        # (batch, n_token, vocab_size) -> (batch, vocab_size) olur
         logits = logits[:, -1, :]
 
-        # Get the idx of the vocab entry with the highest logits value
+        # En yüksek logit değerine sahip sözlük kaydının idx değerini al
         idx_next = torch.argmax(logits, dim=-1, keepdim=True)  # (batch, 1)
 
-        # Append sampled index to the running sequence
+        # Örneklenen indeksi süregelen diziye ekle
         idx = torch.cat((idx, idx_next), dim=1)  # (batch, n_tokens+1)
 
     return idx
@@ -162,19 +162,19 @@ class TransformerBlockFast(nn.Module):
         self.drop_shortcut = nn.Dropout(cfg["drop_rate"])
 
     def forward(self, x):
-        # Shortcut connection for attention block
+        # Dikkat bloğu için kestirme (shortcut) bağlantı
         shortcut = x
         x = self.norm1(x)
-        x = self.att(x)   # Shape [batch_size, num_tokens, emb_size]
+        x = self.att(x)   # Şekil [batch_size, num_tokens, emb_size]
         x = self.drop_shortcut(x)
-        x = x + shortcut  # Add the original input back
+        x = x + shortcut  # Özgün girdiyi geri ekle
 
-        # Shortcut connection for feed-forward block
+        # İleri beslemeli blok için kestirme (shortcut) bağlantı
         shortcut = x
         x = self.norm2(x)
         x = self.ff(x)
         x = self.drop_shortcut(x)
-        x = x + shortcut  # Add the original input back
+        x = x + shortcut  # Özgün girdiyi geri ekle
 
         return x
 

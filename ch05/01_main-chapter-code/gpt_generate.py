@@ -189,7 +189,7 @@ def generate(model, idx, max_new_tokens, context_size, temperature=0.0, top_k=No
     if eos_id is not None and idx.shape[0] != 1:
         raise ValueError("EOS stopping currently supports batch size 1 only")
 
-    # For-loop is the same as before: Get logits, and only focus on last time step
+    # For döngüsü öncekiyle aynı: logit'leri al ve yalnızca son zaman adımına odaklan
     for _ in range(max_new_tokens):
         idx_cond = idx[:, -context_size:]
         with torch.no_grad():
@@ -198,7 +198,7 @@ def generate(model, idx, max_new_tokens, context_size, temperature=0.0, top_k=No
 
         # New: Filter logits with top_k sampling
         if top_k is not None:
-            # Keep only top_k values
+            # Yalnızca en yüksek top_k değeri tut
             top_logits, _ = torch.topk(logits, top_k)
             min_val = top_logits[:, -1]
             logits = torch.where(logits < min_val, torch.tensor(float("-inf")).to(logits.device), logits)
@@ -207,24 +207,24 @@ def generate(model, idx, max_new_tokens, context_size, temperature=0.0, top_k=No
         if temperature > 0.0:
             logits = logits / temperature
 
-            # New (not in book): numerical stability tip to get equivalent results on mps device
-            # subtract rowwise max before softmax
+            # Yeni (kitapta yok): mps cihazında eşdeğer sonuçlar almak için sayısal kararlılık ipucu
+            # softmax'tan önce satır bazında maksimumu çıkar
             logits = logits - logits.max(dim=-1, keepdim=True).values
 
-            # Apply softmax to get probabilities
+            # Olasılıkları elde etmek için softmax uygula
             probs = torch.softmax(logits, dim=-1)  # (batch_size, context_len)
 
-            # Sample from the distribution
+            # Dağılımdan örnekle
             idx_next = torch.multinomial(probs, num_samples=1)  # (batch_size, 1)
 
-        # Otherwise same as before: get idx of the vocab entry with the highest logits value
+        # Aksi hâlde öncekiyle aynı: en yüksek logit değerine sahip sözlük kaydının idx değerini al
         else:
             idx_next = torch.argmax(logits, dim=-1, keepdim=True)  # (batch_size, 1)
 
         if idx_next == eos_id:  # Stop generating early if end-of-sequence token is encountered and eos_id is specified
             break
 
-        # Same as before: append sampled index to the running sequence
+        # Öncekiyle aynı: örneklenen indeksi süregelen diziye ekle
         idx = torch.cat((idx, idx_next), dim=1)  # (batch_size, num_tokens+1)
 
     return idx
@@ -282,9 +282,9 @@ if __name__ == "__main__":
 
 
     BASE_CONFIG = {
-        "vocab_size": 50257,     # Vocabulary size
-        "context_length": 1024,  # Context length
-        "drop_rate": 0.0,        # Dropout rate
+        "vocab_size": 50257,     # Sözcük dağarcığı boyutu
+        "context_length": 1024,  # Bağlam uzunluğu
+        "drop_rate": 0.0,        # Dropout oranı
         "qkv_bias": True         # Query-key-value bias
     }
 

@@ -20,7 +20,7 @@ class Qwen3Model(nn.Module):
     def __init__(self, cfg):
         super().__init__()
 
-        # Main model parameters
+        # Ana model parametreleri
         self.tok_emb = nn.Embedding(cfg["vocab_size"], cfg["emb_dim"], dtype=cfg["dtype"])
 
         self.trf_blocks = nn.ModuleList(  # ModuleList since Sequential can only accept one input, and we need `x, mask, cos, sin`
@@ -29,7 +29,7 @@ class Qwen3Model(nn.Module):
         self.final_norm = RMSNorm(cfg["emb_dim"])
         self.out_head = nn.Linear(cfg["emb_dim"], cfg["vocab_size"], bias=False, dtype=cfg["dtype"])
 
-        # Reusable utilities
+        # Yeniden kullanılabilir yardımcılar
         if cfg["head_dim"] is None:
             head_dim = cfg["emb_dim"] // cfg["n_heads"]
         else:
@@ -45,7 +45,7 @@ class Qwen3Model(nn.Module):
         self.current_pos = 0  # Track current position in KV cache
 
     def forward(self, in_idx, cache=None):
-        # Forward pass
+        # İleri geçiş
         tok_embeds = self.tok_emb(in_idx)
         x = tok_embeds
 
@@ -62,7 +62,7 @@ class Qwen3Model(nn.Module):
             mask = torch.triu(
                 torch.ones(num_tokens, num_tokens, device=x.device, dtype=torch.bool), diagonal=1
             )
-        # Shape (1, 1, num_tokens, num_tokens) to broadcast across batch and heads
+        # Yığın ve başlar boyunca yayınlamak (broadcast) için (1, 1, num_tokens, num_tokens) şekli
         mask = mask[None, None, :, :]
 
         for i, block in enumerate(self.trf_blocks):
@@ -100,17 +100,17 @@ class TransformerBlock(nn.Module):
         self.norm2 = RMSNorm(cfg["emb_dim"], eps=1e-6)
 
     def forward(self, x, mask, cos, sin, start_pos=0, cache=None):
-        # Shortcut connection for attention block
+        # Dikkat bloğu için kestirme (shortcut) bağlantı
         shortcut = x
         x = self.norm1(x)
-        x, next_cache = self.att(x, mask, cos, sin, start_pos=start_pos, cache=cache)  # Shape [batch_size, num_tokens, emb_size]
-        x = x + shortcut  # Add the original input back
+        x, next_cache = self.att(x, mask, cos, sin, start_pos=start_pos, cache=cache)  # Şekil [batch_size, num_tokens, emb_size]
+        x = x + shortcut  # Özgün girdiyi geri ekle
 
-        # Shortcut connection for feed-forward block
+        # İleri beslemeli blok için kestirme (shortcut) bağlantı
         shortcut = x
         x = self.norm2(x)
         x = self.ff(x)
-        x = x + shortcut  # Add the original input back
+        x = x + shortcut  # Özgün girdiyi geri ekle
 
         return x, next_cache
 
@@ -215,23 +215,23 @@ class GroupedQueryAttention(nn.Module):
     def forward(self, x, mask, cos, sin, start_pos=0, cache=None):
         b, num_tokens, _ = x.shape
 
-        # Apply projections
+        # İzdüşümleri uygula
         queries = self.W_query(x)  # (b, num_tokens, num_heads * head_dim)
         keys = self.W_key(x)       # (b, num_tokens, num_kv_groups * head_dim)
         values = self.W_value(x)   # (b, num_tokens, num_kv_groups * head_dim)
 
-        # Reshape
+        # Yeniden şekillendir
         queries = queries.view(b, num_tokens, self.num_heads, self.head_dim).transpose(1, 2)
         keys_new = keys.view(b, num_tokens, self.num_kv_groups, self.head_dim).transpose(1, 2)
         values_new = values.view(b, num_tokens, self.num_kv_groups, self.head_dim).transpose(1, 2)
 
-        # Optional normalization
+        # İsteğe bağlı normalleştirme
         if self.q_norm:
             queries = self.q_norm(queries)
         if self.k_norm:
             keys_new = self.k_norm(keys_new)
 
-        # Apply RoPE
+        # RoPE uygula
         queries = apply_rope(queries, cos, sin, offset=start_pos)
         keys_new = apply_rope(keys_new, cos, sin, offset=start_pos)
 
@@ -245,11 +245,11 @@ class GroupedQueryAttention(nn.Module):
             keys, values = keys_new, values_new
             next_cache = (keys, values)
 
-        # Expand K and V to match number of heads
+        # K ve V tensörlerini baş sayısıyla eşleşecek şekilde genişlet
         keys = keys.repeat_interleave(self.group_size, dim=1)
         values = values.repeat_interleave(self.group_size, dim=1)
 
-        # Attention
+        # Dikkat
         attn_scores = queries @ keys.transpose(2, 3)
         attn_scores = attn_scores.masked_fill(mask, -torch.inf)
         attn_weights = torch.softmax(attn_scores / self.head_dim**0.5, dim=-1)
@@ -261,19 +261,19 @@ class GroupedQueryAttention(nn.Module):
 def compute_rope_params(head_dim, theta_base=10_000, context_length=4096, dtype=torch.float32):
     assert head_dim % 2 == 0, "Embedding dimension must be even"
 
-    # Compute the inverse frequencies
+    # Ters frekansları hesapla
     inv_freq = 1.0 / (theta_base ** (torch.arange(0, head_dim, 2, dtype=dtype)[: (head_dim // 2)].float() / head_dim))
 
-    # Generate position indices
+    # Konum indekslerini üret
     positions = torch.arange(context_length, dtype=dtype)
 
-    # Compute the angles
+    # Açıları hesapla
     angles = positions[:, None] * inv_freq[None, :]  # Shape: (context_length, head_dim // 2)
 
-    # Expand angles to match the head_dim
+    # Açıları head_dim ile eşleşecek şekilde genişlet
     angles = torch.cat([angles, angles], dim=1)  # Shape: (context_length, head_dim)
 
-    # Precompute sine and cosine
+    # Sinüs ve kosinüsü önceden hesapla
     cos = torch.cos(angles)
     sin = torch.sin(angles)
 
@@ -285,19 +285,19 @@ def apply_rope(x, cos, sin, offset=0):
     batch_size, num_heads, seq_len, head_dim = x.shape
     assert head_dim % 2 == 0, "Head dimension must be even"
 
-    # Split x into first half and second half
-    x1 = x[..., : head_dim // 2]  # First half
-    x2 = x[..., head_dim // 2:]  # Second half
+    # x tensörünü birinci ve ikinci yarıya böl
+    x1 = x[..., : head_dim // 2]  # İlk yarı
+    x2 = x[..., head_dim // 2:]  # İkinci yarı
 
-    # Adjust sin and cos shapes
+    # sin ve cos şekillerini ayarla
     cos = cos[offset:offset + seq_len, :].unsqueeze(0).unsqueeze(0)  # Shape: (1, 1, seq_len, head_dim)
     sin = sin[offset:offset + seq_len, :].unsqueeze(0).unsqueeze(0)
 
-    # Apply the rotary transformation
+    # Döner (rotary) dönüşümü uygula
     rotated = torch.cat((-x2, x1), dim=-1)
     x_rotated = (x * cos) + (rotated * sin)
 
-    # It's ok to use lower-precision after applying cos and sin rotation
+    # cos ve sin döndürmesi uygulandıktan sonra daha düşük hassasiyet kullanmak sorun değil
     return x_rotated.to(dtype=x.dtype)
 
 

@@ -12,7 +12,7 @@ import requests
 
 
 def query_model(prompt, model="llama3", url="http://localhost:11434/api/chat"):
-    # Create the data payload as a dictionary
+    # Veri yükünü bir sözlük olarak oluştur
     data = {
         "model": model,
         "messages": [
@@ -25,7 +25,7 @@ def query_model(prompt, model="llama3", url="http://localhost:11434/api/chat"):
         }
     }
 
-    # Send the POST request
+    # POST isteğini gönder
     with requests.post(url, json=data, stream=True, timeout=30) as r:
         r.raise_for_status()
         response_data = ""

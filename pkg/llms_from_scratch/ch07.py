@@ -27,11 +27,11 @@ def download_and_load_file(file_path, url):
     return data
 
 
-# The book originally used the following code below
-# However, urllib uses older protocol settings that
-# can cause problems for some readers using a VPN.
-# The `requests` version above is more robust
-# in that regard.
+# Kitapta aslında aşağıdaki kod kullanılmıştı
+# Ancak urllib, bazı okurların VPN kullanımında sorun
+# çıkarabilen eski protokol ayarlarını kullanıyor.
+# Yukarıdaki `requests` sürümü bu açıdan
+# daha sağlamdır.
 
 
 # import urllib
@@ -70,7 +70,7 @@ class InstructionDataset(Dataset):
     def __init__(self, data, tokenizer):
         self.data = data
 
-        # Pre-tokenize texts
+        # Metinleri önceden token'lara ayır
         self.encoded_texts = []
         for entry in data:
             instruction_plus_input = format_input(entry)
@@ -92,30 +92,30 @@ def custom_collate_draft_1(
     pad_token_id=50256,
     device="cpu"
 ):
-    # Find the longest sequence in the batch
-    # and increase the max length by +1, which will add one extra
-    # padding token below
+    # Yığındaki en uzun diziyi bul
+    # ve maksimum uzunluğu +1 artır; bu, aşağıda fazladan
+    # bir dolgu token'ı ekleyecek
     batch_max_length = max(len(item)+1 for item in batch)
 
-    # Pad and prepare inputs
+    # Girdileri doldur ve hazırla
     inputs_lst = []
 
     for item in batch:
         new_item = item.copy()
-        # Add an <|endoftext|> token
+        # Bir <|endoftext|> token'ı ekle
         new_item += [pad_token_id]
-        # Pad sequences to batch_max_length
+        # Dizileri batch_max_length uzunluğuna doldur
         padded = (
             new_item + [pad_token_id] *
             (batch_max_length - len(new_item))
         )
-        # Via padded[:-1], we remove the extra padded token
-        # that has been added via the +1 setting in batch_max_length
-        # (the extra padding token will be relevant in later codes)
+        # padded[:-1] ile, batch_max_length içindeki +1 ayarıyla eklenmiş olan
+        # fazladan dolgu token'ını kaldırıyoruz
+        # (fazladan dolgu token'ı ilerideki kodlarda önem kazanacak)
         inputs = torch.tensor(padded[:-1])
         inputs_lst.append(inputs)
 
-    # Convert list of inputs to tensor and transfer to target device
+    # Girdi listesini tensöre dönüştür ve hedef cihaza aktar
     inputs_tensor = torch.stack(inputs_lst).to(device)
     return inputs_tensor
 
@@ -125,17 +125,17 @@ def custom_collate_draft_2(
     pad_token_id=50256,
     device="cpu"
 ):
-    # Find the longest sequence in the batch
+    # Yığındaki en uzun diziyi bul
     batch_max_length = max(len(item)+1 for item in batch)
 
-    # Pad and prepare inputs
+    # Girdileri doldur ve hazırla
     inputs_lst, targets_lst = [], []
 
     for item in batch:
         new_item = item.copy()
-        # Add an <|endoftext|> token
+        # Bir <|endoftext|> token'ı ekle
         new_item += [pad_token_id]
-        # Pad sequences to max_length
+        # Dizileri max_length uzunluğuna doldur
         padded = (
             new_item + [pad_token_id] *
             (batch_max_length - len(new_item))
@@ -145,7 +145,7 @@ def custom_collate_draft_2(
         inputs_lst.append(inputs)
         targets_lst.append(targets)
 
-    # Convert list of inputs to tensor and transfer to target device
+    # Girdi listesini tensöre dönüştür ve hedef cihaza aktar
     inputs_tensor = torch.stack(inputs_lst).to(device)
     targets_tensor = torch.stack(targets_lst).to(device)
     return inputs_tensor, targets_tensor
@@ -158,17 +158,17 @@ def custom_collate_fn(
     allowed_max_length=None,
     device="cpu"
 ):
-    # Find the longest sequence in the batch
+    # Yığındaki en uzun diziyi bul
     batch_max_length = max(len(item)+1 for item in batch)
 
-    # Pad and prepare inputs and targets
+    # Girdileri ve hedefleri doldur ve hazırla
     inputs_lst, targets_lst = [], []
 
     for item in batch:
         new_item = item.copy()
-        # Add an <|endoftext|> token
+        # Bir <|endoftext|> token'ı ekle
         new_item += [pad_token_id]
-        # Pad sequences to max_length
+        # Dizileri max_length uzunluğuna doldur
         padded = (
             new_item + [pad_token_id] *
             (batch_max_length - len(new_item))
@@ -190,7 +190,7 @@ def custom_collate_fn(
         inputs_lst.append(inputs)
         targets_lst.append(targets)
 
-    # Convert list of inputs and targets to tensors and transfer to target device
+    # Girdi ve hedef listelerini tensörlere dönüştür ve hedef cihaza aktar
     inputs_tensor = torch.stack(inputs_lst).to(device)
     targets_tensor = torch.stack(targets_lst).to(device)
 
@@ -211,7 +211,7 @@ def query_model(
     model="llama3",
     url="http://localhost:11434/api/chat"
 ):
-    # Create the data payload as a dictionary
+    # Veri yükünü bir sözlük olarak oluştur
     data = {
         "model": model,
         "messages": [
@@ -224,7 +224,7 @@ def query_model(
         }
     }
 
-    # Send the POST request
+    # POST isteğini gönder
     with requests.post(url, json=data, stream=True, timeout=30) as r:
         r.raise_for_status()
         response_data = ""

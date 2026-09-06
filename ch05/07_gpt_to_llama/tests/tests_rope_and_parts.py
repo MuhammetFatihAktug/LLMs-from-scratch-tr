@@ -103,23 +103,23 @@ def notebook():
             path = os.path.join(current_dir, "..", fullname + ".ipynb")
             path = os.path.normpath(path)
 
-            # Load the notebook
+            # Not defterini yükle
             if not os.path.exists(path):
                 raise FileNotFoundError(f"Notebook file not found at: {path}")
 
             with io.open(path, "r", encoding="utf-8") as f:
                 nb = nbformat.read(f, as_version=4)
 
-            # Create a module to store the imported functions and classes
+            # İçe aktarılan fonksiyon ve sınıfları tutacak bir modül oluştur
             mod = types.ModuleType(fullname)
             sys.modules[fullname] = mod
 
-            # Go through the notebook cells and only execute function or class definitions
+            # Not defteri hücrelerini gez ve yalnızca fonksiyon ya da sınıf tanımlarını çalıştır
             for cell in nb.cells:
                 if cell.cell_type == "code":
                     cell_code = cell.source
                     for name in names:
-                        # Check for function or class definitions
+                        # Fonksiyon veya sınıf tanımı mı diye bak
                         if f"def {name}" in cell_code or f"class {name}" in cell_code:
                             exec(cell_code, mod.__dict__)
 
@@ -144,21 +144,21 @@ def test_rope_llama2(notebook):
 
     this_nb = notebook["converting-gpt-to-llama2"]
 
-    # Settings
+    # Ayarlar
     batch_size = 1
     context_len = 4096
     num_heads = 4
     head_dim = 16
     theta_base = 10_000
 
-    # Instantiate RoPE parameters
+    # RoPE parametrelerini örnekle
     cos, sin = this_nb.precompute_rope_params(head_dim=head_dim, context_length=context_len)
 
-    # Dummy query and key tensors
+    # Yapay sorgu ve anahtar tensörleri
     queries = torch.randn(batch_size, num_heads, context_len, head_dim)
     keys = torch.randn(batch_size, num_heads, context_len, head_dim)
 
-    # Apply rotary position embeddings
+    # Döner konum gömmelerini uygula
     queries_rot = this_nb.compute_rope(queries, cos, sin)
     keys_rot = this_nb.compute_rope(keys, cos, sin)
 
@@ -209,26 +209,26 @@ def test_rope_llama3(notebook):
     nb1 = notebook["converting-gpt-to-llama2"]
     nb2 = notebook["converting-llama2-to-llama3"]
 
-    # Settings
+    # Ayarlar
     batch_size = 1
     context_len = 8192
     num_heads = 4
     head_dim = 16
     theta_base = 500_000
 
-    # Instantiate RoPE parameters
+    # RoPE parametrelerini örnekle
     cos, sin = nb2.precompute_rope_params(
         head_dim=head_dim,
         context_length=context_len,
         theta_base=theta_base
     )
 
-    # Dummy query and key tensors
+    # Yapay sorgu ve anahtar tensörleri
     torch.manual_seed(123)
     queries = torch.randn(batch_size, num_heads, context_len, head_dim)
     keys = torch.randn(batch_size, num_heads, context_len, head_dim)
 
-    # Apply rotary position embeddings
+    # Döner konum gömmelerini uygula
     queries_rot = nb1.compute_rope(queries, cos, sin)
     keys_rot = nb1.compute_rope(keys, cos, sin)
 
@@ -279,7 +279,7 @@ def test_rope_llama3_12(notebook):
     nb1 = notebook["converting-gpt-to-llama2"]
     nb2 = notebook["converting-llama2-to-llama3"]
 
-    # Settings
+    # Ayarlar
     batch_size = 1
     context_len = 8192
     num_heads = 4
@@ -293,7 +293,7 @@ def test_rope_llama3_12(notebook):
         "original_context_length": 8192,
     }
 
-    # Instantiate RoPE parameters
+    # RoPE parametrelerini örnekle
     cos, sin = nb2.precompute_rope_params(
         head_dim=head_dim,
         theta_base=rope_theta,
@@ -301,12 +301,12 @@ def test_rope_llama3_12(notebook):
         freq_config=rope_config,
     )
 
-    # Dummy query and key tensors
+    # Yapay sorgu ve anahtar tensörleri
     torch.manual_seed(123)
     queries = torch.randn(batch_size, num_heads, context_len, head_dim)
     keys = torch.randn(batch_size, num_heads, context_len, head_dim)
 
-    # Apply rotary position embeddings
+    # Döner konum gömmelerini uygula
     queries_rot = nb1.compute_rope(queries, cos, sin)
     keys_rot = nb1.compute_rope(keys, cos, sin)
 

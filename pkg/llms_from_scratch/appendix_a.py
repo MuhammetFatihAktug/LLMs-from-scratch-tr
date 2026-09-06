@@ -13,15 +13,15 @@ class NeuralNetwork(torch.nn.Module):
 
         self.layers = torch.nn.Sequential(
 
-            # 1st hidden layer
+            # 1. gizli katman
             torch.nn.Linear(num_inputs, 30),
             torch.nn.ReLU(),
 
-            # 2nd hidden layer
+            # 2. gizli katman
             torch.nn.Linear(30, 20),
             torch.nn.ReLU(),
 
-            # output layer
+            # çıkış katmanı
             torch.nn.Linear(20, num_outputs),
         )
 

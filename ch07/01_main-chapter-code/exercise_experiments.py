@@ -38,7 +38,7 @@ class InstructionDataset(Dataset):
     def __init__(self, data, tokenizer):
         self.data = data
 
-        # Pre-tokenize texts
+        # Metinleri önceden token'lara ayır
         self.encoded_texts = []
         for entry in data:
             instruction_plus_input = format_input(entry)
@@ -88,7 +88,7 @@ class InstructionDatasetPhi(Dataset):
     def __init__(self, data, tokenizer):
         self.data = data
 
-        # Pre-tokenize texts
+        # Metinleri önceden token'lara ayır
         self.encoded_texts = []
         for entry in data:
 
@@ -137,10 +137,10 @@ class LoRALayer(torch.nn.Module):
 def replace_linear_with_lora(model, rank, alpha):
     for name, module in model.named_children():
         if isinstance(module, torch.nn.Linear):
-            # Replace the Linear layer with LinearWithLoRA
+            # Linear katmanını LinearWithLoRA ile değiştir
             setattr(model, name, LinearWithLoRA(module, rank, alpha))
         else:
-            # Recursively apply the same function to child modules
+            # Aynı fonksiyonu alt modüllere özyinelemeli olarak uygula
             replace_linear_with_lora(module, rank, alpha)
 
 
@@ -151,17 +151,17 @@ def custom_collate_fn(
     allowed_max_length=None,
     device="cpu"
 ):
-    # Find the longest sequence in the batch
+    # Yığındaki en uzun diziyi bul
     batch_max_length = max(len(item)+1 for item in batch)
 
-    # Pad and prepare inputs and targets
+    # Girdileri ve hedefleri doldur ve hazırla
     inputs_lst, targets_lst = [], []
 
     for item in batch:
         new_item = item.copy()
-        # Add an <|endoftext|> token
+        # Bir <|endoftext|> token'ı ekle
         new_item += [pad_token_id]
-        # Pad sequences to max_length
+        # Dizileri max_length uzunluğuna doldur
         padded = new_item + [pad_token_id] * (batch_max_length - len(new_item))
         inputs = torch.tensor(padded[:-1])  # Truncate the last token for inputs
         targets = torch.tensor(padded[1:])  # Shift +1 to the right for targets
@@ -180,7 +180,7 @@ def custom_collate_fn(
         inputs_lst.append(inputs)
         targets_lst.append(targets)
 
-    # Convert list of inputs and targets to tensors and transfer to target device
+    # Girdi ve hedef listelerini tensörlere dönüştür ve hedef cihaza aktar
     inputs_tensor = torch.stack(inputs_lst).to(device)
     targets_tensor = torch.stack(targets_lst).to(device)
 
@@ -194,22 +194,22 @@ def custom_collate_with_masking_fn(
     allowed_max_length=None,
     device="cpu"
 ):
-    # Find the longest sequence in the batch
+    # Yığındaki en uzun diziyi bul
     batch_max_length = max(len(item)+1 for instruction_length, item in batch)   # New: batch is now a tuple
 
-    # Pad and prepare inputs and targets
+    # Girdileri ve hedefleri doldur ve hazırla
     inputs_lst, targets_lst = [], []
 
     for instruction_length, item in batch:  # New: batch is now a tuple
         new_item = item.copy()
-        # Add an <|endoftext|> token
+        # Bir <|endoftext|> token'ı ekle
         new_item += [pad_token_id]
-        # Pad sequences to max_length
+        # Dizileri max_length uzunluğuna doldur
         padded = new_item + [pad_token_id] * (batch_max_length - len(new_item))
         inputs = torch.tensor(padded[:-1])  # Truncate the last token for inputs
         targets = torch.tensor(padded[1:])  # Shift +1 to the right for targets
 
-        # Replace all but the first padding tokens in targets by ignore_index
+        # Hedeflerde ilk dolgu token'ı dışındaki tümünü ignore_index ile değiştir
         mask = targets == pad_token_id
         indices = torch.nonzero(mask).squeeze()
         if indices.numel() > 1:
@@ -218,7 +218,7 @@ def custom_collate_with_masking_fn(
         # New: Mask all input and instruction tokens in the targets
         targets[:instruction_length-1] = -100
 
-        # Optionally truncate to maximum sequence length
+        # İsteğe bağlı olarak maksimum dizi uzunluğuna kırp
         if allowed_max_length is not None:
             inputs = inputs[:allowed_max_length]
             targets = targets[:allowed_max_length]
@@ -226,7 +226,7 @@ def custom_collate_with_masking_fn(
         inputs_lst.append(inputs)
         targets_lst.append(targets)
 
-    # Convert list of inputs and targets to tensors and transfer to target device
+    # Girdi ve hedef listelerini tensörlere dönüştür ve hedef cihaza aktar
     inputs_tensor = torch.stack(inputs_lst).to(device)
     targets_tensor = torch.stack(targets_lst).to(device)
 
@@ -275,7 +275,7 @@ def format_input(entry):
 def plot_losses(epochs_seen, tokens_seen, train_losses, val_losses, plot_name):
     fig, ax1 = plt.subplots(figsize=(12, 6))
 
-    # Plot training and validation loss against epochs
+    # Eğitim ve doğrulama kaybını dönemlere karşı çiz
     ax1.plot(epochs_seen, train_losses, label="Training loss")
     ax1.plot(epochs_seen, val_losses, linestyle="-.", label="Validation loss")
     ax1.set_xlabel("Epochs")
@@ -283,7 +283,7 @@ def plot_losses(epochs_seen, tokens_seen, train_losses, val_losses, plot_name):
     ax1.legend(loc="upper right")
     ax1.xaxis.set_major_locator(MaxNLocator(integer=True))  # only show integer labels on x-axis
 
-    # Create a second x-axis for tokens seen
+    # Görülen token'lar için ikinci bir x ekseni oluştur
     ax2 = ax1.twiny()  # Create a second x-axis that shares the same y-axis
     ax2.plot(tokens_seen, train_losses, alpha=0)  # Invisible plot for aligning ticks
     ax2.set_xlabel("Tokens seen")
@@ -389,9 +389,9 @@ def main(mask_instructions=False, alpaca52k=False, phi3_prompt=False, lora=False
     # Load pretrained model
     #######################################
     BASE_CONFIG = {
-        "vocab_size": 50257,     # Vocabulary size
-        "context_length": 1024,  # Context length
-        "drop_rate": 0.0,        # Dropout rate
+        "vocab_size": 50257,     # Sözcük dağarcığı boyutu
+        "context_length": 1024,  # Bağlam uzunluğu
+        "drop_rate": 0.0,        # Dropout oranı
         "qkv_bias": True         # Query-key-value bias
     }
 

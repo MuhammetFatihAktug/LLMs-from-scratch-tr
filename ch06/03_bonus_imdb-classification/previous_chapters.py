@@ -3,9 +3,9 @@
 #   - https://www.manning.com/books/build-a-large-language-model-from-scratch
 # Code: https://github.com/rasbt/LLMs-from-scratch
 #
-# This file collects all the relevant code that we covered thus far
-# throughout Chapters 2-5.
-# This file can be run as a standalone script.
+# Bu dosya, şimdiye dek ele aldığımız tüm ilgili kodu
+# 2-5. bölümler boyunca bir araya toplar.
+# Bu dosya bağımsız bir betik olarak çalıştırılabilir.
 
 import numpy as np
 import tiktoken
@@ -24,10 +24,10 @@ class GPTDatasetV1(Dataset):
         self.input_ids = []
         self.target_ids = []
 
-        # Tokenize the entire text
+        # Metnin tamamını token'lara ayır
         token_ids = tokenizer.encode(txt, allowed_special={"<|endoftext|>"})
 
-        # Use a sliding window to chunk the book into overlapping sequences of max_length
+        # Kitabı max_length uzunluğunda örtüşen dizilere bölmek için kayan pencere kullan
         for i in range(0, len(token_ids) - max_length, stride):
             input_chunk = token_ids[i:i + max_length]
             target_chunk = token_ids[i + 1: i + max_length + 1]
@@ -43,13 +43,13 @@ class GPTDatasetV1(Dataset):
 
 def create_dataloader_v1(txt, batch_size=4, max_length=256,
                          stride=128, shuffle=True, drop_last=True, num_workers=0):
-    # Initialize the tokenizer
+    # Tokenizer'ı başlat
     tokenizer = tiktoken.get_encoding("gpt2")
 
-    # Create dataset
+    # Veri kümesini oluştur
     dataset = GPTDatasetV1(txt, tokenizer, max_length, stride)
 
-    # Create dataloader
+    # Veri yükleyiciyi oluştur
     dataloader = DataLoader(
         dataset, batch_size=batch_size, shuffle=shuffle, drop_last=drop_last, num_workers=num_workers)
 
@@ -57,7 +57,7 @@ def create_dataloader_v1(txt, batch_size=4, max_length=256,
 
 
 #####################################
-# Chapter 3
+# Bölüm 3
 #####################################
 class MultiHeadAttention(nn.Module):
     def __init__(self, d_in, d_out, context_length, dropout, num_heads, qkv_bias=False):
@@ -66,12 +66,12 @@ class MultiHeadAttention(nn.Module):
 
         self.d_out = d_out
         self.num_heads = num_heads
-        self.head_dim = d_out // num_heads  # Reduce the projection dim to match desired output dim
+        self.head_dim = d_out // num_heads  # İzdüşüm boyutunu, istenen çıktı boyutuyla eşleşecek şekilde küçült
 
         self.W_query = nn.Linear(d_in, d_out, bias=qkv_bias)
         self.W_key = nn.Linear(d_in, d_out, bias=qkv_bias)
         self.W_value = nn.Linear(d_in, d_out, bias=qkv_bias)
-        self.out_proj = nn.Linear(d_out, d_out)  # Linear layer to combine head outputs
+        self.out_proj = nn.Linear(d_out, d_out)  # Başlık çıktılarını birleştirmek için doğrusal katman
         self.dropout = nn.Dropout(dropout)
         self.register_buffer("mask", torch.triu(torch.ones(context_length, context_length), diagonal=1))
 
@@ -82,8 +82,8 @@ class MultiHeadAttention(nn.Module):
         queries = self.W_query(x)
         values = self.W_value(x)
 
-        # We implicitly split the matrix by adding a `num_heads` dimension
-        # Unroll last dim: (b, num_tokens, d_out) -> (b, num_tokens, num_heads, head_dim)
+        # Matrisi, bir `num_heads` boyutu ekleyerek örtük olarak bölüyoruz
+        # Son boyutu aç: (b, num_tokens, d_out) -> (b, num_tokens, num_heads, head_dim)
         keys = keys.view(b, num_tokens, self.num_heads, self.head_dim)
         values = values.view(b, num_tokens, self.num_heads, self.head_dim)
         queries = queries.view(b, num_tokens, self.num_heads, self.head_dim)
@@ -93,13 +93,13 @@ class MultiHeadAttention(nn.Module):
         queries = queries.transpose(1, 2)
         values = values.transpose(1, 2)
 
-        # Compute scaled dot-product attention (aka self-attention) with a causal mask
-        attn_scores = queries @ keys.transpose(2, 3)  # Dot product for each head
+        # Nedensel maskeyle ölçeklenmiş nokta çarpımı dikkatini (öz-dikkat) hesapla
+        attn_scores = queries @ keys.transpose(2, 3)  # Her başlık için iç çarpım
 
-        # Original mask truncated to the number of tokens and converted to boolean
+        # Orijinal maske, token sayısına kırpılıp boole değere dönüştürüldü
         mask_bool = self.mask.bool()[:num_tokens, :num_tokens]
 
-        # Use the mask to fill attention scores
+        # Dikkat skorlarını doldurmak için maskeyi kullan
         attn_scores.masked_fill_(mask_bool, -torch.inf)
 
         attn_weights = torch.softmax(attn_scores / keys.shape[-1]**0.5, dim=-1)
@@ -108,15 +108,15 @@ class MultiHeadAttention(nn.Module):
         # Shape: (b, num_tokens, num_heads, head_dim)
         context_vec = (attn_weights @ values).transpose(1, 2)
 
-        # Combine heads, where self.d_out = self.num_heads * self.head_dim
+        # Başları birleştir; burada self.d_out = self.num_heads * self.head_dim
         context_vec = context_vec.reshape(b, num_tokens, self.d_out)
-        context_vec = self.out_proj(context_vec)  # optional projection
+        context_vec = self.out_proj(context_vec)  # isteğe bağlı izdüşüm
 
         return context_vec
 
 
 #####################################
-# Chapter 4
+# Bölüm 4
 #####################################
 class LayerNorm(nn.Module):
     def __init__(self, emb_dim):
@@ -172,19 +172,19 @@ class TransformerBlock(nn.Module):
         self.drop_resid = nn.Dropout(cfg["drop_rate"])
 
     def forward(self, x):
-        # Shortcut connection for attention block
+        # Dikkat bloğu için kestirme (shortcut) bağlantı
         shortcut = x
         x = self.norm1(x)
-        x = self.att(x)   # Shape [batch_size, num_tokens, emb_size]
+        x = self.att(x)   # Şekil [batch_size, num_tokens, emb_size]
         x = self.drop_resid(x)
-        x = x + shortcut  # Add the original input back
+        x = x + shortcut  # Özgün girdiyi geri ekle
 
-        # Shortcut connection for feed-forward block
+        # İleri beslemeli blok için kestirme (shortcut) bağlantı
         shortcut = x
         x = self.norm2(x)
         x = self.ff(x)
         x = self.drop_resid(x)
-        x = x + shortcut  # Add the original input back
+        x = x + shortcut  # Özgün girdiyi geri ekle
 
         return x
 
@@ -206,7 +206,7 @@ class GPTModel(nn.Module):
         batch_size, seq_len = in_idx.shape
         tok_embeds = self.tok_emb(in_idx)
         pos_embeds = self.pos_emb(torch.arange(seq_len, device=in_idx.device))
-        x = tok_embeds + pos_embeds  # Shape [batch_size, num_tokens, emb_size]
+        x = tok_embeds + pos_embeds  # Şekil [batch_size, num_tokens, emb_size]
         x = self.drop_emb(x)
         x = self.trf_blocks(x)
         x = self.final_norm(x)
@@ -215,26 +215,26 @@ class GPTModel(nn.Module):
 
 
 def generate_text_simple(model, idx, max_new_tokens, context_size):
-    # idx is (B, T) array of indices in the current context
+    # idx, mevcut bağlamdaki indekslerin (B, T) boyutlu dizisidir
     for _ in range(max_new_tokens):
 
-        # Crop current context if it exceeds the supported context size
-        # E.g., if LLM supports only 5 tokens, and the context size is 10
-        # then only the last 5 tokens are used as context
+        # Desteklenen bağlam boyutunu aşıyorsa mevcut bağlamı kırp
+        # Ör. LLM yalnızca 5 token destekliyorsa ve bağlam boyutu 10 ise
+        # bağlam olarak yalnızca son 5 token kullanılır
         idx_cond = idx[:, -context_size:]
 
-        # Get the predictions
+        # Tahminleri al
         with torch.no_grad():
             logits = model(idx_cond)
 
-        # Focus only on the last time step
-        # (batch, n_token, vocab_size) becomes (batch, vocab_size)
+        # Yalnızca son zaman adımına odaklan
+        # (batch, n_token, vocab_size) -> (batch, vocab_size) olur
         logits = logits[:, -1, :]
 
-        # Get the idx of the vocab entry with the highest logits value
+        # En yüksek logit değerine sahip sözlük kaydının idx değerini al
         idx_next = torch.argmax(logits, dim=-1, keepdim=True)  # (batch, 1)
 
-        # Append sampled index to the running sequence
+        # Örneklenen indeksi süregelen diziye ekle
         idx = torch.cat((idx, idx_next), dim=1)  # (batch, n_tokens+1)
 
     return idx

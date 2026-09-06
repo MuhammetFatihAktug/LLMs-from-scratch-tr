@@ -38,7 +38,7 @@ def generate_text_simple_stream(model, token_ids, max_new_tokens, eos_token_id=N
         cache = KVCache(n_layers=model.cfg["n_layers"])
         model.reset_kv_cache()
 
-        # Prime the cache with the initial context
+        # Önbelleği başlangıç bağlamıyla doldur
         logits = model(token_ids, cache=cache)
 
         for _ in range(max_new_tokens):
@@ -51,5 +51,5 @@ def generate_text_simple_stream(model, token_ids, max_new_tokens, eos_token_id=N
 
             token_ids = torch.cat([token_ids, next_token], dim=1)
 
-            # Feed only the new token to the model; cache handles history
+            # Modele yalnızca yeni token'ı ver; geçmişi önbellek yönetir
             logits = model(next_token, cache=cache)

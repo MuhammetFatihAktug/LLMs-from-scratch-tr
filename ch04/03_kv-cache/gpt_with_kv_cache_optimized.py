@@ -1,6 +1,6 @@
-# This file collects all the relevant code that we covered thus far
-# throughout Chapters 3-4.
-# This file can be run as a standalone script.
+# Bu dosya, şimdiye dek ele aldığımız tüm ilgili kodu
+# 3-4. bölümler boyunca bir araya toplar.
+# Bu dosya bağımsız bir betik olarak çalıştırılabilir.
 
 import time
 import tiktoken
@@ -9,7 +9,7 @@ import torch.nn as nn
 
 
 #####################################
-# Chapter 3
+# Bölüm 3
 #####################################
 class MultiHeadAttention(nn.Module):
     def __init__(self, d_in, d_out, context_length, dropout, num_heads, qkv_bias=False, max_seq_len=None, window_size=None):
@@ -18,16 +18,16 @@ class MultiHeadAttention(nn.Module):
 
         self.d_out = d_out
         self.num_heads = num_heads
-        self.head_dim = d_out // num_heads  # Reduce the projection dim to match desired output dim
+        self.head_dim = d_out // num_heads  # İzdüşüm boyutunu, istenen çıktı boyutuyla eşleşecek şekilde küçült
 
         self.W_query = nn.Linear(d_in, d_out, bias=qkv_bias)
         self.W_key = nn.Linear(d_in, d_out, bias=qkv_bias)
         self.W_value = nn.Linear(d_in, d_out, bias=qkv_bias)
-        self.out_proj = nn.Linear(d_out, d_out)  # Linear layer to combine head outputs
+        self.out_proj = nn.Linear(d_out, d_out)  # Başlık çıktılarını birleştirmek için doğrusal katman
         self.dropout = nn.Dropout(dropout)
 
         ####################################################
-        # NEW
+        # YENİ
         self.max_seq_len = max_seq_len or context_length
         self.window_size = window_size or self.max_seq_len
         self.register_buffer("cache_k", None, persistent=False)
@@ -38,7 +38,7 @@ class MultiHeadAttention(nn.Module):
         b, num_tokens, d_in = x.shape
 
         if use_cache:
-            # to prevent self.ptr_cur became negative
+            # self.ptr_cur değerinin negatife düşmesini önlemek için
             assert num_tokens <= self.window_size, (
                 f"Input chunk size ({num_tokens}) exceeds KV cache window size ({self.window_size}). "
             )
@@ -47,8 +47,8 @@ class MultiHeadAttention(nn.Module):
         values_new = self.W_value(x)
         queries = self.W_query(x)
 
-        # We implicitly split the matrix by adding a `num_heads` dimension
-        # Unroll last dim: (b, num_tokens, d_out) -> (b, num_tokens, num_heads, head_dim)
+        # Matrisi, bir `num_heads` boyutu ekleyerek örtük olarak bölüyoruz
+        # Son boyutu aç: (b, num_tokens, d_out) -> (b, num_tokens, num_heads, head_dim)
         keys_new = keys_new.view(b, num_tokens, self.num_heads, self.head_dim)
         values_new = values_new.view(b, num_tokens, self.num_heads, self.head_dim)
         queries = queries.view(b, num_tokens, self.num_heads, self.head_dim)
@@ -59,22 +59,22 @@ class MultiHeadAttention(nn.Module):
         queries = queries.transpose(1, 2)
 
         ####################################################
-        # NEW
+        # YENİ
         if use_cache:
             if self.cache_k is None or self.cache_k.size(0) != b:
                 self.cache_k = torch.zeros(b, self.num_heads,
                                            self.window_size, self.head_dim,
                                            device=x.device)
                 self.cache_v = torch.zeros_like(self.cache_k)
-                self.ptr_cur = 0  # pointer to next free slot
+                self.ptr_cur = 0  # bir sonraki boş yuvayı gösteren imleç
 
             # if incoming chunk would overflow discard oldest tokens
             if self.ptr_cur + num_tokens > self.window_size:
                 overflow = self.ptr_cur + num_tokens - self.window_size
-                # shift everything left by `overflow` (cheap view-copy)
+                # her şeyi `overflow` kadar sola kaydır (ucuz görünüm kopyası)
                 self.cache_k[:, :, :-overflow, :] = self.cache_k[:, :, overflow:, :].clone()
                 self.cache_v[:, :, :-overflow, :] = self.cache_v[:, :, overflow:, :].clone()
-                self.ptr_cur -= overflow  # pointer after shift
+                self.ptr_cur -= overflow  # kaydırmadan sonraki imleç
 
             self.cache_k[:, :, self.ptr_cur:self.ptr_cur + num_tokens, :] = keys_new
             self.cache_v[:, :, self.ptr_cur:self.ptr_cur + num_tokens, :] = values_new
@@ -84,27 +84,27 @@ class MultiHeadAttention(nn.Module):
             values = self.cache_v[:, :, :self.ptr_cur, :]
         else:
             keys, values = keys_new, values_new
-            self.ptr_cur = 0  # keep pointer sane if you interleave modes
+            self.ptr_cur = 0  # kipleri iç içe kullanırsanız imleci tutarlı tut
         ####################################################
-        # Compute scaled dot-product attention (aka self-attention) with a causal mask
-        attn_scores = queries @ keys.transpose(2, 3)  # Dot product for each head
+        # Nedensel maskeyle ölçeklenmiş nokta çarpımı dikkatini (öz-dikkat) hesapla
+        attn_scores = queries @ keys.transpose(2, 3)  # Her başlık için iç çarpım
 
         ####################################################
-        # NEW
+        # YENİ
         K = attn_scores.size(-1)
 
         if num_tokens == K:
-            # No cache → use the pre‑baked triangular mask slice
+            # Önbellek yok → önceden hazırlanmış üçgen maske dilimini kullan
             causal_mask = torch.triu(torch.ones(num_tokens, K, device=x.device, dtype=torch.bool), diagonal=1)
         else:
             # Cached: need to offset the diagonal by (K − num_tokens)
-            offset = K - num_tokens  # number of tokens already in cache before this chunk
+            offset = K - num_tokens  # bu parçadan önce önbellekte bulunan token sayısı
             row_idx = torch.arange(num_tokens, device=x.device).unsqueeze(1)  # (num_tokens, 1)
             col_idx = torch.arange(K, device=x.device).unsqueeze(0)           # (1, K)
-            causal_mask = row_idx + offset < col_idx                          # True where j > i+offset
+            causal_mask = row_idx + offset < col_idx                          # j > i+offset olan yerlerde True
         ####################################################
 
-        # Use the mask to fill attention scores
+        # Dikkat skorlarını doldurmak için maskeyi kullan
         attn_scores.masked_fill_(causal_mask.unsqueeze(0).unsqueeze(0), -torch.inf)
 
         attn_weights = torch.softmax(attn_scores / keys.shape[-1]**0.5, dim=-1)
@@ -113,21 +113,21 @@ class MultiHeadAttention(nn.Module):
         # Shape: (b, num_tokens, num_heads, head_dim)
         context_vec = (attn_weights @ values).transpose(1, 2)
 
-        # Combine heads, where self.d_out = self.num_heads * self.head_dim
+        # Başları birleştir; burada self.d_out = self.num_heads * self.head_dim
         context_vec = context_vec.contiguous().view(b, num_tokens, self.d_out)
-        context_vec = self.out_proj(context_vec)  # optional projection
+        context_vec = self.out_proj(context_vec)  # isteğe bağlı izdüşüm
 
         return context_vec
 
     ####################################################
-    # NEW
+    # YENİ
     def reset_cache(self):
         self.cache_k, self.cache_v = None, None
     ####################################################
 
 
 #####################################
-# Chapter 4
+# Bölüm 4
 #####################################
 class LayerNorm(nn.Module):
     def __init__(self, emb_dim):
@@ -177,7 +177,7 @@ class TransformerBlock(nn.Module):
             num_heads=cfg["n_heads"],
             dropout=cfg["drop_rate"],
             qkv_bias=cfg["qkv_bias"],
-            window_size=cfg["kv_window_size"] if "kv_window_size" in cfg else cfg["context_length"]   # NEW
+            window_size=cfg["kv_window_size"] if "kv_window_size" in cfg else cfg["context_length"]   # YENİ
         )
         self.ff = FeedForward(cfg)
         self.norm1 = LayerNorm(cfg["emb_dim"])
@@ -185,25 +185,25 @@ class TransformerBlock(nn.Module):
         self.drop_shortcut = nn.Dropout(cfg["drop_rate"])
 
     def forward(self, x, use_cache=False):
-        # Shortcut connection for attention block
+        # Dikkat bloğu için kestirme (shortcut) bağlantı
         shortcut = x
         x = self.norm1(x)
 
         # x = self.att(x)   # Shape [batch_size, num_tokens, emb_size]
         ####################################################
-        # NEW
+        # YENİ
         x = self.att(x, use_cache=use_cache)
         ####################################################
 
         x = self.drop_shortcut(x)
-        x = x + shortcut  # Add the original input back
+        x = x + shortcut  # Özgün girdiyi geri ekle
 
-        # Shortcut connection for feed-forward block
+        # İleri beslemeli blok için kestirme (shortcut) bağlantı
         shortcut = x
         x = self.norm2(x)
         x = self.ff(x)
         x = self.drop_shortcut(x)
-        x = x + shortcut  # Add the original input back
+        x = x + shortcut  # Özgün girdiyi geri ekle
 
         return x
 
@@ -218,7 +218,7 @@ class GPTModel(nn.Module):
         # self.trf_blocks = nn.Sequential(
         #    *[TransformerBlock(cfg) for _ in range(cfg["n_layers"])])
         ####################################################
-        # NEW
+        # YENİ
         self.trf_blocks = nn.ModuleList(
             [TransformerBlock(cfg) for _ in range(cfg["n_layers"])])
 
@@ -236,12 +236,12 @@ class GPTModel(nn.Module):
         # pos_embeds = self.pos_emb(torch.arange(seq_len, device=in_idx.device))
 
         ####################################################
-        # NEW
+        # YENİ
 
         if use_cache:
             context_length = self.pos_emb.num_embeddings
-            # to prevent generate more sequence than context_length
-            # since longer than context_length will cause model out of bound error when reading the position embedding
+            # context_length değerinden daha uzun dizi üretilmesini önlemek için
+            # çünkü context_length'ten uzun olması, konum gömmesi okunurken modelin sınır dışına çıkmasına yol açar
             assert self.ptr_current_pos + seq_len <= context_length, (
                 f"Position embedding overflow. Want to read {self.ptr_current_pos + seq_len} which excceded size of {context_length}"
             )
@@ -252,12 +252,12 @@ class GPTModel(nn.Module):
         pos_embeds = self.pos_emb(pos_ids).unsqueeze(0)
         ####################################################
 
-        x = tok_embeds + pos_embeds  # Shape [batch_size, num_tokens, emb_size]
+        x = tok_embeds + pos_embeds  # Şekil [batch_size, num_tokens, emb_size]
         x = self.drop_emb(x)
 
         # x = self.trf_blocks(x)
         ####################################################
-        # NEW
+        # YENİ
         for blk in self.trf_blocks:
             x = blk(x, use_cache=use_cache)
         ####################################################
@@ -267,7 +267,7 @@ class GPTModel(nn.Module):
         return logits
 
     ####################################################
-    # NEW
+    # YENİ
     def reset_kv_cache(self):
         for blk in self.trf_blocks:
             blk.att.reset_cache()
@@ -276,33 +276,33 @@ class GPTModel(nn.Module):
 
 
 def generate_text_simple(model, idx, max_new_tokens, context_size):
-    # idx is (B, T) array of indices in the current context
+    # idx, mevcut bağlamdaki indekslerin (B, T) boyutlu dizisidir
     for _ in range(max_new_tokens):
 
-        # Crop current context if it exceeds the supported context size
-        # E.g., if LLM supports only 5 tokens, and the context size is 10
-        # then only the last 5 tokens are used as context
+        # Desteklenen bağlam boyutunu aşıyorsa mevcut bağlamı kırp
+        # Ör. LLM yalnızca 5 token destekliyorsa ve bağlam boyutu 10 ise
+        # bağlam olarak yalnızca son 5 token kullanılır
         idx_cond = idx[:, -context_size:]
 
-        # Get the predictions
+        # Tahminleri al
         with torch.no_grad():
             logits = model(idx_cond)
 
-        # Focus only on the last time step
-        # (batch, n_token, vocab_size) becomes (batch, vocab_size)
+        # Yalnızca son zaman adımına odaklan
+        # (batch, n_token, vocab_size) -> (batch, vocab_size) olur
         logits = logits[:, -1, :]
 
-        # Get the idx of the vocab entry with the highest logits value
+        # En yüksek logit değerine sahip sözlük kaydının idx değerini al
         idx_next = torch.argmax(logits, dim=-1, keepdim=True)  # (batch, 1)
 
-        # Append sampled index to the running sequence
+        # Örneklenen indeksi süregelen diziye ekle
         idx = torch.cat((idx, idx_next), dim=1)  # (batch, n_tokens+1)
 
     return idx
 
 
 ####################################################
-# NEW
+# YENİ
 def generate_text_simple_cached(model, idx, max_new_tokens, context_size=None, use_cache=True):
     model.eval()
 
@@ -316,13 +316,13 @@ def generate_text_simple_cached(model, idx, max_new_tokens, context_size=None, u
             input_tokens = idx[:, -ctx_len:]
             input_tokens_length = input_tokens.size(1)
 
-            # prefill to handle input_tokens_length > kv_window_size
+            # input_tokens_length > kv_window_size durumunu ele almak için ön doldurma
             for i in range(0, input_tokens_length, kv_window_size):
                 chunk = input_tokens[:, i:i+kv_window_size]
                 logits = model(chunk, use_cache=True)
 
-            # can't generate more than ctx_len of result
-            # due to the limitation of position embedding
+            # konum gömmesinin sınırı nedeniyle
+            # ctx_len'den fazla sonuç üretilemez
             max_generable = ctx_len - input_tokens_length
             max_new_tokens = min(max_new_tokens, max_generable)
 
@@ -342,13 +342,13 @@ def generate_text_simple_cached(model, idx, max_new_tokens, context_size=None, u
 
 def main():
     GPT_CONFIG_124M = {
-        "vocab_size": 50257,     # Vocabulary size
-        "context_length": 1024,  # Context length
-        "emb_dim": 768,          # Embedding dimension
-        "n_heads": 12,           # Number of attention heads
-        "n_layers": 12,          # Number of layers
-        "drop_rate": 0.1,        # Dropout rate
-        "qkv_bias": False,       # Query-Key-Value bias
+        "vocab_size": 50257,     # Sözcük dağarcığı boyutu
+        "context_length": 1024,  # Bağlam uzunluğu
+        "emb_dim": 768,          # Gömme (embedding) boyutu
+        "n_heads": 12,           # Dikkat başlığı sayısı
+        "n_layers": 12,          # Katman sayısı
+        "drop_rate": 0.1,        # Dropout oranı
+        "qkv_bias": False,       # Sorgu-Anahtar-Değer bias'ı
         "kv_window_size": 1024   # NEW: KV cache window size
     }
 
@@ -356,7 +356,7 @@ def main():
     model = GPTModel(GPT_CONFIG_124M)
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     model.to(device)
-    model.eval()  # disable dropout
+    model.eval()  # dropout'u kapat
 
     start_context = "Hello, I am"
 
@@ -381,7 +381,7 @@ def main():
     # )
 
     ####################################################
-    # NEW
+    # YENİ
     token_ids = generate_text_simple_cached(
         model=model,
         idx=encoded_tensor,

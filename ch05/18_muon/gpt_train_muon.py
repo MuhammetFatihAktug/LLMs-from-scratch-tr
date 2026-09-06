@@ -110,12 +110,12 @@ def create_muon_optimizers(model, adamw_learning_rate, muon_learning_rate, weigh
 
 def train_model_simple(model, train_loader, val_loader, optimizers, device, num_epochs,
                        eval_freq, eval_iter, start_context, tokenizer, max_steps=None):
-    # Initialize lists to track losses and tokens seen
+    # Kayıpları ve görülen token'ları izlemek için listeleri başlat
     train_losses, val_losses, track_tokens_seen = [], [], []
     tokens_seen = 0
     global_step = -1
 
-    # Main training loop
+    # Ana eğitim döngüsü
     for epoch in range(num_epochs):
         model.train()  # Set model to training mode
 
@@ -129,7 +129,7 @@ def train_model_simple(model, train_loader, val_loader, optimizers, device, num_
             tokens_seen += input_batch.numel()
             global_step += 1
 
-            # Optional evaluation step
+            # İsteğe bağlı değerlendirme adımı
             if global_step % eval_freq == 0:
                 train_loss, val_loss = evaluate_model(
                     model, train_loader, val_loader, device, eval_iter)
@@ -142,7 +142,7 @@ def train_model_simple(model, train_loader, val_loader, optimizers, device, num_
             if max_steps is not None and global_step + 1 >= max_steps:
                 break
 
-        # Print a sample text after each epoch
+        # Her dönemden sonra örnek bir metin yazdır
         generate_and_print_sample(
             model, tokenizer, device, start_context
         )
@@ -156,14 +156,14 @@ def train_model_simple(model, train_loader, val_loader, optimizers, device, num_
 def plot_losses(epochs_seen, tokens_seen, train_losses, val_losses):
     fig, ax1 = plt.subplots()
 
-    # Plot training and validation loss against epochs
+    # Eğitim ve doğrulama kaybını dönemlere karşı çiz
     ax1.plot(epochs_seen, train_losses, label="Training loss")
     ax1.plot(epochs_seen, val_losses, linestyle="-.", label="Validation loss")
     ax1.set_xlabel("Epochs")
     ax1.set_ylabel("Loss")
     ax1.legend(loc="upper right")
 
-    # Create a second x-axis for tokens seen
+    # Görülen token'lar için ikinci bir x ekseni oluştur
     ax2 = ax1.twiny()  # Create a second x-axis that shares the same y-axis
     ax2.plot(tokens_seen, train_losses, alpha=0)  # Invisible plot for aligning ticks
     ax2.set_xlabel("Tokens seen")
@@ -210,7 +210,7 @@ def main(gpt_config, settings):
     # Set up dataloaders
     ##############################
 
-    # Train/validation ratio
+    # Eğitim/doğrulama oranı
     train_ratio = 0.90
     split_idx = int(train_ratio * len(text_data))
 
@@ -262,12 +262,12 @@ if __name__ == "__main__":
     args = parser.parse_args()
 
     GPT_CONFIG_124M = {
-        "vocab_size": 50257,    # Vocabulary size
+        "vocab_size": 50257,    # Sözcük dağarcığı boyutu
         "context_length": 256,  # Shortened context length (orig: 1024)
-        "emb_dim": 768,         # Embedding dimension
-        "n_heads": 12,          # Number of attention heads
-        "n_layers": 12,         # Number of layers
-        "drop_rate": 0.1,       # Dropout rate
+        "emb_dim": 768,         # Gömme (embedding) boyutu
+        "n_heads": 12,          # Dikkat başlığı sayısı
+        "n_layers": 12,         # Katman sayısı
+        "drop_rate": 0.1,       # Dropout oranı
         "qkv_bias": False       # Query-key-value bias
     }
 

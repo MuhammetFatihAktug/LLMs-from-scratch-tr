@@ -14,13 +14,13 @@ import tiktoken
 
 
 GPT_CONFIG_124M = {
-    "vocab_size": 50257,     # Vocabulary size
-    "context_length": 1024,  # Context length
-    "emb_dim": 768,          # Embedding dimension
-    "n_heads": 12,           # Number of attention heads
-    "n_layers": 12,          # Number of layers
-    "drop_rate": 0.1,        # Dropout rate
-    "qkv_bias": False        # Query-Key-Value bias
+    "vocab_size": 50257,     # Sözcük dağarcığı boyutu
+    "context_length": 1024,  # Bağlam uzunluğu
+    "emb_dim": 768,          # Gömme (embedding) boyutu
+    "n_heads": 12,           # Dikkat başlığı sayısı
+    "n_layers": 12,          # Katman sayısı
+    "drop_rate": 0.1,        # Dropout oranı
+    "qkv_bias": False        # Sorgu-Anahtar-Değer bias'ı
 }
 
 
@@ -36,7 +36,7 @@ def test_gpt_model_variants(ModelClass, generate_fn):
 
     torch.manual_seed(123)
     model = ModelClass(GPT_CONFIG_124M)
-    model.eval()  # disable dropout
+    model.eval()  # dropout'u kapat
 
     start_context = "Hello, I am"
 

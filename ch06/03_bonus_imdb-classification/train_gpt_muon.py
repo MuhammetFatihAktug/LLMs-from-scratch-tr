@@ -25,12 +25,12 @@ class IMDbDataset(Dataset):
         self.data = pd.read_csv(csv_file)
         self.max_length = max_length if max_length is not None else self._longest_encoded_length(tokenizer)
 
-        # Pre-tokenize texts
+        # Metinleri önceden token'lara ayır
         self.encoded_texts = [
             tokenizer.encode(text)[:self.max_length]
             for text in self.data["text"]
         ]
-        # Pad sequences to the longest sequence
+        # Dizileri en uzun diziye göre doldur
         self.encoded_texts = [
             et + [pad_token_id] * (self.max_length - len(et))
             for et in self.encoded_texts
@@ -56,9 +56,9 @@ class IMDbDataset(Dataset):
 def instantiate_model(choose_model, load_weights):
 
     BASE_CONFIG = {
-        "vocab_size": 50257,     # Vocabulary size
-        "context_length": 1024,  # Context length
-        "drop_rate": 0.0,        # Dropout rate
+        "vocab_size": 50257,     # Sözcük dağarcığı boyutu
+        "context_length": 1024,  # Bağlam uzunluğu
+        "drop_rate": 0.0,        # Dropout oranı
         "qkv_bias": True         # Query-key-value bias
     }
 
@@ -109,7 +109,7 @@ def calc_loss_loader(data_loader, model, device,
     elif num_batches is None:
         num_batches = len(data_loader)
     else:
-        # Reduce the number of batches to match the total number of batches in the data loader
+        # num_batches değeri veri yükleyicideki yığın sayısını aşarsa,
         # if num_batches exceeds the number of batches in the data loader
         num_batches = min(num_batches, len(data_loader))
     for i, (input_batch, target_batch) in enumerate(data_loader):
@@ -210,11 +210,11 @@ def create_muon_optimizers(model, adamw_learning_rate, muon_learning_rate, weigh
 def train_classifier_simple(model, train_loader, val_loader, optimizers, device, num_epochs,
                             eval_freq, eval_iter, max_steps=None, trainable_token_pos=-1,
                             average_embeddings=False):
-    # Initialize lists to track losses and tokens seen
+    # Kayıpları ve görülen token'ları izlemek için listeleri başlat
     train_losses, val_losses, train_accs, val_accs = [], [], [], []
     examples_seen, global_step = 0, -1
 
-    # Main training loop
+    # Ana eğitim döngüsü
     for epoch in range(num_epochs):
         model.train()  # Set model to training mode
 
@@ -229,7 +229,7 @@ def train_classifier_simple(model, train_loader, val_loader, optimizers, device,
             examples_seen += input_batch.shape[0]  # New: track examples instead of tokens
             global_step += 1
 
-            # Optional evaluation step
+            # İsteğe bağlı değerlendirme adımı
             if global_step % eval_freq == 0:
                 train_loss, val_loss = evaluate_model(
                     model, train_loader, val_loader, device, eval_iter,

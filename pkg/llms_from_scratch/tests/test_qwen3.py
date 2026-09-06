@@ -218,7 +218,7 @@ def test_rope(context_len):
         apply_rotary_pos_emb,
     )
 
-    # Settings
+    # Ayarlar
     batch_size = 1
     num_heads = 4
     head_dim = 16
@@ -231,7 +231,7 @@ def test_rope(context_len):
         context_length=context_len,
     )
 
-    # Dummy query and key tensors
+    # Yapay sorgu ve anahtar tensörleri
     torch.manual_seed(123)
     queries = torch.randn(batch_size, num_heads, context_len, head_dim)
     keys = torch.randn(batch_size, num_heads, context_len, head_dim)

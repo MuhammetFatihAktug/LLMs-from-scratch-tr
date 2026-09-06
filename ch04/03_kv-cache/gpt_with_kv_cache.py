@@ -1,6 +1,6 @@
-# This file collects all the relevant code that we covered thus far
-# throughout Chapters 3-4.
-# This file can be run as a standalone script.
+# Bu dosya, şimdiye dek ele aldığımız tüm ilgili kodu
+# 3-4. bölümler boyunca bir araya toplar.
+# Bu dosya bağımsız bir betik olarak çalıştırılabilir.
 
 import time
 import tiktoken
@@ -9,7 +9,7 @@ import torch.nn as nn
 
 
 #####################################
-# Chapter 3
+# Bölüm 3
 #####################################
 class MultiHeadAttention(nn.Module):
     def __init__(self, d_in, d_out, context_length, dropout, num_heads, qkv_bias=False):
@@ -18,12 +18,12 @@ class MultiHeadAttention(nn.Module):
 
         self.d_out = d_out
         self.num_heads = num_heads
-        self.head_dim = d_out // num_heads  # Reduce the projection dim to match desired output dim
+        self.head_dim = d_out // num_heads  # İzdüşüm boyutunu, istenen çıktı boyutuyla eşleşecek şekilde küçült
 
         self.W_query = nn.Linear(d_in, d_out, bias=qkv_bias)
         self.W_key = nn.Linear(d_in, d_out, bias=qkv_bias)
         self.W_value = nn.Linear(d_in, d_out, bias=qkv_bias)
-        self.out_proj = nn.Linear(d_out, d_out)  # Linear layer to combine head outputs
+        self.out_proj = nn.Linear(d_out, d_out)  # Başlık çıktılarını birleştirmek için doğrusal katman
         self.dropout = nn.Dropout(dropout)
         self.register_buffer(
             "mask",
@@ -32,7 +32,7 @@ class MultiHeadAttention(nn.Module):
         )
 
         ####################################################
-        # NEW
+        # YENİ
         self.register_buffer("cache_k", None, persistent=False)
         self.register_buffer("cache_v", None, persistent=False)
         self.ptr_current_pos = 0
@@ -45,14 +45,14 @@ class MultiHeadAttention(nn.Module):
         values_new = self.W_value(x)
         queries = self.W_query(x)
 
-        # We implicitly split the matrix by adding a `num_heads` dimension
-        # Unroll last dim: (b, num_tokens, d_out) -> (b, num_tokens, num_heads, head_dim)
+        # Matrisi, bir `num_heads` boyutu ekleyerek örtük olarak bölüyoruz
+        # Son boyutu aç: (b, num_tokens, d_out) -> (b, num_tokens, num_heads, head_dim)
         keys_new = keys_new.view(b, num_tokens, self.num_heads, self.head_dim)
         values_new = values_new.view(b, num_tokens, self.num_heads, self.head_dim)
         queries = queries.view(b, num_tokens, self.num_heads, self.head_dim)
 
         ####################################################
-        # NEW
+        # YENİ
         if use_cache:
             if self.cache_k is None:
                 self.cache_k, self.cache_v = keys_new, values_new
@@ -69,11 +69,11 @@ class MultiHeadAttention(nn.Module):
         queries = queries.transpose(1, 2)
         values = values.transpose(1, 2)
 
-        # Compute scaled dot-product attention (aka self-attention) with a causal mask
-        attn_scores = queries @ keys.transpose(2, 3)  # Dot product for each head
+        # Nedensel maskeyle ölçeklenmiş nokta çarpımı dikkatini (öz-dikkat) hesapla
+        attn_scores = queries @ keys.transpose(2, 3)  # Her başlık için iç çarpım
 
         ####################################################
-        # NEW
+        # YENİ
         num_tokens_Q = queries.shape[-2]
         num_tokens_K = keys.shape[-2]
         if use_cache:
@@ -82,11 +82,11 @@ class MultiHeadAttention(nn.Module):
             ]
             self.ptr_current_pos += num_tokens_Q
         ####################################################
-        # Original mask truncated to the number of tokens and converted to boolean
+        # Orijinal maske, token sayısına kırpılıp boole değere dönüştürüldü
         else:
             mask_bool = self.mask.bool()[:num_tokens_Q, :num_tokens_K]
 
-        # Use the mask to fill attention scores
+        # Dikkat skorlarını doldurmak için maskeyi kullan
         attn_scores.masked_fill_(mask_bool, -torch.inf)
 
         attn_weights = torch.softmax(attn_scores / keys.shape[-1]**0.5, dim=-1)
@@ -95,14 +95,14 @@ class MultiHeadAttention(nn.Module):
         # Shape: (b, num_tokens, num_heads, head_dim)
         context_vec = (attn_weights @ values).transpose(1, 2)
 
-        # Combine heads, where self.d_out = self.num_heads * self.head_dim
+        # Başları birleştir; burada self.d_out = self.num_heads * self.head_dim
         context_vec = context_vec.contiguous().view(b, num_tokens, self.d_out)
-        context_vec = self.out_proj(context_vec)  # optional projection
+        context_vec = self.out_proj(context_vec)  # isteğe bağlı izdüşüm
 
         return context_vec
 
     ####################################################
-    # NEW
+    # YENİ
     def reset_cache(self):
         self.cache_k, self.cache_v = None, None
         self.ptr_current_pos = 0
@@ -110,7 +110,7 @@ class MultiHeadAttention(nn.Module):
 
 
 #####################################
-# Chapter 4
+# Bölüm 4
 #####################################
 class LayerNorm(nn.Module):
     def __init__(self, emb_dim):
@@ -166,25 +166,25 @@ class TransformerBlock(nn.Module):
         self.drop_shortcut = nn.Dropout(cfg["drop_rate"])
 
     def forward(self, x, use_cache=False):
-        # Shortcut connection for attention block
+        # Dikkat bloğu için kestirme (shortcut) bağlantı
         shortcut = x
         x = self.norm1(x)
 
         # x = self.att(x)   # Shape [batch_size, num_tokens, emb_size]
         ####################################################
-        # NEW
+        # YENİ
         x = self.att(x, use_cache=use_cache)
         ####################################################
 
         x = self.drop_shortcut(x)
-        x = x + shortcut  # Add the original input back
+        x = x + shortcut  # Özgün girdiyi geri ekle
 
-        # Shortcut connection for feed-forward block
+        # İleri beslemeli blok için kestirme (shortcut) bağlantı
         shortcut = x
         x = self.norm2(x)
         x = self.ff(x)
         x = self.drop_shortcut(x)
-        x = x + shortcut  # Add the original input back
+        x = x + shortcut  # Özgün girdiyi geri ekle
 
         return x
 
@@ -199,7 +199,7 @@ class GPTModel(nn.Module):
         # self.trf_blocks = nn.Sequential(
         #    *[TransformerBlock(cfg) for _ in range(cfg["n_layers"])])
         ####################################################
-        # NEW
+        # YENİ
         self.trf_blocks = nn.ModuleList(
             [TransformerBlock(cfg) for _ in range(cfg["n_layers"])])
 
@@ -216,7 +216,7 @@ class GPTModel(nn.Module):
         # pos_embeds = self.pos_emb(torch.arange(seq_len, device=in_idx.device))
 
         ####################################################
-        # NEW
+        # YENİ
 
         if use_cache:
             pos_ids = torch.arange(self.current_pos, self.current_pos + seq_len, device=in_idx.device, dtype=torch.long)
@@ -226,12 +226,12 @@ class GPTModel(nn.Module):
         pos_embeds = self.pos_emb(pos_ids).unsqueeze(0)
         ####################################################
 
-        x = tok_embeds + pos_embeds  # Shape [batch_size, num_tokens, emb_size]
+        x = tok_embeds + pos_embeds  # Şekil [batch_size, num_tokens, emb_size]
         x = self.drop_emb(x)
 
         # x = self.trf_blocks(x)
         ####################################################
-        # NEW
+        # YENİ
         for blk in self.trf_blocks:
             x = blk(x, use_cache=use_cache)
         ####################################################
@@ -241,7 +241,7 @@ class GPTModel(nn.Module):
         return logits
 
     ####################################################
-    # NEW
+    # YENİ
     def reset_kv_cache(self):
         for blk in self.trf_blocks:
             blk.att.reset_cache()
@@ -250,33 +250,33 @@ class GPTModel(nn.Module):
 
 
 def generate_text_simple(model, idx, max_new_tokens, context_size):
-    # idx is (B, T) array of indices in the current context
+    # idx, mevcut bağlamdaki indekslerin (B, T) boyutlu dizisidir
     for _ in range(max_new_tokens):
 
-        # Crop current context if it exceeds the supported context size
-        # E.g., if LLM supports only 5 tokens, and the context size is 10
-        # then only the last 5 tokens are used as context
+        # Desteklenen bağlam boyutunu aşıyorsa mevcut bağlamı kırp
+        # Ör. LLM yalnızca 5 token destekliyorsa ve bağlam boyutu 10 ise
+        # bağlam olarak yalnızca son 5 token kullanılır
         idx_cond = idx[:, -context_size:]
 
-        # Get the predictions
+        # Tahminleri al
         with torch.no_grad():
             logits = model(idx_cond)
 
-        # Focus only on the last time step
-        # (batch, n_token, vocab_size) becomes (batch, vocab_size)
+        # Yalnızca son zaman adımına odaklan
+        # (batch, n_token, vocab_size) -> (batch, vocab_size) olur
         logits = logits[:, -1, :]
 
-        # Get the idx of the vocab entry with the highest logits value
+        # En yüksek logit değerine sahip sözlük kaydının idx değerini al
         idx_next = torch.argmax(logits, dim=-1, keepdim=True)  # (batch, 1)
 
-        # Append sampled index to the running sequence
+        # Örneklenen indeksi süregelen diziye ekle
         idx = torch.cat((idx, idx_next), dim=1)  # (batch, n_tokens+1)
 
     return idx
 
 
 ####################################################
-# NEW
+# YENİ
 def generate_text_simple_cached(model, idx, max_new_tokens,
                                 context_size=None, use_cache=True):
     model.eval()
@@ -284,16 +284,16 @@ def generate_text_simple_cached(model, idx, max_new_tokens,
 
     with torch.no_grad():
         if use_cache:
-            # Init cache with full prompt
+            # Önbelleği istemin tamamıyla ilk kez doldur
             model.reset_kv_cache()
             logits = model(idx[:, -ctx_len:], use_cache=True)
 
             for _ in range(max_new_tokens):
-                # a) pick the token with the highest log-probability (greedy sampling)
+                # a) en yüksek log-olasılıklı token'ı seç (açgözlü örnekleme)
                 next_idx = logits[:, -1].argmax(dim=-1, keepdim=True)
-                # b) append it to the running sequence
+                # b) onu mevcut diziye ekle
                 idx = torch.cat([idx, next_idx], dim=1)
-                # c) feed model only the new token
+                # c) modele yalnızca yeni token'ı ver
                 logits = model(next_idx, use_cache=True)
         else:
             for _ in range(max_new_tokens):
@@ -307,20 +307,20 @@ def generate_text_simple_cached(model, idx, max_new_tokens,
 
 def main():
     GPT_CONFIG_124M = {
-        "vocab_size": 50257,     # Vocabulary size
-        "context_length": 1024,  # Context length
-        "emb_dim": 768,          # Embedding dimension
-        "n_heads": 12,           # Number of attention heads
-        "n_layers": 12,          # Number of layers
-        "drop_rate": 0.1,        # Dropout rate
-        "qkv_bias": False        # Query-Key-Value bias
+        "vocab_size": 50257,     # Sözcük dağarcığı boyutu
+        "context_length": 1024,  # Bağlam uzunluğu
+        "emb_dim": 768,          # Gömme (embedding) boyutu
+        "n_heads": 12,           # Dikkat başlığı sayısı
+        "n_layers": 12,          # Katman sayısı
+        "drop_rate": 0.1,        # Dropout oranı
+        "qkv_bias": False        # Sorgu-Anahtar-Değer bias'ı
     }
 
     torch.manual_seed(123)
     model = GPTModel(GPT_CONFIG_124M)
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     model.to(device)
-    model.eval()  # disable dropout
+    model.eval()  # dropout'u kapat
 
     start_context = "Hello, I am"
 
@@ -345,7 +345,7 @@ def main():
     # )
 
     ####################################################
-    # NEW
+    # YENİ
     token_ids = generate_text_simple_cached(
         model=model,
         idx=encoded_tensor,

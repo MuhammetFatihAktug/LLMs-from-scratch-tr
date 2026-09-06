@@ -36,7 +36,7 @@ class InstructionDataset(Dataset):
     def __init__(self, data, tokenizer):
         self.data = data
 
-        # Pre-tokenize texts
+        # Metinleri önceden token'lara ayır
         self.encoded_texts = []
         for entry in data:
             instruction_plus_input = format_input(entry)
@@ -60,17 +60,17 @@ def custom_collate_fn(
     allowed_max_length=None,
     device="cpu"
 ):
-    # Find the longest sequence in the batch
+    # Yığındaki en uzun diziyi bul
     batch_max_length = max(len(item)+1 for item in batch)
 
-    # Pad and prepare inputs and targets
+    # Girdileri ve hedefleri doldur ve hazırla
     inputs_lst, targets_lst = [], []
 
     for item in batch:
         new_item = item.copy()
-        # Add an <|endoftext|> token
+        # Bir <|endoftext|> token'ı ekle
         new_item += [pad_token_id]
-        # Pad sequences to max_length
+        # Dizileri max_length uzunluğuna doldur
         padded = new_item + [pad_token_id] * (batch_max_length - len(new_item))
         inputs = torch.tensor(padded[:-1])  # Truncate the last token for inputs
         targets = torch.tensor(padded[1:])  # Shift +1 to the right for targets
@@ -89,7 +89,7 @@ def custom_collate_fn(
         inputs_lst.append(inputs)
         targets_lst.append(targets)
 
-    # Convert list of inputs and targets to tensors and transfer to target device
+    # Girdi ve hedef listelerini tensörlere dönüştür ve hedef cihaza aktar
     inputs_tensor = torch.stack(inputs_lst).to(device)
     targets_tensor = torch.stack(targets_lst).to(device)
 
@@ -125,14 +125,14 @@ def format_input(entry):
 def plot_losses(epochs_seen, tokens_seen, train_losses, val_losses):
     fig, ax1 = plt.subplots(figsize=(12, 6))
 
-    # Plot training and validation loss against epochs
+    # Eğitim ve doğrulama kaybını dönemlere karşı çiz
     ax1.plot(epochs_seen, train_losses, label="Training loss")
     ax1.plot(epochs_seen, val_losses, linestyle="-.", label="Validation loss")
     ax1.set_xlabel("Epochs")
     ax1.set_ylabel("Loss")
     ax1.legend(loc="upper right")
 
-    # Create a second x-axis for tokens seen
+    # Görülen token'lar için ikinci bir x ekseni oluştur
     ax2 = ax1.twiny()  # Create a second x-axis that shares the same y-axis
     ax2.plot(tokens_seen, train_losses, alpha=0)  # Invisible plot for aligning ticks
     ax2.set_xlabel("Tokens seen")
@@ -240,9 +240,9 @@ def main(test_mode=False):
     # Code as it is used in the main chapter
     else:
         BASE_CONFIG = {
-            "vocab_size": 50257,     # Vocabulary size
-            "context_length": 1024,  # Context length
-            "drop_rate": 0.0,        # Dropout rate
+            "vocab_size": 50257,     # Sözcük dağarcığı boyutu
+            "context_length": 1024,  # Bağlam uzunluğu
+            "drop_rate": 0.0,        # Dropout oranı
             "qkv_bias": True         # Query-key-value bias
         }
 

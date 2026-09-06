@@ -10,7 +10,7 @@ import torch.nn as nn
 
 
 #####################################
-# Chapter 3
+# Bölüm 3
 #####################################
 class MultiHeadAttention(nn.Module):
     def __init__(self, d_in, d_out, context_length, dropout, num_heads, qkv_bias=False):
@@ -19,12 +19,12 @@ class MultiHeadAttention(nn.Module):
 
         self.d_out = d_out
         self.num_heads = num_heads
-        self.head_dim = d_out // num_heads  # Reduce the projection dim to match desired output dim
+        self.head_dim = d_out // num_heads  # İzdüşüm boyutunu, istenen çıktı boyutuyla eşleşecek şekilde küçült
 
         self.W_query = nn.Linear(d_in, d_out, bias=qkv_bias)
         self.W_key = nn.Linear(d_in, d_out, bias=qkv_bias)
         self.W_value = nn.Linear(d_in, d_out, bias=qkv_bias)
-        self.out_proj = nn.Linear(d_out, d_out)  # Linear layer to combine head outputs
+        self.out_proj = nn.Linear(d_out, d_out)  # Başlık çıktılarını birleştirmek için doğrusal katman
         self.dropout = nn.Dropout(dropout)
 
     def forward(self, x, use_cache=False, start_pos=0, cache=None):
@@ -34,8 +34,8 @@ class MultiHeadAttention(nn.Module):
         values = self.W_value(x)
         queries = self.W_query(x)
 
-        # We implicitly split the matrix by adding a `num_heads` dimension
-        # Unroll last dim: (b, num_tokens, d_out) -> (b, num_tokens, num_heads, head_dim)
+        # Matrisi, bir `num_heads` boyutu ekleyerek örtük olarak bölüyoruz
+        # Son boyutu aç: (b, num_tokens, d_out) -> (b, num_tokens, num_heads, head_dim)
         keys = keys.view(b, num_tokens, self.num_heads, self.head_dim)
         values = values.view(b, num_tokens, self.num_heads, self.head_dim)
         queries = queries.view(b, num_tokens, self.num_heads, self.head_dim)
@@ -57,10 +57,10 @@ class MultiHeadAttention(nn.Module):
         causal_mask = torch.triu(torch.ones(seq_len, seq_len, dtype=torch.bool, device=x.device), diagonal=1)
         causal_mask = causal_mask[-num_tokens:, :][None, None, :, :]
 
-        # Compute scaled dot-product attention (aka self-attention) with a causal mask
-        attn_scores = queries @ keys.transpose(2, 3)  # Dot product for each head
+        # Nedensel maskeyle ölçeklenmiş nokta çarpımı dikkatini (öz-dikkat) hesapla
+        attn_scores = queries @ keys.transpose(2, 3)  # Her başlık için iç çarpım
 
-        # Use the mask to fill attention scores
+        # Dikkat skorlarını doldurmak için maskeyi kullan
         attn_scores.masked_fill_(causal_mask, -torch.inf)
 
         attn_weights = torch.softmax(attn_scores / keys.shape[-1]**0.5, dim=-1)
@@ -69,15 +69,15 @@ class MultiHeadAttention(nn.Module):
         # Shape: (b, num_tokens, num_heads, head_dim)
         context_vec = (attn_weights @ values).transpose(1, 2)
 
-        # Combine heads, where self.d_out = self.num_heads * self.head_dim
+        # Başları birleştir; burada self.d_out = self.num_heads * self.head_dim
         context_vec = context_vec.contiguous().view(b, num_tokens, self.d_out)
-        context_vec = self.out_proj(context_vec)  # optional projection
+        context_vec = self.out_proj(context_vec)  # isteğe bağlı izdüşüm
 
         return context_vec, next_cache
 
 
 #####################################
-# Chapter 4
+# Bölüm 4
 #####################################
 class LayerNorm(nn.Module):
     def __init__(self, emb_dim):
@@ -133,19 +133,19 @@ class TransformerBlock(nn.Module):
         self.drop_shortcut = nn.Dropout(cfg["drop_rate"])
 
     def forward(self, x, use_cache=False, start_pos=0, cache=None):
-        # Shortcut connection for attention block
+        # Dikkat bloğu için kestirme (shortcut) bağlantı
         shortcut = x
         x = self.norm1(x)
-        x, next_cache = self.att(x, use_cache=use_cache, start_pos=start_pos, cache=cache) # Shape [batch_size, num_tokens, emb_size]
+        x, next_cache = self.att(x, use_cache=use_cache, start_pos=start_pos, cache=cache) # Şekil [batch_size, num_tokens, emb_size]
         x = self.drop_shortcut(x)
-        x = x + shortcut  # Add the original input back
+        x = x + shortcut  # Özgün girdiyi geri ekle
 
-        # Shortcut connection for feed-forward block
+        # İleri beslemeli blok için kestirme (shortcut) bağlantı
         shortcut = x
         x = self.norm2(x)
         x = self.ff(x)
         x = self.drop_shortcut(x)
-        x = x + shortcut  # Add the original input back
+        x = x + shortcut  # Özgün girdiyi geri ekle
 
         return x, next_cache
 

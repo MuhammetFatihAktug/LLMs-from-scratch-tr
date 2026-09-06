@@ -79,13 +79,13 @@ def calc_loss_batch(input_batch, attention_mask_batch, target_batch, model, devi
     return loss
 
 
-# Same as in chapter 5
+# Bölüm 5'tekiyle aynı
 def calc_loss_loader(data_loader, model, device, num_batches=None):
     total_loss = 0.
     if num_batches is None:
         num_batches = len(data_loader)
     else:
-        # Reduce the number of batches to match the total number of batches in the data loader
+        # num_batches değeri veri yükleyicideki yığın sayısını aşarsa,
         # if num_batches exceeds the number of batches in the data loader
         num_batches = min(num_batches, len(data_loader))
     for i, (input_batch, attention_mask_batch, target_batch) in enumerate(data_loader):
@@ -131,11 +131,11 @@ def evaluate_model(model, train_loader, val_loader, device, eval_iter):
 
 def train_classifier_simple(model, train_loader, val_loader, optimizer, device, num_epochs,
                             eval_freq, eval_iter, max_steps=None):
-    # Initialize lists to track losses and tokens seen
+    # Kayıpları ve görülen token'ları izlemek için listeleri başlat
     train_losses, val_losses, train_accs, val_accs = [], [], [], []
     examples_seen, global_step = 0, -1
 
-    # Main training loop
+    # Ana eğitim döngüsü
     for epoch in range(num_epochs):
         model.train()  # Set model to training mode
 
@@ -147,7 +147,7 @@ def train_classifier_simple(model, train_loader, val_loader, optimizer, device, 
             examples_seen += input_batch.shape[0]  # New: track examples instead of tokens
             global_step += 1
 
-            # Optional evaluation step
+            # İsteğe bağlı değerlendirme adımı
             if global_step % eval_freq == 0:
                 train_loss, val_loss = evaluate_model(
                     model, train_loader, val_loader, device, eval_iter)

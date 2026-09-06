@@ -37,8 +37,8 @@ class LinearWithLoRA(torch.nn.Module):
 def replace_linear_with_lora(model, rank, alpha):
     for name, module in model.named_children():
         if isinstance(module, torch.nn.Linear):
-            # Replace the Linear layer with LinearWithLoRA
+            # Linear katmanını LinearWithLoRA ile değiştir
             setattr(model, name, LinearWithLoRA(module, rank, alpha))
         else:
-            # Recursively apply the same function to child modules
+            # Aynı fonksiyonu alt modüllere özyinelemeli olarak uygula
             replace_linear_with_lora(module, rank, alpha)

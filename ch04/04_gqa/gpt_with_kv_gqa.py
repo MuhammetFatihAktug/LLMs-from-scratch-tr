@@ -3,9 +3,9 @@
 #   - https://www.manning.com/books/build-a-large-language-model-from-scratch
 # Code: https://github.com/rasbt/LLMs-from-scratch
 
-# This file collects all the relevant code that we covered thus far
-# throughout Chapters 3-4, adapted to use Grouped-Query Attention (GQA).
-# This file can be run as a standalone script.
+# Bu dosya, şimdiye dek ele aldığımız tüm ilgili kodu
+# 3-4. bölümler boyunca, Gruplanmış Sorgu Dikkati (GQA) kullanacak şekilde bir araya toplar.
+# Bu dosya bağımsız bir betik olarak çalıştırılabilir.
 
 import argparse
 import time
@@ -45,12 +45,12 @@ class GroupedQueryAttention(nn.Module):
     def forward(self, x, use_cache=False):
         b, num_tokens, _ = x.shape
 
-        # Apply projections
+        # İzdüşümleri uygula
         queries = self.W_query(x)  # (b, num_tokens, num_heads * head_dim)
         keys = self.W_key(x)       # (b, num_tokens, num_kv_groups * head_dim)
         values = self.W_value(x)   # (b, num_tokens, num_kv_groups * head_dim)
 
-        # Reshape
+        # Yeniden şekillendir
         queries = queries.view(b, num_tokens, self.num_heads, self.head_dim).transpose(1, 2)
         keys_new = keys.view(b, num_tokens, self.num_kv_groups, self.head_dim).transpose(1, 2)
         values_new = values.view(b, num_tokens, self.num_kv_groups, self.head_dim).transpose(1, 2)
@@ -68,20 +68,20 @@ class GroupedQueryAttention(nn.Module):
                 self.cache_k, self.cache_v = None, None
                 self.ptr_current_pos = 0
 
-        # Expand keys and values to match the number of heads
+        # Anahtar ve değerleri baş sayısıyla eşleşecek şekilde genişlet
         # Shape: (b, num_heads, num_tokens, head_dim)
         keys = keys_base.repeat_interleave(self.group_size, dim=1)  # Shape: (b, num_heads, num_tokens, head_dim)
         values = values_base.repeat_interleave(self.group_size, dim=1)  # Shape: (b, num_heads, num_tokens, head_dim)
-        # For example, before repeat_interleave along dim=1 (query groups):
+        # Örneğin, dim=1 (sorgu grupları) boyunca repeat_interleave öncesinde:
         #   [K1, K2]
-        # After repeat_interleave (each query group is repeated group_size times):
+        # repeat_interleave sonrasında (her sorgu grubu group_size kez tekrarlanır):
         #   [K1, K1, K2, K2]
-        # If we used regular repeat instead of repeat_interleave, we'd get:
+        # repeat_interleave yerine klasik repeat kullansaydık şunu elde ederdik:
         #   [K1, K2, K1, K2]
 
-        # Compute scaled dot-product attention (aka self-attention) with a causal mask
+        # Nedensel maskeyle ölçeklenmiş nokta çarpımı dikkatini (öz-dikkat) hesapla
         # Shape: (b, num_heads, num_tokens, num_tokens)
-        attn_scores = queries @ keys.transpose(2, 3)  # Dot product for each head
+        attn_scores = queries @ keys.transpose(2, 3)  # Her başlık için iç çarpım
 
         ####################################################
         # causal mask
@@ -102,7 +102,7 @@ class GroupedQueryAttention(nn.Module):
         k_positions = torch.arange(num_tokens_K, device=device, dtype=torch.long)
         mask = q_positions.unsqueeze(-1) < k_positions.unsqueeze(0)
 
-        # Use the mask to fill attention scores
+        # Dikkat skorlarını doldurmak için maskeyi kullan
         attn_scores = attn_scores.masked_fill(mask, -torch.inf)
 
         attn_weights = torch.softmax(attn_scores / keys.shape[-1]**0.5, dim=-1)
@@ -112,9 +112,9 @@ class GroupedQueryAttention(nn.Module):
         # Shape: (b, num_tokens, num_heads, head_dim)
         context_vec = (attn_weights @ values).transpose(1, 2)
 
-        # Combine heads, where self.d_out = self.num_heads * self.head_dim
+        # Başları birleştir; burada self.d_out = self.num_heads * self.head_dim
         context_vec = context_vec.contiguous().view(b, num_tokens, self.d_out)
-        context_vec = self.out_proj(context_vec)  # optional projection
+        context_vec = self.out_proj(context_vec)  # isteğe bağlı izdüşüm
 
         return context_vec
 
@@ -124,7 +124,7 @@ class GroupedQueryAttention(nn.Module):
 
 
 #####################################
-# Chapter 4
+# Bölüm 4
 #####################################
 class LayerNorm(nn.Module):
     def __init__(self, emb_dim):
@@ -180,7 +180,7 @@ class TransformerBlock(nn.Module):
         self.drop_shortcut = nn.Dropout(cfg["drop_rate"])
 
     def forward(self, x, use_cache=False):
-        # Shortcut connection for attention block
+        # Dikkat bloğu için kestirme (shortcut) bağlantı
         shortcut = x
         x = self.norm1(x)
 
@@ -191,14 +191,14 @@ class TransformerBlock(nn.Module):
         ####################################################
 
         x = self.drop_shortcut(x)
-        x = x + shortcut  # Add the original input back
+        x = x + shortcut  # Özgün girdiyi geri ekle
 
-        # Shortcut connection for feed-forward block
+        # İleri beslemeli blok için kestirme (shortcut) bağlantı
         shortcut = x
         x = self.norm2(x)
         x = self.ff(x)
         x = self.drop_shortcut(x)
-        x = x + shortcut  # Add the original input back
+        x = x + shortcut  # Özgün girdiyi geri ekle
 
         return x
 
@@ -239,12 +239,12 @@ class GPTModel(nn.Module):
         pos_embeds = self.pos_emb(pos_ids).unsqueeze(0)
         ####################################################
 
-        x = tok_embeds + pos_embeds  # Shape [batch_size, num_tokens, emb_size]
+        x = tok_embeds + pos_embeds  # Şekil [batch_size, num_tokens, emb_size]
         x = self.drop_emb(x)
 
         # x = self.trf_blocks(x)
         ####################################################
-        # KV cache-related
+        # KV önbelleğiyle ilgili
         for blk in self.trf_blocks:
             x = blk(x, use_cache=use_cache)
         ####################################################
@@ -254,7 +254,7 @@ class GPTModel(nn.Module):
         return logits
 
     ####################################################
-    # KV cache-related
+    # KV önbelleğiyle ilgili
     def reset_kv_cache(self):
         for blk in self.trf_blocks:
             blk.att.reset_cache()
@@ -269,16 +269,16 @@ def generate_text_simple_cached(model, idx, max_new_tokens,
 
     with torch.no_grad():
         if use_cache:
-            # Init cache with full prompt
+            # Önbelleği istemin tamamıyla ilk kez doldur
             model.reset_kv_cache()
             logits = model(idx[:, -ctx_len:], use_cache=True)
 
             for _ in range(max_new_tokens):
-                # a) pick the token with the highest log-probability (greedy sampling)
+                # a) en yüksek log-olasılıklı token'ı seç (açgözlü örnekleme)
                 next_idx = logits[:, -1].argmax(dim=-1, keepdim=True)
-                # b) append it to the running sequence
+                # b) onu mevcut diziye ekle
                 idx = torch.cat([idx, next_idx], dim=1)
-                # c) feed model only the new token
+                # c) modele yalnızca yeni token'ı ver
                 logits = model(next_idx, use_cache=True)
         else:
             for _ in range(max_new_tokens):
@@ -304,20 +304,20 @@ def main():
     encoded = tokenizer.encode(start_context)
 
     GPT_CONFIG_124M = {
-        "vocab_size": 50257,        # Vocabulary size
+        "vocab_size": 50257,        # Sözcük dağarcığı boyutu
         "context_length": args.max_new_tokens + len(encoded),
-        "emb_dim": args.emb_dim,    # Embedding dimension
-        "n_heads": args.n_heads,    # Number of attention heads
-        "n_layers": args.n_layers,  # Number of layers
-        "drop_rate": 0.0,           # Dropout rate
-        "qkv_bias": False,          # Query-Key-Value bias
+        "emb_dim": args.emb_dim,    # Gömme (embedding) boyutu
+        "n_heads": args.n_heads,    # Dikkat başlığı sayısı
+        "n_layers": args.n_layers,  # Katman sayısı
+        "drop_rate": 0.0,           # Dropout oranı
+        "qkv_bias": False,          # Sorgu-Anahtar-Değer bias'ı
         "n_kv_groups": args.n_kv_groups
     }
     torch.manual_seed(123)
     model = GPTModel(GPT_CONFIG_124M)
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     model.to(device, dtype=torch.bfloat16)
-    model.eval()  # disable dropout
+    model.eval()  # dropout'u kapat
 
     encoded_tensor = torch.tensor(encoded, device=device).unsqueeze(0)
     print(f"\n{50*'='}\n{22*' '}IN\n{50*'='}")

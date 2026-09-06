@@ -20,12 +20,12 @@ def load_dataframes():
 
 
 def eval_model(model, X_train, y_train, X_val, y_val, X_test, y_test):
-    # Making predictions
+    # Tahminleri yapma
     y_pred_train = model.predict(X_train)
     y_pred_val = model.predict(X_val)
     y_pred_test = model.predict(X_test)
 
-    # Calculating accuracy and balanced accuracy
+    # Doğruluk ve dengeli doğruluğu hesaplama
     accuracy_train = accuracy_score(y_train, y_pred_train)
     # balanced_accuracy_train = balanced_accuracy_score(y_train, y_pred_train)
 
@@ -35,7 +35,7 @@ def eval_model(model, X_train, y_train, X_val, y_val, X_test, y_test):
     accuracy_test = accuracy_score(y_test, y_pred_test)
     # balanced_accuracy_test = balanced_accuracy_score(y_test, y_pred_test)
 
-    # Printing the results
+    # Sonuçları yazdırma
     print(f"Training Accuracy: {accuracy_train*100:.2f}%")
     print(f"Validation Accuracy: {accuracy_val*100:.2f}%")
     print(f"Test Accuracy: {accuracy_test*100:.2f}%")
@@ -62,7 +62,7 @@ if __name__ == "__main__":
     # Model training and evaluation
     #####################################
 
-    # Create a dummy classifier with the strategy to predict the most frequent class
+    # En sık geçen sınıfı tahmin etme stratejisiyle yapay bir sınıflandırıcı oluştur
     dummy_clf = DummyClassifier(strategy="most_frequent")
     dummy_clf.fit(X_train, y_train)
 

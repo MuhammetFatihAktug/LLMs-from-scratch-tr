@@ -15,15 +15,15 @@ from tiktoken.load import load_tiktoken_bpe
 
 
 LLAMA32_CONFIG_1B = {
-    "vocab_size": 128_256,           # Vocabulary size
-    "context_length": 131_072,       # Context length that was used to train the model
-    "emb_dim": 2048,                 # Embedding dimension
-    "n_heads": 32,                   # Number of attention heads
-    "n_layers": 16,                  # Number of layers
-    "hidden_dim": 8192,              # Size of the intermediate dimension in FeedForward
-    "n_kv_groups": 8,                # Key-Value groups for grouped-query attention
-    "rope_base": 500_000.0,          # The base in RoPE's "theta"
-    "dtype": torch.bfloat16,         # Lower-precision dtype to reduce memory usage
+    "vocab_size": 128_256,           # Sözcük dağarcığı boyutu
+    "context_length": 131_072,       # Modelin eğitiminde kullanılan bağlam uzunluğu
+    "emb_dim": 2048,                 # Gömme (embedding) boyutu
+    "n_heads": 32,                   # Dikkat başlığı sayısı
+    "n_layers": 16,                  # Katman sayısı
+    "hidden_dim": 8192,              # FeedForward içindeki ara boyutun büyüklüğü
+    "n_kv_groups": 8,                # Gruplanmış sorgu dikkati (GQA) için anahtar-değer grupları
+    "rope_base": 500_000.0,          # RoPE'nin "theta" değerindeki taban
+    "dtype": torch.bfloat16,         # Bellek kullanımını azaltmak için daha düşük duyarlıklı dtype
     "rope_freq": {                   # RoPE frequency scaling
         "factor": 32.0,
         "low_freq_factor": 1.0,
@@ -33,15 +33,15 @@ LLAMA32_CONFIG_1B = {
 }
 
 LLAMA32_CONFIG_3B = {
-    "vocab_size": 128_256,           # Vocabulary size
-    "context_length": 131_072,       # Context length that was used to train the model
-    "emb_dim": 3072,                 # Embedding dimension
-    "n_heads": 24,                   # Number of attention heads
-    "n_layers": 28,                  # Number of layers
-    "hidden_dim": 8192,              # Size of the intermediate dimension in FeedForward
-    "n_kv_groups": 8,                # Key-Value groups for grouped-query attention
-    "rope_base": 500_000.0,          # The base in RoPE's "theta"
-    "dtype": torch.bfloat16,         # Lower-precision dtype to reduce memory usage
+    "vocab_size": 128_256,           # Sözcük dağarcığı boyutu
+    "context_length": 131_072,       # Modelin eğitiminde kullanılan bağlam uzunluğu
+    "emb_dim": 3072,                 # Gömme (embedding) boyutu
+    "n_heads": 24,                   # Dikkat başlığı sayısı
+    "n_layers": 28,                  # Katman sayısı
+    "hidden_dim": 8192,              # FeedForward içindeki ara boyutun büyüklüğü
+    "n_kv_groups": 8,                # Gruplanmış sorgu dikkati (GQA) için anahtar-değer grupları
+    "rope_base": 500_000.0,          # RoPE'nin "theta" değerindeki taban
+    "dtype": torch.bfloat16,         # Bellek kullanımını azaltmak için daha düşük duyarlıklı dtype
     "rope_freq": {                   # RoPE frequency scaling
         "factor": 32.0,
         "low_freq_factor": 1.0,
@@ -55,7 +55,7 @@ class Llama3Model(nn.Module):
     def __init__(self, cfg):
         super().__init__()
 
-        # Main model parameters
+        # Ana model parametreleri
         self.tok_emb = nn.Embedding(cfg["vocab_size"], cfg["emb_dim"], dtype=cfg["dtype"])
 
         self.trf_blocks = nn.ModuleList(  # ModuleList since Sequential can only accept one input, and we need `x, mask, cos, sin`
@@ -65,7 +65,7 @@ class Llama3Model(nn.Module):
         self.final_norm = nn.RMSNorm(cfg["emb_dim"], eps=1e-5, dtype=cfg["dtype"])
         self.out_head = nn.Linear(cfg["emb_dim"], cfg["vocab_size"], bias=False, dtype=cfg["dtype"])
 
-        # Reusable utilities
+        # Yeniden kullanılabilir yardımcılar
         cos, sin = compute_rope_params(
             head_dim=cfg["emb_dim"] // cfg["n_heads"],
             theta_base=cfg["rope_base"],
@@ -94,7 +94,7 @@ class Llama3Model(nn.Module):
             mask = torch.triu(
                 torch.ones(num_tokens, num_tokens, device=x.device, dtype=torch.bool), diagonal=1
             )
-        # Shape (1, 1, num_tokens, num_tokens) to broadcast across batch and heads
+        # Yığın ve başlar boyunca yayınlamak (broadcast) için (1, 1, num_tokens, num_tokens) şekli
         mask = mask[None, None, :, :]
 
         for i, block in enumerate(self.trf_blocks):
@@ -128,17 +128,17 @@ class TransformerBlock(nn.Module):
         self.norm2 = nn.RMSNorm(cfg["emb_dim"], eps=1e-5, dtype=cfg["dtype"])
 
     def forward(self, x, mask, cos, sin, start_pos=0, cache=None):
-        # Shortcut connection for attention block
+        # Dikkat bloğu için kestirme (shortcut) bağlantı
         shortcut = x
         x = self.norm1(x)
-        x, next_cache = self.att(x, mask, cos, sin, start_pos=start_pos, cache=cache)  # Shape [batch_size, num_tokens, emb_size]
-        x = x + shortcut  # Add the original input back
+        x, next_cache = self.att(x, mask, cos, sin, start_pos=start_pos, cache=cache)  # Şekil [batch_size, num_tokens, emb_size]
+        x = x + shortcut  # Özgün girdiyi geri ekle
 
-        # Shortcut connection for feed-forward block
+        # İleri beslemeli blok için kestirme (shortcut) bağlantı
         shortcut = x
         x = self.norm2(x)
         x = self.ff(x)
-        x = x + shortcut  # Add the original input back
+        x = x + shortcut  # Özgün girdiyi geri ekle
 
         return x, next_cache
 
@@ -180,17 +180,17 @@ class GroupedQueryAttention(nn.Module):
     def forward(self, x, mask, cos, sin, start_pos=0, cache=None):
         b, num_tokens, _ = x.shape
 
-        # Apply projections
+        # İzdüşümleri uygula
         queries = self.W_query(x)  # (b, num_tokens, num_heads * head_dim)
         keys = self.W_key(x)       # (b, num_tokens, num_kv_groups * head_dim)
         values = self.W_value(x)   # (b, num_tokens, num_kv_groups * head_dim)
 
-        # Reshape
+        # Yeniden şekillendir
         queries = queries.view(b, num_tokens, self.num_heads, self.head_dim).transpose(1, 2)
         keys_new = keys.view(b, num_tokens, self.num_kv_groups, self.head_dim).transpose(1, 2)
         values_new = values.view(b, num_tokens, self.num_kv_groups, self.head_dim).transpose(1, 2)
 
-        # Apply RoPE
+        # RoPE uygula
         queries = apply_rope(queries, cos, sin, offset=start_pos)
         keys_new = apply_rope(keys_new, cos, sin, offset=start_pos)
 
@@ -204,22 +204,22 @@ class GroupedQueryAttention(nn.Module):
             keys, values = keys_new, values_new
             next_cache = (keys, values)
 
-        # Expand keys and values to match the number of heads
+        # Anahtar ve değerleri baş sayısıyla eşleşecek şekilde genişlet
         # Shape: (b, num_heads, num_tokens, head_dim)
         keys = keys.repeat_interleave(self.group_size, dim=1)  # Shape: (b, num_heads, num_tokens, head_dim)
         values = values.repeat_interleave(self.group_size, dim=1)  # Shape: (b, num_heads, num_tokens, head_dim)
-        # For example, before repeat_interleave along dim=1 (query groups):
+        # Örneğin, dim=1 (sorgu grupları) boyunca repeat_interleave öncesinde:
         #   [K1, K2]
-        # After repeat_interleave (each query group is repeated group_size times):
+        # repeat_interleave sonrasında (her sorgu grubu group_size kez tekrarlanır):
         #   [K1, K1, K2, K2]
-        # If we used regular repeat instead of repeat_interleave, we'd get:
+        # repeat_interleave yerine klasik repeat kullansaydık şunu elde ederdik:
         #   [K1, K2, K1, K2]
 
-        # Compute scaled dot-product attention (aka self-attention) with a causal mask
+        # Nedensel maskeyle ölçeklenmiş nokta çarpımı dikkatini (öz-dikkat) hesapla
         # Shape: (b, num_heads, num_tokens, num_tokens)
-        attn_scores = queries @ keys.transpose(2, 3)  # Dot product for each head
+        attn_scores = queries @ keys.transpose(2, 3)  # Her başlık için iç çarpım
 
-        # Use the mask to fill attention scores
+        # Dikkat skorlarını doldurmak için maskeyi kullan
         attn_scores = attn_scores.masked_fill(mask, -torch.inf)
 
         attn_weights = torch.softmax(attn_scores / keys.shape[-1]**0.5, dim=-1)
@@ -228,9 +228,9 @@ class GroupedQueryAttention(nn.Module):
         # Shape: (b, num_tokens, num_heads, head_dim)
         context_vec = (attn_weights @ values).transpose(1, 2)
 
-        # Combine heads, where self.d_out = self.num_heads * self.head_dim
+        # Başları birleştir; burada self.d_out = self.num_heads * self.head_dim
         context_vec = context_vec.reshape(b, num_tokens, self.d_out)
-        context_vec = self.out_proj(context_vec)  # optional projection
+        context_vec = self.out_proj(context_vec)  # isteğe bağlı izdüşüm
 
         return context_vec, next_cache
 
@@ -238,10 +238,10 @@ class GroupedQueryAttention(nn.Module):
 def compute_rope_params(head_dim, theta_base=10_000, context_length=4096, freq_config=None, dtype=torch.float32):
     assert head_dim % 2 == 0, "Embedding dimension must be even"
 
-    # Compute the inverse frequencies
+    # Ters frekansları hesapla
     inv_freq = 1.0 / (theta_base ** (torch.arange(0, head_dim, 2, dtype=dtype)[: (head_dim // 2)].float() / head_dim))
 
-    # Frequency adjustments
+    # Frekans ayarlamaları
     if freq_config is not None:
         low_freq_wavelen = freq_config["original_context_length"] / freq_config["low_freq_factor"]
         high_freq_wavelen = freq_config["original_context_length"] / freq_config["high_freq_factor"]
@@ -264,16 +264,16 @@ def compute_rope_params(head_dim, theta_base=10_000, context_length=4096, freq_c
         inv_freq_llama = torch.where(is_medium_freq, smoothed_inv_freq, inv_freq_llama)
         inv_freq = inv_freq_llama
 
-    # Generate position indices
+    # Konum indekslerini üret
     positions = torch.arange(context_length, dtype=dtype)
 
-    # Compute the angles
+    # Açıları hesapla
     angles = positions[:, None] * inv_freq[None, :]  # Shape: (context_length, head_dim // 2)
 
-    # Expand angles to match the head_dim
+    # Açıları head_dim ile eşleşecek şekilde genişlet
     angles = torch.cat([angles, angles], dim=1)  # Shape: (context_length, head_dim)
 
-    # Precompute sine and cosine
+    # Sinüs ve kosinüsü önceden hesapla
     cos = torch.cos(angles)
     sin = torch.sin(angles)
 
@@ -285,19 +285,19 @@ def apply_rope(x, cos, sin, offset=0):
     batch_size, num_heads, seq_len, head_dim = x.shape
     assert head_dim % 2 == 0, "Head dimension must be even"
 
-    # Split x into first half and second half
-    x1 = x[..., : head_dim // 2]  # First half
-    x2 = x[..., head_dim // 2:]  # Second half
+    # x tensörünü birinci ve ikinci yarıya böl
+    x1 = x[..., : head_dim // 2]  # İlk yarı
+    x2 = x[..., head_dim // 2:]  # İkinci yarı
 
-    # Adjust sin and cos shapes
+    # sin ve cos şekillerini ayarla
     cos = cos[offset:offset + seq_len, :].unsqueeze(0).unsqueeze(0)  # Shape: (1, 1, seq_len, head_dim)
     sin = sin[offset:offset + seq_len, :].unsqueeze(0).unsqueeze(0)
 
-    # Apply the rotary transformation
+    # Döner (rotary) dönüşümü uygula
     rotated = torch.cat((-x2, x1), dim=-1)
     x_rotated = (x * cos) + (rotated * sin)
 
-    # It's ok to use lower-precision after applying cos and sin rotation
+    # cos ve sin döndürmesi uygulandıktan sonra daha düşük hassasiyet kullanmak sorun değil
     return x_rotated.to(dtype=x.dtype)
 
 
@@ -314,7 +314,7 @@ class Llama3Tokenizer:
 
         mergeable = load_tiktoken_bpe(model_path)
 
-        # hard-coded from Meta's tokenizer.json
+        # Meta'nın tokenizer.json dosyasından sabit kodlanmıştır
         self.special = {
             "<|begin_of_text|>": 128000,
             "<|end_of_text|>": 128001,
@@ -371,17 +371,17 @@ class ChatFormat:
 
         ids = [self.tok.special["<|begin_of_text|>"]]
 
-        # system
+        # sistem
         ids += self._header("system")
         ids += self.tok.encode(sys_msg, allowed_special=allowed_special)
         ids += [self.tok.special["<|eot_id|>"]]
 
-        # user
+        # kullanıcı
         ids += self._header("user")
         ids += self.tok.encode(user_message)
         ids += [self.tok.special["<|eot_id|>"]]
 
-        # assistant header (no content yet)
+        # asistan başlığı (henüz içerik yok)
         ids += self._header("assistant")
 
         return ids
@@ -391,14 +391,14 @@ class ChatFormat:
 
 
 def clean_text(text, header_end="assistant<|end_header_id|>\n\n"):
-    # Find the index of the first occurrence of "<|end_header_id|>"
+    # "<|end_header_id|>" ifadesinin ilk geçtiği yerin indeksini bul
     index = text.find(header_end)
 
     if index != -1:
-        # Return the substring starting after "<|end_header_id|>"
+        # "<|end_header_id|>" sonrasından başlayan alt dizeyi döndür
         return text[index + len(header_end):].strip()  # Strip removes leading/trailing whitespace
     else:
-        # If the token is not found, return the original text
+        # Token bulunamazsa özgün metni döndür
         return text
 
 
@@ -474,17 +474,17 @@ class TransformerBlockFast(nn.Module):
         self.norm2 = nn.RMSNorm(cfg["emb_dim"], eps=1e-5, dtype=cfg["dtype"])
 
     def forward(self, x, cos, sin):
-        # Shortcut connection for attention block
+        # Dikkat bloğu için kestirme (shortcut) bağlantı
         shortcut = x
         x = self.norm1(x)
-        x = self.att(x, cos, sin)  # Shape [batch_size, num_tokens, emb_size]
-        x = x + shortcut  # Add the original input back
+        x = self.att(x, cos, sin)  # Şekil [batch_size, num_tokens, emb_size]
+        x = x + shortcut  # Özgün girdiyi geri ekle
 
-        # Shortcut connection for feed-forward block
+        # İleri beslemeli blok için kestirme (shortcut) bağlantı
         shortcut = x
         x = self.norm2(x)
         x = self.ff(x)
-        x = x + shortcut  # Add the original input back
+        x = x + shortcut  # Özgün girdiyi geri ekle
 
         return x
 
@@ -498,7 +498,7 @@ class Llama3ModelFast(nn.Module):
     def __init__(self, cfg):
         super().__init__()
 
-        # Main model parameters
+        # Ana model parametreleri
         self.tok_emb = nn.Embedding(cfg["vocab_size"], cfg["emb_dim"], dtype=cfg["dtype"])
 
         self.trf_blocks = nn.ModuleList(  # ModuleList since Sequential can only accept one input, and we need `x, cos, sin`

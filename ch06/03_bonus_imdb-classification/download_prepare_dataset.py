@@ -71,7 +71,7 @@ def partition_and_save(df, sizes=(35000, 5000, 10000)):
     train_end = sizes[0]
     val_end = sizes[0] + sizes[1]
 
-    # Split the DataFrame
+    # DataFrame'i ayır
     train = df_shuffled.iloc[:train_end]
     val = df_shuffled.iloc[train_end:val_end]
     test = df_shuffled.iloc[val_end:]

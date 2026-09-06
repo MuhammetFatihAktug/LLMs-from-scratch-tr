@@ -27,13 +27,13 @@ def train_model(model, train_loader, val_loader, optimizer, device,
     train_losses, val_losses, track_tokens_seen, track_lrs = [], [], [], []
     tokens_seen, global_step = 0, -1
 
-    # Retrieve the maximum learning rate from the optimizer
+    # Optimize ediciden maksimum öğrenme oranını al
     peak_lr = optimizer.param_groups[0]["lr"]
 
-    # Calculate the total number of iterations in the training process
+    # Eğitim sürecindeki toplam yineleme sayısını hesapla
     total_training_steps = len(train_loader) * n_epochs
 
-    # Calculate the learning rate increment during the warmup phase
+    # Isınma aşamasındaki öğrenme oranı artışını hesapla
     lr_increment = (peak_lr - initial_lr) / warmup_steps
 
     for epoch in range(n_epochs):
@@ -42,26 +42,26 @@ def train_model(model, train_loader, val_loader, optimizer, device,
             optimizer.zero_grad()
             global_step += 1
 
-            # Adjust the learning rate based on the current phase (warmup or cosine annealing)
+            # Öğrenme oranını mevcut aşamaya göre ayarla (ısınma veya kosinüs tavlaması)
             if global_step < warmup_steps:
-                # Linear warmup
+                # Doğrusal ısınma
                 lr = initial_lr + global_step * lr_increment
             else:
-                # Cosine annealing after warmup
+                # Isınmadan sonra kosinüs tavlaması
                 progress = ((global_step - warmup_steps) /
                             (total_training_steps - warmup_steps))
                 lr = min_lr + (peak_lr - min_lr) * 0.5 * (1 + math.cos(math.pi * progress))
 
-            # Apply the calculated learning rate to the optimizer
+            # Hesaplanan öğrenme oranını optimize ediciye uygula
             for param_group in optimizer.param_groups:
                 param_group["lr"] = lr
             track_lrs.append(lr)  # Store the current learning rate
 
-            # Calculate and backpropagate the loss
+            # Kaybı hesapla ve geri yay
             loss = calc_loss_batch(input_batch, target_batch, model, device)
             loss.backward()
 
-            # Apply gradient clipping after the warmup phase to avoid exploding gradients
+            # Patlayan gradyanlardan kaçınmak için ısınma aşamasından sonra gradyan kırpma uygula
             if orig_book_version:
                 if global_step > warmup_steps:
                     torch.nn.utils.clip_grad_norm_(model.parameters(), max_norm=1.0)
@@ -72,7 +72,7 @@ def train_model(model, train_loader, val_loader, optimizer, device,
             optimizer.step()
             tokens_seen += input_batch.numel()
 
-            # Periodically evaluate the model on the training and validation sets
+            # Modeli eğitim ve doğrulama kümelerinde belirli aralıklarla değerlendir
             if global_step % eval_freq == 0:
                 train_loss, val_loss = evaluate_model(
                     model, train_loader, val_loader,
@@ -81,12 +81,12 @@ def train_model(model, train_loader, val_loader, optimizer, device,
                 train_losses.append(train_loss)
                 val_losses.append(val_loss)
                 track_tokens_seen.append(tokens_seen)
-                # Print the current losses
+                # Mevcut kayıpları yazdır
                 print(f"Ep {epoch+1} (Iter {global_step:06d}): "
                       f"Train loss {train_loss:.3f}, "
                       f"Val loss {val_loss:.3f}")
 
-        # Generate and print a sample from the model to monitor progress
+        # İlerlemeyi izlemek için modelden bir örnek üret ve yazdır
         generate_and_print_sample(
             model, tokenizer, device, start_context
         )

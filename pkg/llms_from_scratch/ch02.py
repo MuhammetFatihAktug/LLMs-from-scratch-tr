@@ -14,10 +14,10 @@ class GPTDatasetV1(Dataset):
         self.input_ids = []
         self.target_ids = []
 
-        # Tokenize the entire text
+        # Metnin tamamını token'lara ayır
         token_ids = tokenizer.encode(txt, allowed_special={"<|endoftext|>"})
 
-        # Use a sliding window to chunk the book into overlapping sequences of max_length
+        # Kitabı max_length uzunluğunda örtüşen dizilere bölmek için kayan pencere kullan
         for i in range(0, len(token_ids) - max_length, stride):
             input_chunk = token_ids[i:i + max_length]
             target_chunk = token_ids[i + 1: i + max_length + 1]
@@ -34,13 +34,13 @@ class GPTDatasetV1(Dataset):
 def create_dataloader_v1(txt, batch_size=4, max_length=256,
                          stride=128, shuffle=True, drop_last=True, num_workers=0):
 
-    # Initialize the tokenizer
+    # Tokenizer'ı başlat
     tokenizer = tiktoken.get_encoding("gpt2")
 
-    # Create dataset
+    # Veri kümesini oluştur
     dataset = GPTDatasetV1(txt, tokenizer, max_length, stride)
 
-    # Create dataloader
+    # Veri yükleyiciyi oluştur
     dataloader = DataLoader(
         dataset, batch_size=batch_size, shuffle=shuffle, drop_last=drop_last, num_workers=num_workers)
 

@@ -60,10 +60,10 @@ class GPTDatasetV1(Dataset):
         self.input_ids = []
         self.target_ids = []
 
-        # Tokenize the entire text
+        # Metnin tamamını token'lara ayır
         token_ids = tokenizer.encode(txt, allowed_special={"<|endoftext|>"})
 
-        # Use a sliding window to chunk the book into overlapping sequences of max_length
+        # Kitabı max_length uzunluğunda örtüşen dizilere bölmek için kayan pencere kullan
         for i in range(0, len(token_ids) - max_length, stride):
             input_chunk = token_ids[i:i + max_length]
             target_chunk = token_ids[i + 1: i + max_length + 1]
@@ -81,13 +81,13 @@ class GPTDatasetV1(Dataset):
 # (See Appendix A):
 def create_dataloader_v1(txt, batch_size=4, max_length=256,
                          stride=128, drop_last=True, num_workers=0):
-    # Initialize the tokenizer
+    # Tokenizer'ı başlat
     tokenizer = tiktoken.get_encoding("gpt2")
 
-    # Create dataset
+    # Veri kümesini oluştur
     dataset = GPTDatasetV1(txt, tokenizer, max_length, stride)
 
-    # Create dataloader
+    # Veri yükleyiciyi oluştur
     dataloader = DataLoader(
         dataset=dataset,
         batch_size=batch_size,
@@ -96,13 +96,13 @@ def create_dataloader_v1(txt, batch_size=4, max_length=256,
         num_workers=num_workers,
         pin_memory=True,
         # NEW: chunk batches across GPUs without overlapping samples:
-        sampler=DistributedSampler(dataset)  # NEW
+        sampler=DistributedSampler(dataset)  # YENİ
     )
     return dataloader
 
 
 #####################################
-# Chapter 3
+# Bölüm 3
 #####################################
 class PyTorchMultiHeadAttention(nn.Module):
     def __init__(self, d_in, d_out, num_heads, dropout=0.0, qkv_bias=False):
@@ -138,7 +138,7 @@ class PyTorchMultiHeadAttention(nn.Module):
         context_vec = nn.functional.scaled_dot_product_attention(
             queries, keys, values, attn_mask=None, dropout_p=use_dropout, is_causal=True)
 
-        # Combine heads, where self.d_out = self.num_heads * self.head_dim
+        # Başları birleştir; burada self.d_out = self.num_heads * self.head_dim
         context_vec = context_vec.transpose(1, 2).contiguous().view(batch_size, num_tokens, self.d_out)
 
         context_vec = self.proj(context_vec)
@@ -147,7 +147,7 @@ class PyTorchMultiHeadAttention(nn.Module):
 
 
 #####################################
-# Chapter 4
+# Bölüm 4
 #####################################
 
 
@@ -179,19 +179,19 @@ class TransformerBlock(nn.Module):
         self.drop_shortcut = nn.Dropout(cfg["drop_rate"])
 
     def forward(self, x):
-        # Shortcut connection for attention block
+        # Dikkat bloğu için kestirme (shortcut) bağlantı
         shortcut = x
         x = self.norm1(x)
-        x = self.att(x)   # Shape [batch_size, num_tokens, emb_size]
+        x = self.att(x)   # Şekil [batch_size, num_tokens, emb_size]
         x = self.drop_shortcut(x)
-        x = x + shortcut  # Add the original input back
+        x = x + shortcut  # Özgün girdiyi geri ekle
 
-        # Shortcut connection for feed-forward block
+        # İleri beslemeli blok için kestirme (shortcut) bağlantı
         shortcut = x
         x = self.norm2(x)
         x = self.ff(x)
         x = self.drop_shortcut(x)
-        x = x + shortcut  # Add the original input back
+        x = x + shortcut  # Özgün girdiyi geri ekle
 
         return x
 
@@ -213,7 +213,7 @@ class GPTModel(nn.Module):
         batch_size, seq_len = in_idx.shape
         tok_embeds = self.tok_emb(in_idx)
         pos_embeds = self.pos_emb(torch.arange(seq_len, device=in_idx.device))
-        x = tok_embeds + pos_embeds  # Shape [batch_size, num_tokens, emb_size]
+        x = tok_embeds + pos_embeds  # Şekil [batch_size, num_tokens, emb_size]
         x = self.drop_emb(x)
         x = self.trf_blocks(x)
         x = self.final_norm(x)
@@ -222,26 +222,26 @@ class GPTModel(nn.Module):
 
 
 def generate_text_simple(model, idx, max_new_tokens, context_size):
-    # idx is (B, T) array of indices in the current context
+    # idx, mevcut bağlamdaki indekslerin (B, T) boyutlu dizisidir
     for _ in range(max_new_tokens):
 
-        # Crop current context if it exceeds the supported context size
-        # E.g., if LLM supports only 5 tokens, and the context size is 10
-        # then only the last 5 tokens are used as context
+        # Desteklenen bağlam boyutunu aşıyorsa mevcut bağlamı kırp
+        # Ör. LLM yalnızca 5 token destekliyorsa ve bağlam boyutu 10 ise
+        # bağlam olarak yalnızca son 5 token kullanılır
         idx_cond = idx[:, -context_size:]
 
-        # Get the predictions
+        # Tahminleri al
         with torch.no_grad():
             logits = model(idx_cond)
 
-        # Focus only on the last time step
-        # (batch, n_token, vocab_size) becomes (batch, vocab_size)
+        # Yalnızca son zaman adımına odaklan
+        # (batch, n_token, vocab_size) -> (batch, vocab_size) olur
         logits = logits[:, -1, :]
 
-        # Get the idx of the vocab entry with the highest logits value
+        # En yüksek logit değerine sahip sözlük kaydının idx değerini al
         idx_next = torch.argmax(logits, dim=-1, keepdim=True)  # (batch, 1)
 
-        # Append sampled index to the running sequence
+        # Örneklenen indeksi süregelen diziye ekle
         idx = torch.cat((idx, idx_next), dim=1)  # (batch, n_tokens+1)
 
     return idx
@@ -333,7 +333,7 @@ def train_model_simple_with_timing(model, train_loader, val_loader, optimizer, d
     else:
         t0 = time.time()          # Start the timer for the first interval
 
-    # Main training loop
+    # Ana eğitim döngüsü
     for epoch in range(num_epochs):
         # NEW: set epoch for DistributedSampler so each process gets a unique shuffle order
         if isinstance(train_loader.sampler, DistributedSampler):
@@ -416,14 +416,14 @@ def train_model_simple_with_timing(model, train_loader, val_loader, optimizer, d
 def plot_losses(epochs_seen, tokens_seen, train_losses, val_losses):
     fig, ax1 = plt.subplots()
 
-    # Plot training and validation loss against epochs
+    # Eğitim ve doğrulama kaybını dönemlere karşı çiz
     ax1.plot(epochs_seen, train_losses, label="Training loss")
     ax1.plot(epochs_seen, val_losses, linestyle="-.", label="Validation loss")
     ax1.set_xlabel("Epochs")
     ax1.set_ylabel("Loss")
     ax1.legend(loc="upper right")
 
-    # Create a second x-axis for tokens seen
+    # Görülen token'lar için ikinci bir x ekseni oluştur
     ax2 = ax1.twiny()  # Create a second x-axis that shares the same y-axis
     ax2.plot(tokens_seen, train_losses, alpha=0)  # Invisible plot for aligning ticks
     ax2.set_xlabel("Tokens seen")
@@ -498,7 +498,7 @@ def main(gpt_config, settings, rank, world_size):
     # Set up dataloaders
     ##############################
 
-    # Train/validation ratio
+    # Eğitim/doğrulama oranı
     train_ratio = 0.90
     split_idx = int(train_ratio * len(text_data))
 
@@ -558,12 +558,12 @@ if __name__ == "__main__":
         rank = 0
 
     GPT_CONFIG_124M = {
-        "vocab_size": 50304,     # Vocabulary size
+        "vocab_size": 50304,     # Sözcük dağarcığı boyutu
         "context_length": 1024,  # Input tokens per training example
-        "emb_dim": 768,          # Embedding dimension
-        "n_heads": 12,           # Number of attention heads
-        "n_layers": 12,          # Number of layers
-        "drop_rate": 0.1,        # Dropout rate
+        "emb_dim": 768,          # Gömme (embedding) boyutu
+        "n_heads": 12,           # Dikkat başlığı sayısı
+        "n_layers": 12,          # Katman sayısı
+        "drop_rate": 0.1,        # Dropout oranı
         "qkv_bias": False        # Query-key-value bias
     }
 
@@ -580,7 +580,7 @@ if __name__ == "__main__":
 
     train_losses, val_losses, tokens_seen, model = main(
         GPT_CONFIG_124M, OTHER_SETTINGS,
-        rank, world_size  # NEW
+        rank, world_size  # YENİ
     )
 
     ###########################

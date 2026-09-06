@@ -21,10 +21,10 @@ from gpt_download import download_and_load_gpt2
 from previous_chapters import GPTModel, load_weights_into_gpt
 
 
-# If the `previous_chapters.py` file is not available locally,
-# you can import it from the `llms-from-scratch` PyPI package.
-# For details, see: https://github.com/rasbt/LLMs-from-scratch/tree/main/pkg
-# E.g.,
+# `previous_chapters.py` dosyası yerelde mevcut değilse,
+# onu `llms-from-scratch` PyPI paketinden içe aktarabilirsiniz.
+# Ayrıntılar için bkz.: https://github.com/rasbt/LLMs-from-scratch/tree/main/pkg
+# Ör.:
 # from llms_from_scratch.ch04 import GPTModel
 # from llms_from_scratch.ch05 import download_and_load_gpt2, load_weights_into_gpt
 
@@ -74,14 +74,14 @@ class SpamDataset(Dataset):
         self.data = pd.read_csv(csv_file)
         self.max_length = max_length if max_length is not None else self._longest_encoded_length(tokenizer)
 
-        # Pre-tokenize texts
+        # Metinleri önceden token'lara ayır
         self.encoded_texts = [
             tokenizer.encode(text)[:self.max_length]
             for text in self.data["Text"]
         ]
 
         if not no_padding:
-            # Pad sequences to the longest sequence
+            # Dizileri en uzun diziye göre doldur
             self.encoded_texts = [
                 et + [pad_token_id] * (self.max_length - len(et))
                 for et in self.encoded_texts
@@ -103,7 +103,7 @@ class SpamDataset(Dataset):
                 max_length = encoded_length
         return max_length
         # Note: A more pythonic version to implement this method
-        # is the following, which is also used in the next chapter:
+        # şudur; bu, bir sonraki bölümde de kullanılıyor:
         # return max(len(encoded_text) for encoded_text in self.encoded_texts)
 
 
@@ -112,7 +112,7 @@ def download_and_unzip(url, zip_path, extract_to, new_file_path):
         print(f"{new_file_path} already exists. Skipping download and extraction.")
         return
 
-    # Downloading the file
+    # Dosyayı indirme
     response = requests.get(url, stream=True, timeout=60)
     response.raise_for_status()
     with open(zip_path, "wb") as out_file:
@@ -120,7 +120,7 @@ def download_and_unzip(url, zip_path, extract_to, new_file_path):
             if chunk:
                 out_file.write(chunk)
 
-    # Unzipping the file
+    # Dosyayı açma (unzip)
     with zipfile.ZipFile(zip_path, "r") as zip_ref:
         zip_ref.extractall(extract_to)
 
@@ -131,14 +131,14 @@ def download_and_unzip(url, zip_path, extract_to, new_file_path):
 
 
 def random_split(df, train_frac, val_frac):
-    # Shuffle the entire DataFrame
+    # DataFrame'in tamamını karıştır
     df = df.sample(frac=1, random_state=123).reset_index(drop=True)
 
-    # Calculate split indices
+    # Ayırma indekslerini hesapla
     train_end = int(len(df) * train_frac)
     val_end = train_end + int(len(df) * val_frac)
 
-    # Split the DataFrame
+    # DataFrame'i ayır
     train_df = df[:train_end]
     val_df = df[train_end:val_end]
     test_df = df[val_end:]
@@ -166,9 +166,9 @@ def create_dataset_csvs(new_file_path):
 def instantiate_model(choose_model, load_weights):
 
     BASE_CONFIG = {
-        "vocab_size": 50257,     # Vocabulary size
-        "context_length": 1024,  # Context length
-        "drop_rate": 0.0,        # Dropout rate
+        "vocab_size": 50257,     # Sözcük dağarcığı boyutu
+        "context_length": 1024,  # Bağlam uzunluğu
+        "drop_rate": 0.0,        # Dropout oranı
         "qkv_bias": True         # Query-key-value bias
     }
 
@@ -237,7 +237,7 @@ def calc_loss_loader(data_loader, model, device,
     elif num_batches is None:
         num_batches = len(data_loader)
     else:
-        # Reduce the number of batches to match the total number of batches in the data loader
+        # num_batches değeri veri yükleyicideki yığın sayısını aşarsa,
         # if num_batches exceeds the number of batches in the data loader
         num_batches = min(num_batches, len(data_loader))
     for i, (input_batch, target_batch) in enumerate(data_loader):
@@ -329,11 +329,11 @@ def evaluate_model(model, train_loader, val_loader, device,
 def train_classifier_simple(model, train_loader, val_loader, optimizer, device, num_epochs,
                             eval_freq, eval_iter, max_steps=None, trainable_token_pos=-1,
                             accumulation_steps=1, ignore_index=-100, average_embeddings=False):
-    # Initialize lists to track losses and tokens seen
+    # Kayıpları ve görülen token'ları izlemek için listeleri başlat
     train_losses, val_losses, train_accs, val_accs = [], [], [], []
     examples_seen, global_step = 0, -1
 
-    # Main training loop
+    # Ana eğitim döngüsü
     for epoch in range(num_epochs):
         model.train()  # Set model to training mode
 
@@ -360,7 +360,7 @@ def train_classifier_simple(model, train_loader, val_loader, optimizer, device, 
             examples_seen += input_batch.shape[0]  # New: track examples instead of tokens
             global_step += 1
 
-            # Optional evaluation step
+            # İsteğe bağlı değerlendirme adımı
             if global_step % eval_freq == 0:
                 train_loss, val_loss = evaluate_model(
                     model, train_loader, val_loader, device, eval_iter,
@@ -398,13 +398,13 @@ def train_classifier_simple(model, train_loader, val_loader, optimizer, device, 
 def replace_linear_with_lora(model, rank, alpha, alternative=False):
     for name, module in model.named_children():
         if isinstance(module, torch.nn.Linear):
-            # Replace the Linear layer with LinearWithLoRA
+            # Linear katmanını LinearWithLoRA ile değiştir
             if alternative:
                 setattr(model, name, LinearWithLoRAMerged(module, rank, alpha))
             else:
                 setattr(model, name, LinearWithLoRA(module, rank, alpha))
         else:
-            # Recursively apply the same function to child modules
+            # Aynı fonksiyonu alt modüllere özyinelemeli olarak uygula
             replace_linear_with_lora(module, rank, alpha)
 
 

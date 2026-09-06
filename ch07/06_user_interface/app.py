@@ -11,7 +11,7 @@ import torch
 import chainlit
 
 
-# For llms_from_scratch installation instructions, see:
+# llms_from_scratch kurulum talimatları için bkz.:
 # https://github.com/rasbt/LLMs-from-scratch/tree/main/pkg
 from llms_from_scratch.ch04 import GPTModel
 from llms_from_scratch.ch05 import (
@@ -30,12 +30,12 @@ def get_model_and_tokenizer():
     """
 
     GPT_CONFIG_355M = {
-        "vocab_size": 50257,     # Vocabulary size
+        "vocab_size": 50257,     # Sözcük dağarcığı boyutu
         "context_length": 1024,  # Shortened context length (orig: 1024)
-        "emb_dim": 1024,         # Embedding dimension
-        "n_heads": 16,           # Number of attention heads
-        "n_layers": 24,          # Number of layers
-        "drop_rate": 0.0,        # Dropout rate
+        "emb_dim": 1024,         # Gömme (embedding) boyutu
+        "n_heads": 16,           # Dikkat başlığı sayısı
+        "n_layers": 24,          # Katman sayısı
+        "drop_rate": 0.0,        # Dropout oranı
         "qkv_bias": True         # Query-key-value bias
     }
 

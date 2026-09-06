@@ -10,7 +10,7 @@ import tiktoken
 import torch
 import chainlit
 
-# For llms_from_scratch installation instructions, see:
+# llms_from_scratch kurulum talimatları için bkz.:
 # https://github.com/rasbt/LLMs-from-scratch/tree/main/pkg
 from llms_from_scratch.ch04 import GPTModel
 from llms_from_scratch.ch06 import classify_review
@@ -26,12 +26,12 @@ def get_model_and_tokenizer():
     """
 
     GPT_CONFIG_124M = {
-        "vocab_size": 50257,     # Vocabulary size
-        "context_length": 1024,  # Context length
-        "emb_dim": 768,          # Embedding dimension
-        "n_heads": 12,           # Number of attention heads
-        "n_layers": 12,          # Number of layers
-        "drop_rate": 0.1,        # Dropout rate
+        "vocab_size": 50257,     # Sözcük dağarcığı boyutu
+        "context_length": 1024,  # Bağlam uzunluğu
+        "emb_dim": 768,          # Gömme (embedding) boyutu
+        "n_heads": 12,           # Dikkat başlığı sayısı
+        "n_layers": 12,          # Katman sayısı
+        "drop_rate": 0.1,        # Dropout oranı
         "qkv_bias": True         # Query-key-value bias
     }
 
@@ -48,7 +48,7 @@ def get_model_and_tokenizer():
     # Instantiate model
     model = GPTModel(GPT_CONFIG_124M)
 
-    # Convert model to classifier as in section 6.5 in ch06.ipynb
+    # ch06.ipynb içindeki 6.5 kısmındaki gibi modeli sınıflandırıcıya dönüştür
     num_classes = 2
     model.out_head = torch.nn.Linear(in_features=GPT_CONFIG_124M["emb_dim"], out_features=num_classes)
 

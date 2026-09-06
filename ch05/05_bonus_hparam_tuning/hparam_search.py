@@ -9,7 +9,7 @@ import os
 import tiktoken
 import torch
 
-# For llms_from_scratch installation instructions, see:
+# llms_from_scratch kurulum talimatları için bkz.:
 # https://github.com/rasbt/LLMs-from-scratch/tree/main/pkg
 from llms_from_scratch.ch02 import create_dataloader_v1
 from llms_from_scratch.ch04 import GPTModel
@@ -146,13 +146,13 @@ if __name__ == "__main__":
             HPARAM_CONFIG = dict(zip(HPARAM_GRID.keys(), combination))
 
             GPT_CONFIG_124M = {
-                "vocab_size": 50257,    # Vocabulary size
+                "vocab_size": 50257,    # Sözcük dağarcığı boyutu
                 "context_length": 256,  # Context length -- shortened from original 1024 tokens
-                "emb_dim": 768,         # Embedding dimension
-                "n_heads": 12,          # Number of attention heads
-                "n_layers": 12,         # Number of layers
+                "emb_dim": 768,         # Gömme (embedding) boyutu
+                "n_heads": 12,          # Dikkat başlığı sayısı
+                "n_layers": 12,         # Katman sayısı
                 "drop_rate": HPARAM_CONFIG["drop_rate"],
-                "qkv_bias": False,     # Query-Key-Value bias
+                "qkv_bias": False,     # Sorgu-Anahtar-Değer bias'ı
             }
 
             torch.manual_seed(123)

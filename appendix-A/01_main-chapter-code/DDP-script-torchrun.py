@@ -64,15 +64,15 @@ class NeuralNetwork(torch.nn.Module):
         super().__init__()
 
         self.layers = torch.nn.Sequential(
-            # 1st hidden layer
+            # 1. gizli katman
             torch.nn.Linear(num_inputs, 30),
             torch.nn.ReLU(),
 
-            # 2nd hidden layer
+            # 2. gizli katman
             torch.nn.Linear(30, 20),
             torch.nn.ReLU(),
 
-            # output layer
+            # çıkış katmanı
             torch.nn.Linear(20, num_outputs),
         )
 
@@ -114,7 +114,7 @@ def prepare_dataset():
         pin_memory=True,
         drop_last=True,
         # NEW: chunk batches across GPUs without overlapping samples:
-        sampler=DistributedSampler(train_ds)  # NEW
+        sampler=DistributedSampler(train_ds)  # YENİ
     )
     test_loader = DataLoader(
         dataset=test_ds,

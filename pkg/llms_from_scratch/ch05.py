@@ -18,7 +18,7 @@ from tqdm import tqdm
 
 def generate(model, idx, max_new_tokens, context_size, temperature=0.0, top_k=None, eos_id=None):
 
-    # For-loop is the same as before: Get logits, and only focus on last time step
+    # For döngüsü öncekiyle aynı: logit'leri al ve yalnızca son zaman adımına odaklan
     for _ in range(max_new_tokens):
         idx_cond = idx[:, -context_size:]
         with torch.no_grad():
@@ -27,7 +27,7 @@ def generate(model, idx, max_new_tokens, context_size, temperature=0.0, top_k=No
 
         # New: Filter logits with top_k sampling
         if top_k is not None:
-            # Keep only top_k values
+            # Yalnızca en yüksek top_k değeri tut
             top_logits, _ = torch.topk(logits, top_k)
             min_val = top_logits[:, -1]
             logits = torch.where(logits < min_val, torch.tensor(float("-inf")).to(logits.device), logits)
@@ -36,24 +36,24 @@ def generate(model, idx, max_new_tokens, context_size, temperature=0.0, top_k=No
         if temperature > 0.0:
             logits = logits / temperature
 
-            # New (not in book): numerical stability tip to get equivalent results on mps device
-            # subtract rowwise max before softmax
+            # Yeni (kitapta yok): mps cihazında eşdeğer sonuçlar almak için sayısal kararlılık ipucu
+            # softmax'tan önce satır bazında maksimumu çıkar
             logits = logits - logits.max(dim=-1, keepdim=True).values
 
-            # Apply softmax to get probabilities
+            # Olasılıkları elde etmek için softmax uygula
             probs = torch.softmax(logits, dim=-1)  # (batch_size, context_len)
 
-            # Sample from the distribution
+            # Dağılımdan örnekle
             idx_next = torch.multinomial(probs, num_samples=1)  # (batch_size, 1)
 
-        # Otherwise same as before: get idx of the vocab entry with the highest logits value
+        # Aksi hâlde öncekiyle aynı: en yüksek logit değerine sahip sözlük kaydının idx değerini al
         else:
             idx_next = torch.argmax(logits, dim=-1, keepdim=True)  # (batch_size, 1)
 
         if idx_next == eos_id:  # Stop generating early if end-of-sequence token is encountered and eos_id is specified
             break
 
-        # Same as before: append sampled index to the running sequence
+        # Öncekiyle aynı: örneklenen indeksi süregelen diziye ekle
         idx = torch.cat((idx, idx_next), dim=1)  # (batch_size, num_tokens+1)
 
     return idx
@@ -61,11 +61,11 @@ def generate(model, idx, max_new_tokens, context_size, temperature=0.0, top_k=No
 
 def train_model_simple(model, train_loader, val_loader, optimizer, device, num_epochs,
                        eval_freq, eval_iter, start_context, tokenizer):
-    # Initialize lists to track losses and tokens seen
+    # Kayıpları ve görülen token'ları izlemek için listeleri başlat
     train_losses, val_losses, track_tokens_seen = [], [], []
     tokens_seen, global_step = 0, -1
 
-    # Main training loop
+    # Ana eğitim döngüsü
     for epoch in range(num_epochs):
         model.train()  # Set model to training mode
 
@@ -77,7 +77,7 @@ def train_model_simple(model, train_loader, val_loader, optimizer, device, num_e
             tokens_seen += input_batch.numel()
             global_step += 1
 
-            # Optional evaluation step
+            # İsteğe bağlı değerlendirme adımı
             if global_step % eval_freq == 0:
                 train_loss, val_loss = evaluate_model(
                     model, train_loader, val_loader, device, eval_iter)
@@ -87,7 +87,7 @@ def train_model_simple(model, train_loader, val_loader, optimizer, device, num_e
                 print(f"Ep {epoch+1} (Step {global_step:06d}): "
                       f"Train loss {train_loss:.3f}, Val loss {val_loss:.3f}")
 
-        # Print a sample text after each epoch
+        # Her dönemden sonra örnek bir metin yazdır
         generate_and_print_sample(
             model, tokenizer, device, start_context
         )
@@ -210,7 +210,7 @@ def calc_loss_loader(data_loader, model, device, num_batches=None):
     elif num_batches is None:
         num_batches = len(data_loader)
     else:
-        # Reduce the number of batches to match the total number of batches in the data loader
+        # num_batches değeri veri yükleyicideki yığın sayısını aşarsa,
         # if num_batches exceeds the number of batches in the data loader
         num_batches = min(num_batches, len(data_loader))
     for i, (input_batch, target_batch) in enumerate(data_loader):
@@ -225,7 +225,7 @@ def calc_loss_loader(data_loader, model, device, num_batches=None):
 def plot_losses(epochs_seen, tokens_seen, train_losses, val_losses):
     fig, ax1 = plt.subplots(figsize=(5, 3))
 
-    # Plot training and validation loss against epochs
+    # Eğitim ve doğrulama kaybını dönemlere karşı çiz
     ax1.plot(epochs_seen, train_losses, label="Training loss")
     ax1.plot(epochs_seen, val_losses, linestyle="-.", label="Validation loss")
     ax1.set_xlabel("Epochs")
@@ -233,7 +233,7 @@ def plot_losses(epochs_seen, tokens_seen, train_losses, val_losses):
     ax1.legend(loc="upper right")
     ax1.xaxis.set_major_locator(MaxNLocator(integer=True))  # only show integer labels on x-axis
 
-    # Create a second x-axis for tokens seen
+    # Görülen token'lar için ikinci bir x ekseni oluştur
     ax2 = ax1.twiny()  # Create a second x-axis that shares the same y-axis
     ax2.plot(tokens_seen, train_losses, alpha=0)  # Invisible plot for aligning ticks
     ax2.set_xlabel("Tokens seen")

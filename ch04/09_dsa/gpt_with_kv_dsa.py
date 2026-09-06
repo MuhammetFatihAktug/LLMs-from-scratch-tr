@@ -3,13 +3,13 @@
 #   - https://www.manning.com/books/build-a-large-language-model-from-scratch
 # Code: https://github.com/rasbt/LLMs-from-scratch
 
-# This file collects all the relevant code that we covered thus far
-# throughout Chapters 3-4, adapted to use DeepSeek Sparse Attention (DSA).
-# This file can be run as a standalone script.
+# Bu dosya, şimdiye dek ele aldığımız tüm ilgili kodu
+# 3-4. bölümler boyunca, DeepSeek Seyrek Dikkat (DSA) kullanacak şekilde bir araya toplar.
+# Bu dosya bağımsız bir betik olarak çalıştırılabilir.
 
-# DSA is introduced in DeepSeek-V3.2:
+# DSA, DeepSeek-V3.2 ile tanıtıldı:
 #   https://huggingface.co/deepseek-ai/DeepSeek-V3.2
-# Technical report:
+# Teknik rapor:
 #   https://huggingface.co/deepseek-ai/DeepSeek-V3.2/resolve/main/assets/paper.pdf
 
 import argparse
@@ -20,19 +20,19 @@ import torch.nn as nn
 
 
 #####################################
-# DeepSeek Sparse Attention (DSA)
+# DeepSeek Seyrek Dikkat (DSA)
 #####################################
-# DSA combines two components:
-#   1. A Lightning Indexer that scores all past tokens for each query
-#      using a lightweight gated sum of ReLU(q · k) dot products.
-#   2. A Token Selector that picks the top-K highest-scoring past tokens
-#      and masks out the rest.
+# DSA iki bileşeni birleştirir:
+#   1. Her sorgu için geçmiş tüm token'ları, ReLU(q · k) iç çarpımlarının
+#      hafif kapılı toplamıyla puanlayan bir Şimşek İndeksleyici (Lightning Indexer).
+#   2. En yüksek puanlı ilk K geçmiş token'ı seçip geri kalanını maskeleyen
+#      bir Token Seçici (Token Selector).
 #
-# This teaching implementation applies a dense mask to standard attention.
-# It reproduces the DSA selection logic but does not include a fused sparse
-# attention kernel that would reduce attention compute from O(L^2) to O(L*k).
+# Bu öğretici uygulama, standart dikkate yoğun (dense) bir maske uygular.
+# DSA seçim mantığını yeniden üretir, ancak dikkat hesabını O(L^2)'den O(L*k)'ye
+# indirecek kaynaşık (fused) seyrek dikkat çekirdeğini içermez.
 #
-# Reference implementation inspired by:
+# Referans uygulamadan esinlenilmiştir:
 #   https://huggingface.co/deepseek-ai/DeepSeek-V3.2-Exp/blob/main/inference/model.py
 
 
@@ -58,29 +58,29 @@ class LightningIndexer(nn.Module):
         self.index_n_heads = index_n_heads
         self.index_head_dim = index_head_dim
 
-        # Project input to indexer query vectors: (d_model -> index_n_heads * index_head_dim)
+        # Girdiyi indeksleyici sorgu vektörlerine izdüşür: (d_model -> index_n_heads * index_head_dim)
         self.W_q_index = nn.Linear(d_model, index_n_heads * index_head_dim, bias=False)
-        # Project input to shared key vectors: (d_model -> index_head_dim)
+        # Girdiyi paylaşılan anahtar vektörlerine izdüşür: (d_model -> index_head_dim)
         self.W_k_index = nn.Linear(d_model, index_head_dim, bias=False)
-        # Learn a per-head weight scalar: (d_model -> index_n_heads), as in the V3.2 paper
+        # V3.2 makalesindeki gibi başlık başına bir ağırlık skaleri öğren: (d_model -> index_n_heads)
         self.W_weights = nn.Linear(d_model, index_n_heads, bias=False)
 
         self.scale = index_head_dim ** -0.5
 
     def forward(
         self,
-        x: torch.Tensor,         # (b, T, d_model)  current token(s)
-        x_ctx: torch.Tensor,     # (b, S, d_model)  all past + current tokens
+        x: torch.Tensor,         # (b, T, d_model)  geçerli token(lar)
+        x_ctx: torch.Tensor,     # (b, S, d_model)  geçmiş + geçerli token'ların tümü
         topk: int,
-        causal_mask: torch.Tensor | None = None,  # (T, S) float mask
+        causal_mask: torch.Tensor | None = None,  # (T, S) float maske
     ) -> torch.Tensor:
         """Return top-K token indices shape (b, T, topk)."""
         b, T, _ = x.shape
         _, S, _ = x_ctx.shape
 
-        # Indexer queries: (b, T, H_I, head_dim)
+        # İndeksleyici sorguları: (b, T, H_I, head_dim)
         q = self.W_q_index(x).view(b, T, self.index_n_heads, self.index_head_dim)
-        # Indexer keys: (b, S, head_dim)
+        # İndeksleyici anahtarları: (b, S, head_dim)
         k = self.W_k_index(x_ctx)  # (b, S, head_dim)
 
         # ReLU(q · k^T) for each head: (b, T, H_I, S)
@@ -88,19 +88,19 @@ class LightningIndexer(nn.Module):
         raw = torch.einsum("bthd,bsd->bths", q, k) * self.scale  # (b, T, H_I, S)
         raw = torch.relu(raw)
 
-        # Per-head learned gates: (b, T, H_I)
-        # Reference implementations use raw learned gates scaled by sqrt(H_I),
-        # not a probability distribution over index heads.
+        # Başlık başına öğrenilen kapılar: (b, T, H_I)
+        # Referans uygulamalar, indeks başlıkları üzerinde bir olasılık dağılımı yerine
+        # sqrt(H_I) ile ölçeklenmiş ham öğrenilmiş kapılar kullanır.
         w = self.W_weights(x)  # (b, T, H_I)
         w = w * (self.index_n_heads ** -0.5)
 
-        # Weighted sum over heads -> index scores (b, T, S)
+        # Başlıklar üzerinden ağırlıklı toplam -> indeks puanları (b, T, S)
         index_scores = torch.einsum("bth,bths->bts", w, raw)  # (b, T, S)
 
         if causal_mask is not None:
-            index_scores = index_scores + causal_mask  # broadcast over batch
+            index_scores = index_scores + causal_mask  # yığın (batch) boyunca yayınla
 
-        # Select top-K positions. topk is capped at available context length S.
+        # En yüksek K konumu seç. topk, kullanılabilir bağlam uzunluğu S ile sınırlanır.
         k_val = min(topk, S)
         topk_indices = index_scores.topk(k_val, dim=-1).indices  # (b, T, k)
         return topk_indices
@@ -153,10 +153,10 @@ class MultiHeadAttentionWithDSA(nn.Module):
         self.indexer = LightningIndexer(d_in, index_n_heads, index_head_dim)
 
         ####################################################
-        # KV cache-related code
+        # KV önbelleğiyle ilgili kod
         self.register_buffer("cache_k", None, persistent=False)
         self.register_buffer("cache_v", None, persistent=False)
-        # Keep raw input tokens for the indexer key projection
+        # İndeksleyici anahtar izdüşümü için ham girdi token'larını sakla
         self.register_buffer("cache_x", None, persistent=False)
         self.ptr_current_pos = 0
         ####################################################
@@ -174,13 +174,13 @@ class MultiHeadAttentionWithDSA(nn.Module):
         keys_new = self.W_key(x)
         values_new = self.W_value(x)
 
-        # Reshape to (b, T, num_heads, head_dim)
+        # (b, T, num_heads, head_dim) şekline getir
         queries = queries.view(b, num_tokens, self.num_heads, self.head_dim)
         keys_new = keys_new.view(b, num_tokens, self.num_heads, self.head_dim)
         values_new = values_new.view(b, num_tokens, self.num_heads, self.head_dim)
 
         ####################################################
-        # KV cache-related
+        # KV önbelleğiyle ilgili
         if use_cache:
             if self.cache_k is None:
                 keys = keys_new
@@ -209,33 +209,33 @@ class MultiHeadAttentionWithDSA(nn.Module):
         keys_t = keys.transpose(1, 2)
         values_t = values.transpose(1, 2)
 
-        # Full scaled dot-product attention scores: (b, num_heads, T_q, T_k)
+        # Tam ölçeklenmiş iç çarpım dikkat puanları: (b, num_heads, T_q, T_k)
         attn_scores = queries_t @ keys_t.transpose(2, 3)
 
         num_tokens_Q = queries_t.shape[-2]
         num_tokens_K = keys_t.shape[-2]
         device = x.device
 
-        # ---- Build causal mask (float, -inf for masked positions) ----
+        # ---- Nedensel maskeyi kur (float; maskelenen konumlar için -inf) ----
         q_positions = torch.arange(q_start, q_start + num_tokens_Q, device=device, dtype=torch.long)
         k_positions = torch.arange(k_start, k_start + num_tokens_K, device=device, dtype=torch.long)
         causal_bool = q_positions.unsqueeze(-1) < k_positions.unsqueeze(0)  # (T_q, T_k)
         causal_float = torch.zeros(num_tokens_Q, num_tokens_K, device=device, dtype=attn_scores.dtype)
         causal_float.masked_fill_(causal_bool, float("-inf"))
 
-        # ---- DSA: Lightning Indexer → sparse mask ----
-        # The indexer receives the current queries (x) and all context tokens (x_ctx).
-        # causal_float is passed so future tokens are excluded from index selection.
+        # ---- DSA: Şimşek İndeksleyici → seyrek maske ----
+        # İndeksleyici, geçerli sorguları (x) ve tüm bağlam token'larını (x_ctx) alır.
+        # causal_float verilir ki gelecekteki token'lar indeks seçiminin dışında kalsın.
         topk_indices = self.indexer(x, x_ctx, self.topk, causal_mask=causal_float)
         # topk_indices: (b, T_q, k)
 
-        # Build sparse mask: -inf everywhere, 0 at selected positions
+        # Seyrek maskeyi kur: her yer -inf, seçilen konumlarda 0
         sparse_mask = torch.full(
             (b, num_tokens_Q, num_tokens_K), float("-inf"), device=device, dtype=attn_scores.dtype
         )
         sparse_mask.scatter_(-1, topk_indices, 0.0)  # (b, T_q, T_k)
 
-        # Combine causal mask and sparse mask, then broadcast over heads
+        # Nedensel maske ile seyrek maskeyi birleştir, sonra başlıklar boyunca yayınla
         combined_mask = causal_float.unsqueeze(0) + sparse_mask  # (b, T_q, T_k)
         attn_scores = attn_scores + combined_mask.unsqueeze(1)  # (b, num_heads, T_q, T_k)
 
@@ -244,14 +244,14 @@ class MultiHeadAttentionWithDSA(nn.Module):
 
         # Shape: (b, num_heads, T_q, head_dim)
         context_vec = attn_weights @ values_t
-        # Transpose and reshape: (b, T_q, d_out)
+        # Devrik al ve yeniden şekillendir: (b, T_q, d_out)
         context_vec = context_vec.transpose(1, 2).contiguous().view(b, num_tokens, self.d_out)
         context_vec = self.out_proj(context_vec)
         return context_vec
 
 
 #####################################
-# Chapter 4
+# Bölüm 4
 #####################################
 class LayerNorm(nn.Module):
     def __init__(self, emb_dim):
@@ -310,24 +310,24 @@ class TransformerBlock(nn.Module):
         self.drop_shortcut = nn.Dropout(cfg["drop_rate"])
 
     def forward(self, x, use_cache=False):
-        # Shortcut connection for attention block
+        # Dikkat bloğu için kestirme (shortcut) bağlantı
         shortcut = x
         x = self.norm1(x)
 
         ####################################################
-        # KV cache-related
+        # KV önbelleğiyle ilgili
         x = self.att(x, use_cache=use_cache)
         ####################################################
 
         x = self.drop_shortcut(x)
-        x = x + shortcut  # Add the original input back
+        x = x + shortcut  # Özgün girdiyi geri ekle
 
-        # Shortcut connection for feed-forward block
+        # İleri beslemeli blok için kestirme (shortcut) bağlantı
         shortcut = x
         x = self.norm2(x)
         x = self.ff(x)
         x = self.drop_shortcut(x)
-        x = x + shortcut  # Add the original input back
+        x = x + shortcut  # Özgün girdiyi geri ekle
 
         return x
 
@@ -340,7 +340,7 @@ class GPTModel(nn.Module):
         self.drop_emb = nn.Dropout(cfg["drop_rate"])
 
         ####################################################
-        # KV cache-related
+        # KV önbelleğiyle ilgili
         self.trf_blocks = nn.ModuleList(
             [TransformerBlock(cfg) for _ in range(cfg["n_layers"])])
 
@@ -355,7 +355,7 @@ class GPTModel(nn.Module):
         tok_embeds = self.tok_emb(in_idx)
 
         ####################################################
-        # KV cache-related
+        # KV önbelleğiyle ilgili
         if use_cache:
             pos_ids = torch.arange(self.current_pos, self.current_pos + seq_len, device=in_idx.device, dtype=torch.long)
             self.current_pos += seq_len
@@ -364,11 +364,11 @@ class GPTModel(nn.Module):
         pos_embeds = self.pos_emb(pos_ids).unsqueeze(0)
         ####################################################
 
-        x = tok_embeds + pos_embeds  # Shape [batch_size, num_tokens, emb_size]
+        x = tok_embeds + pos_embeds  # Şekil [batch_size, num_tokens, emb_size]
         x = self.drop_emb(x)
 
         ####################################################
-        # KV cache-related
+        # KV önbelleğiyle ilgili
         for blk in self.trf_blocks:
             x = blk(x, use_cache=use_cache)
         ####################################################
@@ -378,7 +378,7 @@ class GPTModel(nn.Module):
         return logits
 
     ####################################################
-    # KV cache-related
+    # KV önbelleğiyle ilgili
     def reset_kv_cache(self):
         for blk in self.trf_blocks:
             blk.att.reset_cache()
@@ -393,16 +393,16 @@ def generate_text_simple_cached(model, idx, max_new_tokens,
 
     with torch.no_grad():
         if use_cache:
-            # Init cache with full prompt
+            # Önbelleği istemin tamamıyla ilk kez doldur
             model.reset_kv_cache()
             logits = model(idx[:, -ctx_len:], use_cache=True)
 
             for _ in range(max_new_tokens):
-                # a) pick the token with the highest log-probability (greedy sampling)
+                # a) en yüksek log-olasılıklı token'ı seç (açgözlü örnekleme)
                 next_idx = logits[:, -1].argmax(dim=-1, keepdim=True)
-                # b) append it to the running sequence
+                # b) onu mevcut diziye ekle
                 idx = torch.cat([idx, next_idx], dim=1)
-                # c) feed model only the new token
+                # c) modele yalnızca yeni token'ı ver
                 logits = model(next_idx, use_cache=True)
         else:
             for _ in range(max_new_tokens):
@@ -437,13 +437,13 @@ def main():
     encoded = tokenizer.encode(start_context)
 
     GPT_CONFIG_124M = {
-        "vocab_size": 50257,        # Vocabulary size
+        "vocab_size": 50257,        # Sözcük dağarcığı boyutu
         "context_length": args.max_new_tokens + len(encoded),
-        "emb_dim": args.emb_dim,    # Embedding dimension
-        "n_heads": args.n_heads,    # Number of attention heads
-        "n_layers": args.n_layers,  # Number of layers
-        "drop_rate": 0.0,           # Dropout rate
-        "qkv_bias": False,          # Query-Key-Value bias
+        "emb_dim": args.emb_dim,    # Gömme (embedding) boyutu
+        "n_heads": args.n_heads,    # Dikkat başlığı sayısı
+        "n_layers": args.n_layers,  # Katman sayısı
+        "drop_rate": 0.0,           # Dropout oranı
+        "qkv_bias": False,          # Sorgu-Anahtar-Değer bias'ı
         "index_n_heads": args.index_n_heads,
         "index_head_dim": args.index_head_dim,
         "topk": args.topk,
@@ -453,7 +453,7 @@ def main():
     model = GPTModel(GPT_CONFIG_124M)
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     model.to(device, dtype=torch.bfloat16)
-    model.eval()  # disable dropout
+    model.eval()  # dropout'u kapat
 
     encoded_tensor = torch.tensor(encoded, device=device).unsqueeze(0)
     print(f"\n{50*'='}\n{22*' '}IN\n{50*'='}")

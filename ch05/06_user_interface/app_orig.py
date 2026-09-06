@@ -7,7 +7,7 @@ import tiktoken
 import torch
 import chainlit
 
-# For llms_from_scratch installation instructions, see:
+# llms_from_scratch kurulum talimatları için bkz.:
 # https://github.com/rasbt/LLMs-from-scratch/tree/main/pkg
 from llms_from_scratch.ch04 import GPTModel
 from llms_from_scratch.ch05 import (
@@ -31,9 +31,9 @@ def get_model_and_tokenizer():
     CHOOSE_MODEL = "gpt2-small (124M)"  # Optionally replace with another model from the model_configs dir below
 
     BASE_CONFIG = {
-        "vocab_size": 50257,     # Vocabulary size
-        "context_length": 1024,  # Context length
-        "drop_rate": 0.0,        # Dropout rate
+        "vocab_size": 50257,     # Sözcük dağarcığı boyutu
+        "context_length": 1024,  # Bağlam uzunluğu
+        "drop_rate": 0.0,        # Dropout oranı
         "qkv_bias": True         # Query-key-value bias
     }
 

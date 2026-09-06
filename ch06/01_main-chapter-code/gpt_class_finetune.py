@@ -28,7 +28,7 @@ def download_and_unzip_spam_data(url, zip_path, extracted_path, data_file_path):
         print(f"{data_file_path} already exists. Skipping download and extraction.")
         return
 
-    # Downloading the file
+    # Dosyayı indirme
     response = requests.get(url, stream=True, timeout=60)
     response.raise_for_status()
     with open(zip_path, "wb") as out_file:
@@ -36,38 +36,38 @@ def download_and_unzip_spam_data(url, zip_path, extracted_path, data_file_path):
             if chunk:
                 out_file.write(chunk)
 
-    # Unzipping the file
+    # Dosyayı açma (unzip)
     with zipfile.ZipFile(zip_path, "r") as zip_ref:
         zip_ref.extractall(extracted_path)
 
-    # Add .tsv file extension
+    # .tsv dosya uzantısı ekle
     original_file_path = Path(extracted_path) / "SMSSpamCollection"
     os.rename(original_file_path, data_file_path)
     print(f"File downloaded and saved as {data_file_path}")
 
 
 def create_balanced_dataset(df):
-    # Count the instances of "spam"
+    # "spam" örneklerini say
     num_spam = df[df["Label"] == "spam"].shape[0]
 
-    # Randomly sample "ham" instances to match the number of "spam" instances
+    # "spam" örneklerinin sayısına eşit olacak şekilde rastgele "ham" örneği seç
     ham_subset = df[df["Label"] == "ham"].sample(num_spam, random_state=123)
 
-    # Combine ham "subset" with "spam"
+    # "ham" alt kümesini "spam" ile birleştir
     balanced_df = pd.concat([ham_subset, df[df["Label"] == "spam"]])
 
     return balanced_df
 
 
 def random_split(df, train_frac, validation_frac):
-    # Shuffle the entire DataFrame
+    # DataFrame'in tamamını karıştır
     df = df.sample(frac=1, random_state=123).reset_index(drop=True)
 
-    # Calculate split indices
+    # Ayırma indekslerini hesapla
     train_end = int(len(df) * train_frac)
     validation_end = train_end + int(len(df) * validation_frac)
 
-    # Split the DataFrame
+    # DataFrame'i ayır
     train_df = df[:train_end]
     validation_df = df[train_end:validation_end]
     test_df = df[validation_end:]
@@ -79,7 +79,7 @@ class SpamDataset(Dataset):
     def __init__(self, csv_file, tokenizer, max_length=None, pad_token_id=50256):
         self.data = pd.read_csv(csv_file)
 
-        # Pre-tokenize texts
+        # Metinleri önceden token'lara ayır
         self.encoded_texts = [
             tokenizer.encode(text) for text in self.data["Text"]
         ]
@@ -88,13 +88,13 @@ class SpamDataset(Dataset):
             self.max_length = self._longest_encoded_length()
         else:
             self.max_length = max_length
-            # Truncate sequences if they are longer than max_length
+            # max_length değerinden uzunlarsa dizileri kırp
             self.encoded_texts = [
                 encoded_text[:self.max_length]
                 for encoded_text in self.encoded_texts
             ]
 
-        # Pad sequences to the longest sequence
+        # Dizileri en uzun diziye göre doldur
         self.encoded_texts = [
             encoded_text + [pad_token_id] * (self.max_length - len(encoded_text))
             for encoded_text in self.encoded_texts
@@ -119,7 +119,7 @@ class SpamDataset(Dataset):
                 max_length = encoded_length
         return max_length
         # Note: A more pythonic version to implement this method
-        # is the following, which is also used in the next chapter:
+        # şudur; bu, bir sonraki bölümde de kullanılıyor:
         # return max(len(encoded_text) for encoded_text in self.encoded_texts)
 
 
@@ -181,11 +181,11 @@ def evaluate_model(model, train_loader, val_loader, device, eval_iter):
 
 def train_classifier_simple(model, train_loader, val_loader, optimizer, device, num_epochs,
                             eval_freq, eval_iter):
-    # Initialize lists to track losses and tokens seen
+    # Kayıpları ve görülen token'ları izlemek için listeleri başlat
     train_losses, val_losses, train_accs, val_accs = [], [], [], []
     examples_seen, global_step = 0, -1
 
-    # Main training loop
+    # Ana eğitim döngüsü
     for epoch in range(num_epochs):
         model.train()  # Set model to training mode
 
@@ -197,7 +197,7 @@ def train_classifier_simple(model, train_loader, val_loader, optimizer, device, 
             examples_seen += input_batch.shape[0]  # New: track examples instead of tokens
             global_step += 1
 
-            # Optional evaluation step
+            # İsteğe bağlı değerlendirme adımı
             if global_step % eval_freq == 0:
                 train_loss, val_loss = evaluate_model(
                     model, train_loader, val_loader, device, eval_iter)
@@ -206,7 +206,7 @@ def train_classifier_simple(model, train_loader, val_loader, optimizer, device, 
                 print(f"Ep {epoch+1} (Step {global_step:06d}): "
                       f"Train loss {train_loss:.3f}, Val loss {val_loss:.3f}")
 
-        # Calculate accuracy after each epoch
+        # Her dönemden sonra doğruluğu hesapla
         train_accuracy = calc_accuracy_loader(train_loader, model, device, num_batches=eval_iter)
         val_accuracy = calc_accuracy_loader(val_loader, model, device, num_batches=eval_iter)
         print(f"Training accuracy: {train_accuracy*100:.2f}% | ", end="")
@@ -220,14 +220,14 @@ def train_classifier_simple(model, train_loader, val_loader, optimizer, device, 
 def plot_values(epochs_seen, examples_seen, train_values, val_values, label="loss"):
     fig, ax1 = plt.subplots(figsize=(5, 3))
 
-    # Plot training and validation loss against epochs
+    # Eğitim ve doğrulama kaybını dönemlere karşı çiz
     ax1.plot(epochs_seen, train_values, label=f"Training {label}")
     ax1.plot(epochs_seen, val_values, linestyle="-.", label=f"Validation {label}")
     ax1.set_xlabel("Epochs")
     ax1.set_ylabel(label.capitalize())
     ax1.legend()
 
-    # Create a second x-axis for tokens seen
+    # Görülen token'lar için ikinci bir x ekseni oluştur
     ax2 = ax1.twiny()  # Create a second x-axis that shares the same y-axis
     ax2.plot(examples_seen, train_values, alpha=0)  # Invisible plot for aligning ticks
     ax2.set_xlabel("Examples seen")
@@ -353,9 +353,9 @@ if __name__ == "__main__":
         INPUT_PROMPT = "Every effort moves"
 
         BASE_CONFIG = {
-            "vocab_size": 50257,     # Vocabulary size
-            "context_length": 1024,  # Context length
-            "drop_rate": 0.0,        # Dropout rate
+            "vocab_size": 50257,     # Sözcük dağarcığı boyutu
+            "context_length": 1024,  # Bağlam uzunluğu
+            "drop_rate": 0.0,        # Dropout oranı
             "qkv_bias": True         # Query-key-value bias
         }
 

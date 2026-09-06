@@ -61,7 +61,7 @@ def test_rope():
 
     from transformers.models.llama.modeling_llama import LlamaRotaryEmbedding, apply_rotary_pos_emb
 
-    # Settings
+    # Ayarlar
     batch_size = 1
     context_len = 8192
     num_heads = 4
@@ -75,7 +75,7 @@ def test_rope():
         "original_context_length": 8192,
     }
 
-    # Instantiate RoPE parameters
+    # RoPE parametrelerini örnekle
     cos, sin = compute_rope_params(
         head_dim=head_dim,
         theta_base=rope_theta,
@@ -83,12 +83,12 @@ def test_rope():
         freq_config=rope_config,
     )
 
-    # Dummy query and key tensors
+    # Yapay sorgu ve anahtar tensörleri
     torch.manual_seed(123)
     queries = torch.randn(batch_size, num_heads, context_len, head_dim)
     keys = torch.randn(batch_size, num_heads, context_len, head_dim)
 
-    # Apply rotary position embeddings
+    # Döner konum gömmelerini uygula
     queries_rot = apply_rope(queries, cos, sin)
     keys_rot = apply_rope(keys, cos, sin)
 
@@ -144,13 +144,13 @@ def test_rope():
 
 
 GPT_CONFIG_124M = {
-    "vocab_size": 50257,     # Vocabulary size
-    "context_length": 1024,  # Context length
-    "emb_dim": 768,          # Embedding dimension
-    "n_heads": 12,           # Number of attention heads
-    "n_layers": 12,          # Number of layers
-    "drop_rate": 0.1,        # Dropout rate
-    "qkv_bias": False        # Query-Key-Value bias
+    "vocab_size": 50257,     # Sözcük dağarcığı boyutu
+    "context_length": 1024,  # Bağlam uzunluğu
+    "emb_dim": 768,          # Gömme (embedding) boyutu
+    "n_heads": 12,           # Dikkat başlığı sayısı
+    "n_layers": 12,          # Katman sayısı
+    "drop_rate": 0.1,        # Dropout oranı
+    "qkv_bias": False        # Sorgu-Anahtar-Değer bias'ı
 }
 
 
