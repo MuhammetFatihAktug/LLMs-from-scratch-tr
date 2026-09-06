@@ -68,7 +68,7 @@ def _hf_ids(obj):
         elif "ids" in obj:
             obj = obj["ids"]
     elif hasattr(obj, "keys") and hasattr(obj, "__getitem__"):
-        # Some HF containers behave like mappings but don't register as Mapping.
+        # Bazı HF kapsayıcıları eşleme (mapping) gibi davranır ama Mapping olarak kaydolmaz.
         try:
             if "input_ids" in obj:
                 obj = obj["input_ids"]
@@ -84,7 +84,7 @@ def _hf_ids(obj):
         obj = obj.tolist()
     if isinstance(obj, tuple):
         obj = list(obj)
-    # Some HF versions return a batched structure even for a single prompt.
+    # Bazı HF sürümleri tek bir istem için bile yığınlanmış bir yapı döndürür.
     if isinstance(obj, list) and obj and isinstance(obj[0], list) and len(obj) == 1:
         obj = obj[0]
     return list(obj)
@@ -93,7 +93,7 @@ def _hf_ids(obj):
 @pytest.fixture
 def dummy_input():
     torch.manual_seed(123)
-    return torch.randint(0, 100, (1, 8))  # batch size 1, seq length 8
+    return torch.randint(0, 100, (1, 8))  # yığın boyutu 1, dizi uzunluğu 8
 
 
 @pytest.fixture
@@ -224,7 +224,7 @@ def test_rope(context_len):
     head_dim = 16
     rope_theta = 1_000_000
 
-    # Instantiate RoPE parameters (our implementation)
+    # RoPE parametrelerini örnekle (bizim uygulamamız)
     cos, sin = compute_rope_params(
         head_dim=head_dim,
         theta_base=rope_theta,
@@ -236,13 +236,13 @@ def test_rope(context_len):
     queries = torch.randn(batch_size, num_heads, context_len, head_dim)
     keys = torch.randn(batch_size, num_heads, context_len, head_dim)
 
-    # Apply rotary embeddings with our implementation
+    # Döner gömmeleri kendi uygulamamızla uygula
     queries_rot = apply_rope(queries, cos, sin)
     keys_rot = apply_rope(keys, cos, sin)
 
-    # Generate reference RoPE via HF
+    # HF üzerinden referans RoPE üret
     class RoPEConfig:
-        # Transformers' RoPE init map does not include "qwen3".
+        # Transformers'ın RoPE ilklendirme haritası "qwen3" içermiyor.
         rope_type = "default"
         factor = 1.0
         dim: int = head_dim
@@ -252,7 +252,7 @@ def test_rope(context_len):
         num_attention_heads = num_heads
 
         def __init__(self):
-            # Transformers >=5.0.0 expects `rope_parameters` on the instance.
+            # Transformers >=5.0.0, örnek üzerinde `rope_parameters` bekliyor.
             self.rope_parameters = {"rope_type": "default", "rope_theta": rope_theta, "factor": 1.0}
 
         def standardize_rope_params(self):
@@ -409,7 +409,7 @@ def test_model_batched_KV():
         add_thinking=False
     )
 
-    # Batch size 1
+    # Yığın boyutu 1
 
     prompt = "Give me a short introduction to large language models."
     input_token_ids = tokenizer.encode(prompt)
@@ -436,7 +436,7 @@ def test_model_batched_KV():
 
     assert torch.equal(out_KV, out_KV_bs_1)
 
-    # Batch size 2
+    # Yığın boyutu 2
 
     prompts = [
         "Give me a short introduction to large language models.",
@@ -467,7 +467,7 @@ def test_rmsnorm_equivalence():
     rms_norm = RMSNorm(hidden_size)
     ref_norm = Qwen3RMSNorm(hidden_size)
 
-    # Sync weights
+    # Ağırlıkları eşitle
     with torch.no_grad():
         ref_norm.weight.copy_(ref_norm.weight)
 
@@ -481,8 +481,8 @@ def test_rmsnorm_equivalence():
 
 @pytest.mark.skipif(not transformers_installed, reason="transformers not installed")
 @pytest.mark.parametrize("repo_id, tok_file", [
-    ("Qwen/Qwen3-0.6B", "Qwen3-0.6B/tokenizer.json"),  # Chat / Reasoning
-    ("Qwen/Qwen3-0.6B-Base", "Qwen3-0.6B-Base/tokenizer.json"),  # Base
+    ("Qwen/Qwen3-0.6B", "Qwen3-0.6B/tokenizer.json"),  # Sohbet / Akıl yürütme
+    ("Qwen/Qwen3-0.6B-Base", "Qwen3-0.6B-Base/tokenizer.json"),  # Temel
 ])
 def test_all_special_tokens_roundtrip(repo_id, tok_file):
     from transformers import AutoTokenizer as HFTokenizer
@@ -495,16 +495,16 @@ def test_all_special_tokens_roundtrip(repo_id, tok_file):
         add_thinking=False,
     )
 
-    # Use the instance's actually-available specials
+    # Örnekte gerçekten mevcut olan özel token'ları kullan
     active_specials = list(qt._special_to_id.keys())
 
-    # Every available special has a concrete id and round-trips
+    # Mevcut her özel token'ın somut bir kimliği vardır ve gidiş-dönüşü korur
     for sp, sp_id in qt._special_to_id.items():
         assert isinstance(sp_id, int) and sp_id >= 0, f"{sp} missing or invalid id"
         assert qt.encode(sp) == [sp_id], f"{sp} must encode to its single id"
         assert qt.decode([sp_id]) == sp, f"{sp} must decode back to itself"
 
-    # Inline use preserves boundaries for available specials
+    # Satır içi kullanım, mevcut özel token'lar için sınırları korur
     for sp in active_specials:
         s = f"hello {sp} world"
         ids = qt.encode(s, chat_wrapped=False)
@@ -512,7 +512,7 @@ def test_all_special_tokens_roundtrip(repo_id, tok_file):
         assert sp_id in ids, f"{sp} id not found inline"
         assert qt.decode(ids) == s, f"Inline decode mismatch for {sp}"
 
-    # EOS / PAD expectations
+    # EOS / PAD beklentileri
     is_base = ("Base" in repo_id)
     expected_eos = "<|endoftext|>" if is_base else "<|im_end|>"
     expected_pad = "<|endoftext|>"
@@ -524,7 +524,7 @@ def test_all_special_tokens_roundtrip(repo_id, tok_file):
     assert hf_tok.decode([hf_tok.eos_token_id], skip_special_tokens=False) == expected_eos
     assert hf_tok.decode([hf_tok.pad_token_id], skip_special_tokens=False) == expected_pad
 
-    # Thinking tokens only on chat models
+    # Düşünme token'ları yalnızca sohbet modellerinde
     if not is_base:
         assert qt._tok.token_to_id("<think>") == 151667
         assert qt._tok.token_to_id("</think>") == 151668
@@ -554,7 +554,7 @@ def test_chat_wrap_and_equivalence(add_gen, add_think):
             add_thinking=add_think,
         )
 
-        # Our encode vs HF template
+        # Bizim encode'umuz ile HF şablonu
         ours = qt.encode(prompt)
         ref = _hf_ids(hf_tok.apply_chat_template(
             messages,
@@ -564,15 +564,15 @@ def test_chat_wrap_and_equivalence(add_gen, add_think):
         ))
 
         if add_gen and not add_think:
-            pass  # skip edge case as this is not something we use in practice
+            pass  # pratikte kullanmadığımız bir uç durum olduğu için atla
         else:
             assert ours == ref, (repo_id, add_gen, add_think)
 
-        # Round-trip decode equality
+        # Gidiş-dönüş kod çözme eşitliği
         if not (add_gen and not add_think):
             assert qt.decode(ours) == hf_tok.decode(ref)
 
-        # EOS/PAD parity
+        # EOS/PAD denkliği
         assert qt.eos_token_id == hf_tok.eos_token_id
         assert qt.pad_token_id == hf_tok.pad_token_id
 
@@ -604,7 +604,7 @@ def test_multiturn_equivalence(repo_id, tok_file, add_gen, add_think):
         {"role": "user", "content": "Now add one concrete example."},
     ]
 
-    # HF reference (ids and raw template text)
+    # HF referansı (kimlikler ve ham şablon metni)
     ref_ids = hf_tok.apply_chat_template(
         messages, tokenize=True,
         add_generation_prompt=add_gen, enable_thinking=add_think
@@ -615,12 +615,12 @@ def test_multiturn_equivalence(repo_id, tok_file, add_gen, add_think):
         add_generation_prompt=add_gen, enable_thinking=add_think
     )
 
-    # Our encode over HF's raw template text
+    # HF'nin ham şablon metni üzerinde bizim encode'umuz
     ours_ids = qt.encode(ref_text, chat_wrapped=False)
 
     assert ours_ids == ref_ids, f"mismatch for ({repo_id}, add_gen={add_gen}, add_think={add_think})"
 
-    # Round-trip decode equality
+    # Gidiş-dönüş kod çözme eşitliği
     ours_dec = qt.decode(ours_ids)
     ref_dec = hf_tok.decode(ref_ids, skip_special_tokens=False)
     assert ours_dec == ref_dec
@@ -720,7 +720,7 @@ def test_multiturn_prefix_stability(repo_id, tok_file, add_gen, add_think):
 
     prev_ids_qt, prev_ids_hf = None, None
     prev_ref_text = None
-    running = []  # grows turn-by-turn
+    running = []  # tur tur büyür
 
     for delta in turns:
         running += delta
@@ -735,15 +735,15 @@ def test_multiturn_prefix_stability(repo_id, tok_file, add_gen, add_think):
             add_generation_prompt=add_gen, enable_thinking=add_think
         )
 
-        # Normalize line endings to match our encoder's assumptions
+        # Kendi kodlayıcımızın varsayımlarıyla eşleşmesi için satır sonlarını normalleştir
         ref_text_norm = ref_text.replace("\r\n", "\n").replace("\r", "\n")
 
-        # Our encode over HF’s raw template text
+        # HF'nin ham şablon metni üzerinde bizim encode'umuz
         ours_ids = qt.encode(ref_text_norm, chat_wrapped=False)
 
-        # 1) Exact equality per stage
+        # 1) Aşama başına tam eşitlik
         if ours_ids != ref_ids:
-            # Lightweight inline diff to aid debugging
+            # Hata ayıklamaya yardımcı olacak hafif satır içi fark
             from itertools import zip_longest
             for i, (a, b) in enumerate(zip_longest(ours_ids, ref_ids, fillvalue=None)):
                 if a != b:
@@ -758,17 +758,17 @@ def test_multiturn_prefix_stability(repo_id, tok_file, add_gen, add_think):
                         f"OURS tok: {ours_toks}\nREF  tok: {ref_toks}\n"
                         f"OURS dec: {qt.decode(ours_slice)}\nREF  dec: {hf_tok.decode(ref_slice, skip_special_tokens=False)}"
                     )
-        # If no raise, they match
+        # Hata fırlatılmadıysa eşleşiyorlar
         assert ours_ids == ref_ids
 
-        # 2) Prefix stability only when HF's own *text* remained a prefix
+        # 2) Önek kararlılığı yalnızca HF'nin kendi *metni* önek olarak kaldığında
         if prev_ids_hf is not None and prev_ref_text is not None:
             if ref_text.startswith(prev_ref_text):
                 assert ours_ids[:len(prev_ids_qt)] == prev_ids_qt
                 assert ref_ids[:len(prev_ids_hf)] == prev_ids_hf
             # else: HF modified earlier boundaries (e.g., inserted <think>), so skip prefix checks
 
-        # 3) Decode parity at each step
+        # 3) Her adımda kod çözme denkliği
         assert qt.decode(ours_ids) == hf_tok.decode(ref_ids, skip_special_tokens=False)
 
         prev_ids_qt, prev_ids_hf = ours_ids, ref_ids
@@ -781,7 +781,7 @@ def test_qwen3_base_equivalence_with_transformers():
 
     from transformers.models.qwen3 import Qwen3Config, Qwen3ForCausalLM
 
-    # Tiny config so the test is fast
+    # Testin hızlı olması için küçücük yapılandırma
     cfg = {
         "vocab_size": 257,
         "context_length": 8,

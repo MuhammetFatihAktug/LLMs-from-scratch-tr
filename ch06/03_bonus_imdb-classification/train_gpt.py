@@ -59,7 +59,7 @@ def instantiate_model(choose_model, load_weights):
         "vocab_size": 50257,     # Sözcük dağarcığı boyutu
         "context_length": 1024,  # Bağlam uzunluğu
         "drop_rate": 0.0,        # Dropout oranı
-        "qkv_bias": True         # Query-key-value bias
+        "qkv_bias": True         # Sorgu-anahtar-değer bias'ı
     }
 
     model_configs = {
@@ -90,10 +90,10 @@ def calc_loss_batch(input_batch, target_batch, model, device,
 
     model_output = model(input_batch)
     if average_embeddings:
-        # Average over the sequence dimension (dim=1)
+        # Dizi boyutu üzerinden ortalama al (dim=1)
         logits = model_output.mean(dim=1)
     else:
-        # Select embeddings at the specified token position
+        # Belirtilen token konumundaki gömmeleri seç
         logits = model_output[:, trainable_token_pos, :]
 
     loss = torch.nn.functional.cross_entropy(logits, target_batch)
@@ -124,7 +124,7 @@ def calc_loss_loader(data_loader, model, device,
     return total_loss / num_batches
 
 
-@torch.no_grad()  # Disable gradient tracking for efficiency
+@torch.no_grad()  # Verimlilik için gradyan izlemeyi kapat
 def calc_accuracy_loader(data_loader, model, device,
                          num_batches=None, trainable_token_pos=-1,
                          average_embeddings=False):
@@ -141,10 +141,10 @@ def calc_accuracy_loader(data_loader, model, device,
 
             model_output = model(input_batch)
             if average_embeddings:
-                # Average over the sequence dimension (dim=1)
+                # Dizi boyutu üzerinden ortalama al (dim=1)
                 logits = model_output.mean(dim=1)
             else:
-                # Select embeddings at the specified token position
+                # Belirtilen token konumundaki gömmeleri seç
                 logits = model_output[:, trainable_token_pos, :]
 
             predicted_labels = torch.argmax(logits, dim=-1)
@@ -181,14 +181,14 @@ def train_classifier_simple(model, train_loader, val_loader, optimizer, device, 
 
     # Ana eğitim döngüsü
     for epoch in range(num_epochs):
-        model.train()  # Set model to training mode
+        model.train()  # Modeli eğitim kipine al
 
         for input_batch, target_batch in train_loader:
-            optimizer.zero_grad()  # Reset loss gradients from previous batch iteration
+            optimizer.zero_grad()  # Önceki yığın yinelemesinden kalan kayıp gradyanlarını sıfırla
             loss = calc_loss_batch(input_batch, target_batch, model, device,
                                    trainable_token_pos=trainable_token_pos, average_embeddings=average_embeddings)
-            loss.backward()  # Calculate loss gradients
-            optimizer.step()  # Update model weights using loss gradients
+            loss.backward()  # Kayıp gradyanlarını hesapla
+            optimizer.step()  # Kayıp gradyanlarını kullanarak model ağırlıklarını güncelle
             examples_seen += input_batch.shape[0]  # New: track examples instead of tokens
             global_step += 1
 
@@ -311,7 +311,7 @@ if __name__ == "__main__":
         raise ValueError("Invalid --trainable_token_pos argument")
 
     ###############################
-    # Load model
+    # Modeli yükle
     ###############################
 
     if args.weights == "pretrained":
@@ -360,7 +360,7 @@ if __name__ == "__main__":
         model = torch.compile(model)
 
     ###############################
-    # Instantiate dataloaders
+    # Veri yükleyicileri örnekle
     ###############################
 
     base_path = Path(".")
@@ -410,7 +410,7 @@ if __name__ == "__main__":
     )
 
     ###############################
-    # Train model
+    # Modeli eğit
     ###############################
 
     start_time = time.time()
@@ -429,7 +429,7 @@ if __name__ == "__main__":
     print(f"Training completed in {execution_time_minutes:.2f} minutes.")
 
     ###############################
-    # Evaluate model
+    # Modeli değerlendir
     ###############################
 
     print("\nEvaluating on the full datasets ...\n")

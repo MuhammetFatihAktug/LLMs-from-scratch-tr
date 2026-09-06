@@ -40,7 +40,7 @@ def test_train_simple(tmp_path, ModelClass):
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
     ##############################
-    # Download data if necessary
+    # Gerekirse veriyi indir
     ##############################
     file_path = tmp_path / "the-verdict.txt"
     url = "https://raw.githubusercontent.com/rasbt/LLMs-from-scratch/main/ch02/01_main-chapter-code/the-verdict.txt"
@@ -56,7 +56,7 @@ def test_train_simple(tmp_path, ModelClass):
             text_data = f.read()
 
     ##############################
-    # Set up dataloaders
+    # Veri yükleyicileri kur
     ##############################
     train_ratio = 0.90
     split_idx = int(train_ratio * len(text_data))
@@ -88,7 +88,7 @@ def test_train_simple(tmp_path, ModelClass):
     one_batch_val_loader = DataLoader(val_subset, batch_size=1)
 
     ##############################
-    # Train model
+    # Modeli eğit
     ##############################
     model = ModelClass(GPT_CONFIG_124M)
     model.to(device)

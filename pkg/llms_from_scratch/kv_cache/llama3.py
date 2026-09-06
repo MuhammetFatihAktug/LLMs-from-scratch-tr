@@ -396,14 +396,14 @@ def clean_text(text, header_end="assistant<|end_header_id|>\n\n"):
 
     if index != -1:
         # "<|end_header_id|>" sonrasından başlayan alt dizeyi döndür
-        return text[index + len(header_end):].strip()  # Strip removes leading/trailing whitespace
+        return text[index + len(header_end):].strip()  # Strip, baştaki ve sondaki boşlukları kaldırır
     else:
         # Token bulunamazsa özgün metni döndür
         return text
 
 
 ######################################################################
-# Llama 3 fast (alternative code geared towards efficiency)
+# Llama 3 fast (verimliliğe yönelik alternatif kod)
 ######################################################################
 
 class GroupedQueryAttentionFast(nn.Module):
@@ -431,26 +431,26 @@ class GroupedQueryAttentionFast(nn.Module):
     def forward(self, x, cos, sin):
         b, num_tokens, _ = x.shape
 
-        # Project to queries, keys, values
+        # Sorgulara, anahtarlara ve değerlere izdüşür
         q = self.W_query(x).view(b, num_tokens, self.num_heads, self.head_dim).transpose(1, 2)
         k = self.W_key(x).view(b, num_tokens, self.num_kv_groups, self.head_dim).transpose(1, 2)
         v = self.W_value(x).view(b, num_tokens, self.num_kv_groups, self.head_dim).transpose(1, 2)
 
-        # Apply Rotary Positional Embedding
+        # Döner Konum Gömmesini (RoPE) uygula
         q = apply_rope(q, cos, sin)
         k = apply_rope(k, cos, sin)
 
-        # Expand key/value groups to full head count
+        # Anahtar/değer gruplarını tam başlık sayısına genişlet
         k = k.repeat_interleave(self.group_size, dim=1)
         v = v.repeat_interleave(self.group_size, dim=1)
 
-        # Efficient scaled dot-product attention
+        # Verimli ölçeklenmiş iç çarpım dikkati
         attn_output = torch.nn.functional.scaled_dot_product_attention(
             q, k, v,
-            is_causal=True  # Enables Flash/FlexAttention kernels
+            is_causal=True  # Flash/FlexAttention çekirdeklerini etkinleştirir
         )
 
-        # Combine heads and project
+        # Başlıkları birleştir ve izdüşür
         attn_output = attn_output.transpose(1, 2).reshape(b, num_tokens, self.d_out)
         return self.out_proj(attn_output)
 

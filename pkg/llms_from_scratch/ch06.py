@@ -129,7 +129,7 @@ def calc_accuracy_loader(data_loader, model, device, num_batches=None):
             input_batch, target_batch = input_batch.to(device), target_batch.to(device)
 
             with torch.no_grad():
-                logits = model(input_batch)[:, -1, :]  # Logits of last output token
+                logits = model(input_batch)[:, -1, :]  # Son çıktı token'ının logit'leri
             predicted_labels = torch.argmax(logits, dim=-1)
 
             num_examples += predicted_labels.shape[0]
@@ -141,7 +141,7 @@ def calc_accuracy_loader(data_loader, model, device, num_batches=None):
 
 def calc_loss_batch(input_batch, target_batch, model, device):
     input_batch, target_batch = input_batch.to(device), target_batch.to(device)
-    logits = model(input_batch)[:, -1, :]  # Logits of last output token
+    logits = model(input_batch)[:, -1, :]  # Son çıktı token'ının logit'leri
     loss = torch.nn.functional.cross_entropy(logits, target_batch)
     return loss
 
@@ -182,13 +182,13 @@ def train_classifier_simple(model, train_loader, val_loader, optimizer, device, 
 
     # Ana eğitim döngüsü
     for epoch in range(num_epochs):
-        model.train()  # Set model to training mode
+        model.train()  # Modeli eğitim kipine al
 
         for input_batch, target_batch in train_loader:
-            optimizer.zero_grad()  # Reset loss gradients from previous batch iteration
+            optimizer.zero_grad()  # Önceki yığın yinelemesinden kalan kayıp gradyanlarını sıfırla
             loss = calc_loss_batch(input_batch, target_batch, model, device)
-            loss.backward()  # Calculate loss gradients
-            optimizer.step()  # Update model weights using loss gradients
+            loss.backward()  # Kayıp gradyanlarını hesapla
+            optimizer.step()  # Kayıp gradyanlarını kullanarak model ağırlıklarını güncelle
             examples_seen += input_batch.shape[0]  # New: track examples instead of tokens
             global_step += 1
 
@@ -223,11 +223,11 @@ def plot_values(epochs_seen, examples_seen, train_values, val_values, label="los
     ax1.legend()
 
     # Görülen örnekler için ikinci bir x ekseni oluştur
-    ax2 = ax1.twiny()  # Create a second x-axis that shares the same y-axis
-    ax2.plot(examples_seen, train_values, alpha=0)  # Invisible plot for aligning ticks
+    ax2 = ax1.twiny()  # Aynı y eksenini paylaşan ikinci bir x ekseni oluştur
+    ax2.plot(examples_seen, train_values, alpha=0)  # Eksen işaretlerini hizalamak için görünmez çizim
     ax2.set_xlabel("Examples seen")
 
-    fig.tight_layout()  # Adjust layout to make room
+    fig.tight_layout()  # Yer açmak için yerleşimi ayarla
     plt.savefig(f"{label}-plot.pdf")
     plt.show()
 
@@ -246,7 +246,7 @@ def classify_review(text, model, tokenizer, device, max_length=None, pad_token_i
 
     # Dizileri en uzun diziye göre doldur
     input_ids += [pad_token_id] * (max_length - len(input_ids))
-    input_tensor = torch.tensor(input_ids, device=device).unsqueeze(0) # add batch dimension
+    input_tensor = torch.tensor(input_ids, device=device).unsqueeze(0) # yığın (batch) boyutunu ekle
 
     # Model çıkarımı
     with torch.no_grad():

@@ -50,7 +50,7 @@ def generate(model, idx, max_new_tokens, context_size, temperature=0.0, top_k=No
         else:
             idx_next = torch.argmax(logits, dim=-1, keepdim=True)  # (batch_size, 1)
 
-        if idx_next == eos_id:  # Stop generating early if end-of-sequence token is encountered and eos_id is specified
+        if idx_next == eos_id:  # eos_id belirtilmişse ve dizi-sonu token'ıyla karşılaşılırsa üretimi erken durdur
             break
 
         # Öncekiyle aynı: örneklenen indeksi süregelen diziye ekle
@@ -67,13 +67,13 @@ def train_model_simple(model, train_loader, val_loader, optimizer, device, num_e
 
     # Ana eğitim döngüsü
     for epoch in range(num_epochs):
-        model.train()  # Set model to training mode
+        model.train()  # Modeli eğitim kipine al
 
         for input_batch, target_batch in train_loader:
-            optimizer.zero_grad()  # Reset loss gradients from previous batch iteration
+            optimizer.zero_grad()  # Önceki yığın yinelemesinden kalan kayıp gradyanlarını sıfırla
             loss = calc_loss_batch(input_batch, target_batch, model, device)
-            loss.backward()  # Calculate loss gradients
-            optimizer.step()  # Update model weights using loss gradients
+            loss.backward()  # Kayıp gradyanlarını hesapla
+            optimizer.step()  # Kayıp gradyanlarını kullanarak model ağırlıklarını güncelle
             tokens_seen += input_batch.numel()
             global_step += 1
 
@@ -114,7 +114,7 @@ def generate_and_print_sample(model, tokenizer, device, start_context):
             max_new_tokens=50, context_size=context_size
         )
         decoded_text = token_ids_to_text(token_ids, tokenizer)
-        print(decoded_text.replace("\n", " "))  # Compact print format
+        print(decoded_text.replace("\n", " "))  # Derli toplu yazdırma biçimi
     model.train()
 
 
@@ -187,12 +187,12 @@ def load_weights_into_gpt(gpt, params):
 
 def text_to_token_ids(text, tokenizer):
     encoded = tokenizer.encode(text, allowed_special={"<|endoftext|>"})
-    encoded_tensor = torch.tensor(encoded).unsqueeze(0)  # add batch dimension
+    encoded_tensor = torch.tensor(encoded).unsqueeze(0)  # yığın (batch) boyutunu ekle
     return encoded_tensor
 
 
 def token_ids_to_text(token_ids, tokenizer):
-    flat = token_ids.squeeze(0)  # remove batch dimension
+    flat = token_ids.squeeze(0)  # yığın (batch) boyutunu kaldır
     return tokenizer.decode(flat.tolist())
 
 
@@ -231,14 +231,14 @@ def plot_losses(epochs_seen, tokens_seen, train_losses, val_losses):
     ax1.set_xlabel("Epochs")
     ax1.set_ylabel("Loss")
     ax1.legend(loc="upper right")
-    ax1.xaxis.set_major_locator(MaxNLocator(integer=True))  # only show integer labels on x-axis
+    ax1.xaxis.set_major_locator(MaxNLocator(integer=True))  # x ekseninde yalnızca tam sayı etiketleri göster
 
     # Görülen token'lar için ikinci bir x ekseni oluştur
-    ax2 = ax1.twiny()  # Create a second x-axis that shares the same y-axis
-    ax2.plot(tokens_seen, train_losses, alpha=0)  # Invisible plot for aligning ticks
+    ax2 = ax1.twiny()  # Aynı y eksenini paylaşan ikinci bir x ekseni oluştur
+    ax2.plot(tokens_seen, train_losses, alpha=0)  # Eksen işaretlerini hizalamak için görünmez çizim
     ax2.set_xlabel("Tokens seen")
 
-    fig.tight_layout()  # Adjust layout to make room
+    fig.tight_layout()  # Yer açmak için yerleşimi ayarla
     plt.savefig("loss-plot.pdf")
     plt.show()
 
@@ -246,12 +246,12 @@ def plot_losses(epochs_seen, tokens_seen, train_losses, val_losses):
 def download_and_load_gpt2(model_size, models_dir):
     import tensorflow as tf
 
-    # Validate model size
+    # Model boyutunu doğrula
     allowed_sizes = ("124M", "355M", "774M", "1558M")
     if model_size not in allowed_sizes:
         raise ValueError(f"Model size not in {allowed_sizes}")
 
-    # Define paths
+    # Yolları tanımla
     model_dir = os.path.join(models_dir, model_size)
     base_url = "https://openaipublic.blob.core.windows.net/gpt-2/models"
     backup_base_url = "https://f001.backblazeb2.com/file/LLMs-from-scratch/gpt2"
@@ -261,7 +261,7 @@ def download_and_load_gpt2(model_size, models_dir):
         "model.ckpt.meta", "vocab.bpe"
     ]
 
-    # Download files
+    # Dosyaları indir
     os.makedirs(model_dir, exist_ok=True)
     for filename in filenames:
         file_url = os.path.join(base_url, model_size, filename)
@@ -269,7 +269,7 @@ def download_and_load_gpt2(model_size, models_dir):
         file_path = os.path.join(model_dir, filename)
         download_file(file_url, file_path, backup_url)
 
-    # Load settings and params
+    # Ayarları ve parametreleri yükle
     tf_ckpt_path = tf.train.latest_checkpoint(model_dir)
     settings = json.load(open(os.path.join(model_dir, "hparams.json"), "r", encoding="utf-8"))
     params = load_gpt2_params_from_tf_ckpt(tf_ckpt_path, settings)
@@ -284,7 +284,7 @@ def download_file(url, destination, backup_url=None):
 
         file_size = int(response.headers.get("Content-Length", 0))
 
-        # Check if file exists and has same size
+        # Dosya var mı ve boyutu aynı mı diye bak
         if os.path.exists(destination):
             file_size_local = os.path.getsize(destination)
             if file_size and file_size == file_size_local:
@@ -327,28 +327,28 @@ def download_file(url, destination, backup_url=None):
 def load_gpt2_params_from_tf_ckpt(ckpt_path, settings):
     import tensorflow as tf
 
-    # Initialize parameters dictionary with empty blocks for each layer
+    # Parametre sözlüğünü her katman için boş bloklarla başlat
     params = {"blocks": [{} for _ in range(settings["n_layer"])]}
 
-    # Iterate over each variable in the checkpoint
+    # Kontrol noktasındaki her değişkeni dolaş
     for name, _ in tf.train.list_variables(ckpt_path):
-        # Load the variable and remove singleton dimensions
+        # Değişkeni yükle ve tekil boyutları kaldır
         variable_array = np.squeeze(tf.train.load_variable(ckpt_path, name))
 
-        # Process the variable name to extract relevant parts
-        variable_name_parts = name.split("/")[1:]  # Skip the 'model/' prefix
+        # İlgili parçaları ayıklamak için değişken adını işle
+        variable_name_parts = name.split("/")[1:]  # 'model/' önekini atla
 
-        # Identify the target dictionary for the variable
+        # Değişken için hedef sözlüğü belirle
         target_dict = params
         if variable_name_parts[0].startswith("h"):
             layer_number = int(variable_name_parts[0][1:])
             target_dict = params["blocks"][layer_number]
 
-        # Recursively access or create nested dictionaries
+        # İç içe sözlüklere özyinelemeli olarak eriş ya da oluştur
         for key in variable_name_parts[1:-1]:
             target_dict = target_dict.setdefault(key, {})
 
-        # Assign the variable array to the last key
+        # Değişken dizisini son anahtara ata
         last_key = variable_name_parts[-1]
         target_dict[last_key] = variable_array
 

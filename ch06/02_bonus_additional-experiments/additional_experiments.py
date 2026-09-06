@@ -54,7 +54,7 @@ class LinearWithLoRA(torch.nn.Module):
         return self.linear(x) + self.lora(x)
 
 
-# This LoRA code is equivalent to LinearWithLoRA
+# Bu LoRA kodu LinearWithLoRA ile eşdeğerdir
 class LinearWithLoRAMerged(torch.nn.Module):
     def __init__(self, linear, rank, alpha):
         super().__init__()
@@ -124,7 +124,7 @@ def download_and_unzip(url, zip_path, extract_to, new_file_path):
     with zipfile.ZipFile(zip_path, "r") as zip_ref:
         zip_ref.extractall(extract_to)
 
-    # Renaming the file to indicate its format
+    # Biçimini belirtmek için dosyayı yeniden adlandırma
     original_file = Path(extract_to) / "SMSSpamCollection"
     os.rename(original_file, new_file_path)
     print(f"File downloaded and saved as {new_file_path}")
@@ -149,14 +149,14 @@ def random_split(df, train_frac, val_frac):
 def create_dataset_csvs(new_file_path):
     df = pd.read_csv(new_file_path, sep="\t", header=None, names=["Label", "Text"])
 
-    # Create balanced dataset
+    # Dengeli veri kümesi oluştur
     n_spam = df[df["Label"] == "spam"].shape[0]
     ham_sampled = df[df["Label"] == "ham"].sample(n_spam, random_state=123)
     balanced_df = pd.concat([ham_sampled, df[df["Label"] == "spam"]])
     balanced_df = balanced_df.sample(frac=1, random_state=123).reset_index(drop=True)
     balanced_df["Label"] = balanced_df["Label"].map({"ham": 0, "spam": 1})
 
-    # Sample and save csv files
+    # Örnekle ve csv dosyalarını kaydet
     train_df, val_df, test_df = random_split(balanced_df, 0.7, 0.1)
     train_df.to_csv("train.csv", index=None)
     val_df.to_csv("validation.csv", index=None)
@@ -169,7 +169,7 @@ def instantiate_model(choose_model, load_weights):
         "vocab_size": 50257,     # Sözcük dağarcığı boyutu
         "context_length": 1024,  # Bağlam uzunluğu
         "drop_rate": 0.0,        # Dropout oranı
-        "qkv_bias": True         # Query-key-value bias
+        "qkv_bias": True         # Sorgu-anahtar-değer bias'ı
     }
 
     model_configs = {
@@ -198,17 +198,17 @@ def calc_loss_batch(input_batch, target_batch, model, device,
                     trainable_token_pos=-1, ignore_index=-100, average_embeddings=False):
     input_batch, target_batch = input_batch.to(device), target_batch.to(device)
 
-    if trainable_token_pos == "flexible":  # Selects the last tokens before the padding tokens
-        # From https://github.com/rasbt/LLMs-from-scratch/discussions/434
-        # Find the last non-padding token for each sequence in the batch
-        pad_token_id = 50256  # <|endoftext|> token used for padding
+    if trainable_token_pos == "flexible":  # Dolgu token'larından önceki son token'ları seçer
+        # Kaynak: https://github.com/rasbt/LLMs-from-scratch/discussions/434
+        # Yığındaki her dizi için son dolgu-olmayan token'ı bul
+        pad_token_id = 50256  # Dolgu için kullanılan <|endoftext|> token'ı
         mask = input_batch != pad_token_id
-        last_token_pos = mask.sum(dim=1) - 1  # Get position of last real token
+        last_token_pos = mask.sum(dim=1) - 1  # Son gerçek token'ın konumunu al
 
-        # Get model outputs
+        # Model çıktılarını al
         logits = model(input_batch)  # shape: [batch_size, seq_len, num_classes]
 
-        # Select the logits corresponding to the last real token of each sequence
+        # Her dizinin son gerçek token'ına karşılık gelen logit'leri seç
         batch_size = logits.size(0)
         selected_logits = logits[torch.arange(batch_size), last_token_pos]
 
@@ -218,10 +218,10 @@ def calc_loss_batch(input_batch, target_batch, model, device,
     else:
         model_output = model(input_batch)
         if average_embeddings:
-            # Average over the sequence dimension (dim=1)
+            # Dizi boyutu üzerinden ortalama al (dim=1)
             logits = model_output.mean(dim=1)
         else:
-            # Select embeddings at the specified token position
+            # Belirtilen token konumundaki gömmeleri seç
             logits = model_output[:, trainable_token_pos, :]
 
         loss = torch.nn.functional.cross_entropy(logits, target_batch, ignore_index=ignore_index)
@@ -253,7 +253,7 @@ def calc_loss_loader(data_loader, model, device,
     return total_loss / num_batches
 
 
-@torch.no_grad()  # Disable gradient tracking for efficiency
+@torch.no_grad()  # Verimlilik için gradyan izlemeyi kapat
 def calc_accuracy_loader(data_loader, model, device, num_batches=None,
                          trainable_token_pos=-1, average_embeddings=False):
     model.eval()
@@ -269,13 +269,13 @@ def calc_accuracy_loader(data_loader, model, device, num_batches=None,
             if i < num_batches:
                 input_batch, target_batch = input_batch.to(device), target_batch.to(device)
 
-                # Find the last non-padding token for each sequence in the batch
-                pad_token_id = 50256  # <|endoftext|> token used for padding
+                # Yığındaki her dizi için son dolgu-olmayan token'ı bul
+                pad_token_id = 50256  # Dolgu için kullanılan <|endoftext|> token'ı
                 mask = input_batch != pad_token_id
-                last_token_pos = mask.sum(dim=1) - 1  # Get position of last real token
+                last_token_pos = mask.sum(dim=1) - 1  # Son gerçek token'ın konumunu al
 
-                logits = model(input_batch)  # Logits of last output token
-                # Select the logits corresponding to the last real token of each sequence
+                logits = model(input_batch)  # Son çıktı token'ının logit'leri
+                # Her dizinin son gerçek token'ına karşılık gelen logit'leri seç
                 batch_size = logits.size(0)
                 selected_logits = logits[torch.arange(batch_size), last_token_pos]
                 predicted_labels = torch.argmax(selected_logits, dim=-1)
@@ -292,10 +292,10 @@ def calc_accuracy_loader(data_loader, model, device, num_batches=None,
 
                 model_output = model(input_batch)
                 if average_embeddings:
-                    # Average over the sequence dimension (dim=1)
+                    # Dizi boyutu üzerinden ortalama al (dim=1)
                     logits = model_output.mean(dim=1)
                 else:
-                    # Select embeddings at the specified token position
+                    # Belirtilen token konumundaki gömmeleri seç
                     logits = model_output[:, trainable_token_pos, :]
 
                 predicted_labels = torch.argmax(logits, dim=-1)
@@ -335,7 +335,7 @@ def train_classifier_simple(model, train_loader, val_loader, optimizer, device, 
 
     # Ana eğitim döngüsü
     for epoch in range(num_epochs):
-        model.train()  # Set model to training mode
+        model.train()  # Modeli eğitim kipine al
 
         for batch_idx, (input_batch, target_batch) in enumerate(train_loader):
             loss = calc_loss_batch(
@@ -344,18 +344,18 @@ def train_classifier_simple(model, train_loader, val_loader, optimizer, device, 
                 average_embeddings=average_embeddings
             )
 
-            # Use gradient accumulation if accumulation_steps > 1
-            # See https://sebastianraschka.com/blog/2023/llm-grad-accumulation.html
+            # accumulation_steps > 1 ise gradyan biriktirmeyi kullan
+            # Bkz. https://sebastianraschka.com/blog/2023/llm-grad-accumulation.html
             # for an explanation
             loss /= accumulation_steps
 
-            loss.backward()  # Calculate loss gradients
+            loss.backward()  # Kayıp gradyanlarını hesapla
 
-            # Use gradient accumulation if accumulation_steps > 1
+            # accumulation_steps > 1 ise gradyan biriktirmeyi kullan
             is_update_step = ((batch_idx + 1) % accumulation_steps == 0) or ((batch_idx + 1) == len(train_loader))
             if is_update_step:
-                optimizer.step()  # Update model weights using loss gradients
-                optimizer.zero_grad()  # Reset loss gradients from previous batch iteration
+                optimizer.step()  # Kayıp gradyanlarını kullanarak model ağırlıklarını güncelle
+                optimizer.zero_grad()  # Önceki yığın yinelemesinden kalan kayıp gradyanlarını sıfırla
 
             examples_seen += input_batch.shape[0]  # New: track examples instead of tokens
             global_step += 1
@@ -538,15 +538,15 @@ if __name__ == "__main__":
         args.trainable_token_pos = 0
     elif args.trainable_token_pos == "last":
         args.trainable_token_pos = -1
-    # The "flexible" setting selects the last tokens before the padding tokens
-    # See https://github.com/rasbt/LLMs-from-scratch/discussions/434
+    # "flexible" ayarı, dolgu token'larından önceki son token'ları seçer
+    # Bkz. https://github.com/rasbt/LLMs-from-scratch/discussions/434
     elif args.trainable_token_pos == "flexible":
         args.trainable_token_pos = "flexible"
     else:
         raise ValueError("Invalid --trainable_token_pos argument")
 
     ###############################
-    # Load model
+    # Modeli yükle
     ###############################
 
     if args.weights == "pretrained":
@@ -600,7 +600,7 @@ if __name__ == "__main__":
     model.to(device)
 
     ###############################
-    # Instantiate dataloaders
+    # Veri yükleyicileri örnekle
     ###############################
 
     url = "https://archive.ics.uci.edu/static/public/228/sms+spam+collection.zip"
@@ -676,7 +676,7 @@ if __name__ == "__main__":
     )
 
     ###############################
-    # Train model
+    # Modeli eğit
     ###############################
 
     start_time = time.time()
@@ -695,7 +695,7 @@ if __name__ == "__main__":
     print(f"Training completed in {execution_time_minutes:.2f} minutes.")
 
     ###############################
-    # Evaluate model
+    # Modeli değerlendir
     ###############################
 
     train_accuracy = calc_accuracy_loader(

@@ -34,7 +34,7 @@ def get_model_and_tokenizer():
         "vocab_size": 50257,     # Sözcük dağarcığı boyutu
         "context_length": 1024,  # Bağlam uzunluğu
         "drop_rate": 0.0,        # Dropout oranı
-        "qkv_bias": True         # Query-key-value bias
+        "qkv_bias": True         # Sorgu-anahtar-değer bias'ı
     }
 
     model_configs = {

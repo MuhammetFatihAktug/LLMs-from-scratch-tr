@@ -15,7 +15,7 @@ from torch.utils.data import Dataset, DataLoader
 import tiktoken
 
 #####################################
-# Chapter 2
+# Bölüm 2
 #####################################
 
 
@@ -204,18 +204,18 @@ def generate_text_simple(model, idx, max_new_tokens, context_size):
     return idx
 
 #####################################
-# Chapter 5
+# Bölüm 5
 #####################################
 
 
 def text_to_token_ids(text, tokenizer):
     encoded = tokenizer.encode(text)
-    encoded_tensor = torch.tensor(encoded).unsqueeze(0)  # add batch dimension
+    encoded_tensor = torch.tensor(encoded).unsqueeze(0)  # yığın (batch) boyutunu ekle
     return encoded_tensor
 
 
 def token_ids_to_text(token_ids, tokenizer):
-    flat = token_ids.squeeze(0)  # remove batch dimension
+    flat = token_ids.squeeze(0)  # yığın (batch) boyutunu kaldır
     return tokenizer.decode(flat.tolist())
 
 
@@ -262,7 +262,7 @@ def generate_and_print_sample(model, tokenizer, device, start_context):
             max_new_tokens=50, context_size=context_size
         )
         decoded_text = token_ids_to_text(token_ids, tokenizer)
-        print(decoded_text.replace("\n", " "))  # Compact print format
+        print(decoded_text.replace("\n", " "))  # Derli toplu yazdırma biçimi
     model.train()
 
 
@@ -271,18 +271,18 @@ def train_model_simple_with_timing(model, train_loader, val_loader, optimizer, d
     train_losses, val_losses, track_tokens = [], [], []
     total_tokens, global_step, last_tokens = 0, -1, 0
 
-    # Variables for cumulative average tokens/sec
+    # Kümülatif ortalama token/sn için değişkenler
     cumulative_tokens, cumulative_time = 0.0, 0.0
 
-    # CUDA-specific timing setup
+    # CUDA'ya özgü zamanlama hazırlığı
     use_cuda = device.type == "cuda"
     if use_cuda:
         t_start = torch.cuda.Event(enable_timing=True)
         t_end = torch.cuda.Event(enable_timing=True)
-        torch.cuda.synchronize()  # Ensure all prior CUDA operations are done
-        t_start.record()          # Start the timer for the first interval
+        torch.cuda.synchronize()  # Önceki tüm CUDA işlemlerinin bittiğinden emin ol
+        t_start.record()          # İlk aralık için zamanlayıcıyı başlat
     else:
-        t0 = time.time()          # Start the timer for the first interval
+        t0 = time.time()          # İlk aralık için zamanlayıcıyı başlat
 
     # Ana eğitim döngüsü
     for epoch in range(num_epochs):
@@ -291,39 +291,39 @@ def train_model_simple_with_timing(model, train_loader, val_loader, optimizer, d
             optimizer.zero_grad()
             global_step += 1
 
-            # Forward and backward pass
+            # İleri ve geri geçiş
             loss = calc_loss_batch(inp_batch, tgt_batch, model, device)
             loss.backward()
             optimizer.step()
 
             total_tokens += inp_batch.numel()
 
-            # At evaluation intervals, measure elapsed time and tokens per second
+            # Değerlendirme aralıklarında geçen süreyi ve saniyedeki token sayısını ölç
             if global_step % eval_freq == 0:
-                # End timing for the current interval
+                # Geçerli aralık için zamanlamayı bitir
                 if use_cuda:
                     t_end.record()
-                    torch.cuda.synchronize()  # Wait for all CUDA ops to complete.
-                    elapsed = t_start.elapsed_time(t_end) / 1000  # Convert ms to seconds
-                    t_start.record()  # Reset timer for the next interval
+                    torch.cuda.synchronize()  # Tüm CUDA işlemlerinin tamamlanmasını bekle.
+                    elapsed = t_start.elapsed_time(t_end) / 1000  # ms'yi saniyeye çevir
+                    t_start.record()  # Zamanlayıcıyı bir sonraki aralık için sıfırla
                 else:
                     elapsed = time.time() - t0
-                    t0 = time.time()  # Reset timer for the next interval
+                    t0 = time.time()  # Zamanlayıcıyı bir sonraki aralık için sıfırla
 
-                # Calculate tokens processed in this interval
+                # Bu aralıkta işlenen token sayısını hesapla
                 tokens_interval = total_tokens - last_tokens
                 last_tokens = total_tokens
-                tps = tokens_interval / elapsed if elapsed > 0 else 0  # Tokens per second
+                tps = tokens_interval / elapsed if elapsed > 0 else 0  # Saniyedeki token sayısı
 
-                # Update cumulative counters (skip the first evaluation interval)
-                if global_step:  # This is False only when global_step == 0 (first evaluation)
+                # Kümülatif sayaçları güncelle (ilk değerlendirme aralığını atla)
+                if global_step:  # Bu yalnızca global_step == 0 iken False olur (ilk değerlendirme)
                     cumulative_tokens += tokens_interval
                     cumulative_time += elapsed
 
-                # Compute cumulative average tokens/sec (excluding the first interval)
+                # Kümülatif ortalama token/sn hesapla (ilk aralık hariç)
                 avg_tps = cumulative_tokens / cumulative_time if cumulative_time > 0 else 0
 
-                # Evaluate model performance (this may add overhead)
+                # Model başarımını değerlendir (bu ek yük getirebilir)
                 train_loss, val_loss = evaluate_model(model, train_loader, val_loader, device, eval_iter)
                 train_losses.append(train_loss)
                 val_losses.append(val_loss)
@@ -335,12 +335,12 @@ def train_model_simple_with_timing(model, train_loader, val_loader, optimizer, d
 
         generate_and_print_sample(model, tokenizer, device, start_context)
 
-        # Memory stats
+        # Bellek istatistikleri
         if torch.cuda.is_available():
             device = torch.cuda.current_device()
 
-            allocated = torch.cuda.memory_allocated(device) / 1024**3  # Convert to GB
-            reserved = torch.cuda.memory_reserved(device) / 1024**3  # Convert to GB
+            allocated = torch.cuda.memory_allocated(device) / 1024**3  # GB'a çevir
+            reserved = torch.cuda.memory_reserved(device) / 1024**3  # GB'a çevir
 
             print(f"\nAllocated memory: {allocated:.4f} GB")
             print(f"Reserved memory: {reserved:.4f} GB\n")
@@ -359,16 +359,16 @@ def plot_losses(epochs_seen, tokens_seen, train_losses, val_losses):
     ax1.legend(loc="upper right")
 
     # Görülen token'lar için ikinci bir x ekseni oluştur
-    ax2 = ax1.twiny()  # Create a second x-axis that shares the same y-axis
-    ax2.plot(tokens_seen, train_losses, alpha=0)  # Invisible plot for aligning ticks
+    ax2 = ax1.twiny()  # Aynı y eksenini paylaşan ikinci bir x ekseni oluştur
+    ax2.plot(tokens_seen, train_losses, alpha=0)  # Eksen işaretlerini hizalamak için görünmez çizim
     ax2.set_xlabel("Tokens seen")
 
-    fig.tight_layout()  # Adjust layout to make room
+    fig.tight_layout()  # Yer açmak için yerleşimi ayarla
     # plt.show()
 
 
 #####################################
-# Main function calls
+# Ana fonksiyon çağrıları
 #####################################
 
 def main(gpt_config, settings):
@@ -390,7 +390,7 @@ def main(gpt_config, settings):
     print()
 
     ##############################
-    # Download data if necessary
+    # Gerekirse veriyi indir
     ##############################
 
     file_path = "middlemarch.txt"
@@ -407,7 +407,7 @@ def main(gpt_config, settings):
             text_data = file.read()
 
     ##############################
-    # Initialize model
+    # Modeli başlat
     ##############################
 
     model = GPTModel(gpt_config)
@@ -419,7 +419,7 @@ def main(gpt_config, settings):
     )
 
     ##############################
-    # Set up dataloaders
+    # Veri yükleyicileri kur
     ##############################
 
     # Eğitim/doğrulama oranı
@@ -447,7 +447,7 @@ def main(gpt_config, settings):
     )
 
     ##############################
-    # Train model
+    # Modeli eğit
     ##############################
 
     tokenizer = tiktoken.get_encoding("gpt2")
@@ -472,12 +472,12 @@ if __name__ == "__main__":
 
     GPT_CONFIG_124M = {
         "vocab_size": 50304,     # Sözcük dağarcığı boyutu
-        "context_length": 1024,  # Input tokens per training example
+        "context_length": 1024,  # Eğitim örneği başına girdi token'ı
         "emb_dim": 768,          # Gömme (embedding) boyutu
         "n_heads": 12,           # Dikkat başlığı sayısı
         "n_layers": 12,          # Katman sayısı
         "drop_rate": 0.1,        # Dropout oranı
-        "qkv_bias": False        # Query-key-value bias
+        "qkv_bias": False        # Sorgu-anahtar-değer bias'ı
     }
 
     OTHER_SETTINGS = {
@@ -488,21 +488,21 @@ if __name__ == "__main__":
     }
 
     ###########################
-    # Initiate training
+    # Eğitimi başlat
     ###########################
 
     train_losses, val_losses, tokens_seen, model = main(GPT_CONFIG_124M, OTHER_SETTINGS)
 
     ###########################
-    # After training
+    # Eğitimden sonra
     ###########################
 
-    # Plot results
+    # Sonuçları çizdir
     epochs_tensor = torch.linspace(0, OTHER_SETTINGS["num_epochs"], len(train_losses))
     plot_losses(epochs_tensor, tokens_seen, train_losses, val_losses)
     plt.savefig("loss.pdf")
 
-    # Save and load model
+    # Modeli kaydet ve yükle
     #
     # compiled = hasattr(model, "_orig_mod")
     # if compiled:

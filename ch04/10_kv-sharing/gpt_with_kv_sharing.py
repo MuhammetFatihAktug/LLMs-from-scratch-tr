@@ -184,7 +184,7 @@ class TransformerBlock(nn.Module):
 
         # x = self.att(x)   # Shape [batch_size, num_tokens, emb_size]
         ####################################################
-        #  KV cache-related
+        #  KV önbelleğiyle ilgili
         x, new_shared_kv = self.att(x, use_cache=use_cache, shared_kv=shared_kv)
         ####################################################
 
@@ -214,7 +214,7 @@ class GPTModel(nn.Module):
         # self.trf_blocks = nn.Sequential(
         #    *[TransformerBlock(cfg) for _ in range(cfg["n_layers"])])
         ####################################################
-        #  KV cache-related
+        #  KV önbelleğiyle ilgili
         self.trf_blocks = nn.ModuleList(
             [TransformerBlock(cfg) for _ in range(cfg["n_layers"])])
         self.n_kv_producing_layers = cfg["n_kv_producing_layers"]
@@ -231,7 +231,7 @@ class GPTModel(nn.Module):
         # pos_embeds = self.pos_emb(torch.arange(seq_len, device=in_idx.device))
 
         ####################################################
-        #  KV cache-related
+        #  KV önbelleğiyle ilgili
         if use_cache:
             pos_ids = torch.arange(self.current_pos, self.current_pos + seq_len, device=in_idx.device, dtype=torch.long)
             self.current_pos += seq_len

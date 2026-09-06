@@ -92,7 +92,7 @@ def test_rope():
     queries_rot = apply_rope(queries, cos, sin)
     keys_rot = apply_rope(keys, cos, sin)
 
-    # Generate reference RoPE via HF
+    # HF üzerinden referans RoPE üret
     hf_rope_params = {
         "factor": 8.0,
         "low_freq_factor": 1.0,
@@ -112,7 +112,7 @@ def test_rope():
         num_attention_heads = num_heads
 
         def __init__(self):
-            # Transformers >=5.0.0 expects `rope_parameters` on the instance.
+            # Transformers >=5.0.0, örnek üzerinde `rope_parameters` bekliyor.
             self.rope_parameters = {**hf_rope_params, "rope_theta": rope_theta}
 
         def standardize_rope_params(self):
@@ -256,7 +256,7 @@ def test_rmsnorm_equivalence():
     rms_norm = torch.nn.RMSNorm(hidden_size, eps=1e-6)
     lit_norm = LitGPTRMSNorm(hidden_size)
 
-    # Sync weights
+    # Ağırlıkları eşitle
     with torch.no_grad():
         lit_norm.weight.copy_(lit_norm.weight)
 

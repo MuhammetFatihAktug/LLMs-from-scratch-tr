@@ -36,7 +36,7 @@ def get_model_and_tokenizer():
         "n_heads": 16,           # Dikkat başlığı sayısı
         "n_layers": 24,          # Katman sayısı
         "drop_rate": 0.0,        # Dropout oranı
-        "qkv_bias": True         # Query-key-value bias
+        "qkv_bias": True         # Sorgu-anahtar-değer bias'ı
     }
 
     tokenizer = tiktoken.get_encoding("gpt2")

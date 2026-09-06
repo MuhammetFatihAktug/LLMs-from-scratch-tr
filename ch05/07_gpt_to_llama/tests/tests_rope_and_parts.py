@@ -162,7 +162,7 @@ def test_rope_llama2(notebook):
     queries_rot = this_nb.compute_rope(queries, cos, sin)
     keys_rot = this_nb.compute_rope(keys, cos, sin)
 
-    # Generate reference RoPE via HF
+    # HF üzerinden referans RoPE üret
 
     if version.parse(transformers_version) < version.parse("4.48"):
         rot_emb = LlamaRotaryEmbedding(
@@ -232,7 +232,7 @@ def test_rope_llama3(notebook):
     queries_rot = nb1.compute_rope(queries, cos, sin)
     keys_rot = nb1.compute_rope(keys, cos, sin)
 
-    # Generate reference RoPE via HF
+    # HF üzerinden referans RoPE üret
     if version.parse(transformers_version) < version.parse("4.48"):
         rot_emb = LlamaRotaryEmbedding(
             dim=head_dim,
@@ -310,7 +310,7 @@ def test_rope_llama3_12(notebook):
     queries_rot = nb1.compute_rope(queries, cos, sin)
     keys_rot = nb1.compute_rope(keys, cos, sin)
 
-    # Generate reference RoPE via HF
+    # HF üzerinden referans RoPE üret
     hf_rope_params = {
         "factor": 8.0,
         "low_freq_factor": 1.0,

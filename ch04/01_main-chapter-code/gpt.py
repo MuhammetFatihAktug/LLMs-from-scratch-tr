@@ -8,7 +8,7 @@ import torch.nn as nn
 from torch.utils.data import Dataset, DataLoader
 
 #####################################
-# Chapter 2
+# Bölüm 2
 #####################################
 
 

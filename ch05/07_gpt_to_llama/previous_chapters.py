@@ -11,16 +11,16 @@ import torch
 
 
 #####################################
-# Chapter 5
+# Bölüm 5
 #####################################
 def text_to_token_ids(text, tokenizer):
     encoded = tokenizer.encode(text)
-    encoded_tensor = torch.tensor(encoded).unsqueeze(0)  # add batch dimension
+    encoded_tensor = torch.tensor(encoded).unsqueeze(0)  # yığın (batch) boyutunu ekle
     return encoded_tensor
 
 
 def token_ids_to_text(token_ids, tokenizer):
-    flat = token_ids.squeeze(0)  # remove batch dimension
+    flat = token_ids.squeeze(0)  # yığın (batch) boyutunu kaldır
     return tokenizer.decode(flat.tolist())
 
 
@@ -58,7 +58,7 @@ def generate(model, idx, max_new_tokens, context_size, temperature=0.0, top_k=No
         else:
             idx_next = torch.argmax(logits, dim=-1, keepdim=True)  # (batch_size, 1)
 
-        if idx_next == eos_id:  # Stop generating early if end-of-sequence token is encountered and eos_id is specified
+        if idx_next == eos_id:  # eos_id belirtilmişse ve dizi-sonu token'ıyla karşılaşılırsa üretimi erken durdur
             break
 
         # Öncekiyle aynı: örneklenen indeksi süregelen diziye ekle

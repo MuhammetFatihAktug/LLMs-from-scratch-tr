@@ -25,7 +25,7 @@ def import_notebook_defs():
 @pytest.fixture
 def dummy_input():
     torch.manual_seed(123)
-    return torch.randint(0, 100, (1, 8))  # batch size 1, seq length 8
+    return torch.randint(0, 100, (1, 8))  # yığın boyutu 1, dizi uzunluğu 8
 
 
 @pytest.fixture
@@ -68,7 +68,7 @@ def test_dummy_olmo3_forward(dummy_cfg_base, dummy_input, import_notebook_defs):
 def test_olmo3_base_equivalence_with_transformers(import_notebook_defs):
     from transformers import Olmo3Config, Olmo3ForCausalLM
 
-    # Tiny config so the test is fast
+    # Testin hızlı olması için küçücük yapılandırma
     cfg = {
         "vocab_size": 257,
         "context_length": 8,

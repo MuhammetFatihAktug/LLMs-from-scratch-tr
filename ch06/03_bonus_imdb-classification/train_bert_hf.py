@@ -97,7 +97,7 @@ def calc_loss_loader(data_loader, model, device, num_batches=None):
     return total_loss / num_batches
 
 
-@torch.no_grad()  # Disable gradient tracking for efficiency
+@torch.no_grad()  # Verimlilik için gradyan izlemeyi kapat
 def calc_accuracy_loader(data_loader, model, device, num_batches=None):
     model.eval()
     correct_predictions, num_examples = 0, 0
@@ -137,13 +137,13 @@ def train_classifier_simple(model, train_loader, val_loader, optimizer, device, 
 
     # Ana eğitim döngüsü
     for epoch in range(num_epochs):
-        model.train()  # Set model to training mode
+        model.train()  # Modeli eğitim kipine al
 
         for input_batch, attention_mask_batch, target_batch in train_loader:
-            optimizer.zero_grad()  # Reset loss gradients from previous batch iteration
+            optimizer.zero_grad()  # Önceki yığın yinelemesinden kalan kayıp gradyanlarını sıfırla
             loss = calc_loss_batch(input_batch, attention_mask_batch, target_batch, model, device)
-            loss.backward()  # Calculate loss gradients
-            optimizer.step()  # Update model weights using loss gradients
+            loss.backward()  # Kayıp gradyanlarını hesapla
+            optimizer.step()  # Kayıp gradyanlarını kullanarak model ağırlıklarını güncelle
             examples_seen += input_batch.shape[0]  # New: track examples instead of tokens
             global_step += 1
 
@@ -219,7 +219,7 @@ if __name__ == "__main__":
     args = parser.parse_args()
 
     ###############################
-    # Load model
+    # Modeli yükle
     ###############################
 
     torch.manual_seed(123)
@@ -363,7 +363,7 @@ if __name__ == "__main__":
     model.eval()
 
     ###############################
-    # Instantiate dataloaders
+    # Veri yükleyicileri örnekle
     ###############################
 
     base_path = Path(".")
@@ -423,7 +423,7 @@ if __name__ == "__main__":
     )
 
     ###############################
-    # Train model
+    # Modeli eğit
     ###############################
 
     start_time = time.time()
@@ -441,7 +441,7 @@ if __name__ == "__main__":
     print(f"Training completed in {execution_time_minutes:.2f} minutes.")
 
     ###############################
-    # Evaluate model
+    # Modeli değerlendir
     ###############################
 
     print("\nEvaluating on the full datasets ...\n")

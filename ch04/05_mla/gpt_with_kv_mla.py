@@ -15,9 +15,9 @@ import torch.nn as nn
 
 
 #####################################
-# Multi-Head Latent Attention
+# Çok Başlıklı Gizil Dikkat (Multi-Head Latent Attention)
 #####################################
-# The MLA code below is inspired by
+# Aşağıdaki MLA kodu şundan esinlenmiştir:
 # https://huggingface.co/bird-of-paradise/deepseek-mla
 
 
@@ -33,16 +33,16 @@ class MultiHeadLatentAttention(nn.Module):
         self.latent_dim = latent_dim if latent_dim is not None else max(16, d_out // 8)
 
         # İzdüşümler
-        self.W_query = nn.Linear(d_in, d_out, bias=qkv_bias)              # per-head Q
-        self.W_DKV = nn.Linear(d_in, self.latent_dim, bias=qkv_bias)    # down to latent C
-        self.W_UK = nn.Linear(self.latent_dim, d_out, bias=qkv_bias)   # latent -> per-head K
-        self.W_UV = nn.Linear(self.latent_dim, d_out, bias=qkv_bias)   # latent -> per-head V
+        self.W_query = nn.Linear(d_in, d_out, bias=qkv_bias)              # başlık başına Q
+        self.W_DKV = nn.Linear(d_in, self.latent_dim, bias=qkv_bias)    # gizil C'ye indir
+        self.W_UK = nn.Linear(self.latent_dim, d_out, bias=qkv_bias)   # gizil -> başlık başına K
+        self.W_UV = nn.Linear(self.latent_dim, d_out, bias=qkv_bias)   # gizil -> başlık başına V
 
         self.out_proj = nn.Linear(d_out, d_out)
         self.dropout = nn.Dropout(dropout)
 
         ####################################################
-        # Latent-KV cache
+        # Gizil-KV önbelleği
         self.register_buffer("cache_c_kv", None, persistent=False)
         self.ptr_current_pos = 0
         ####################################################
@@ -62,11 +62,11 @@ class MultiHeadLatentAttention(nn.Module):
         num_heads = self.num_heads
         head_dim = self.head_dim
 
-        # 1) Project to queries (per-token, per-head) and new latent chunk
+        # 1) Sorgulara (token ve başlık başına) ve yeni gizil parçaya izdüşür
         queries_all = self.W_query(x)  # (b, T, d_out)
         latent_new = self.W_DKV(x)  # (b, T, latent_dim)
 
-        # 2) Update latent cache and choose latent sequence to up-project
+        # 2) Gizil önbelleği güncelle ve yukarı izdüşürülecek gizil diziyi seç
         if use_cache:
             if self.cache_c_kv is None:
                 latent_total = latent_new
@@ -76,16 +76,16 @@ class MultiHeadLatentAttention(nn.Module):
         else:
             latent_total = latent_new
 
-        # 3) Up-project latent to per-head keys/values (then split into heads)
+        # 3) Gizili başlık başına anahtar/değerlere yukarı izdüşür (sonra başlıklara ayır)
         keys_all = self.W_UK(latent_total)   # (b, T_k_total, d_out)
         values_all = self.W_UV(latent_total)   # (b, T_k_total, d_out)
 
-        # 4) Reshape to heads
+        # 4) Başlıklara göre yeniden şekillendir
         queries = self._reshape_to_heads(queries_all, num_heads, head_dim)
         keys = self._reshape_to_heads(keys_all, num_heads, head_dim)
         values = self._reshape_to_heads(values_all, num_heads, head_dim)
 
-        # 5) Scaled dot-product attention with causal mask
+        # 5) Nedensel maskeli ölçeklenmiş iç çarpım dikkati
         attn_scores = torch.matmul(queries, keys.transpose(-2, -1))
 
         num_tokens_Q = queries.shape[-2]
@@ -182,7 +182,7 @@ class TransformerBlock(nn.Module):
 
         # x = self.att(x)   # Shape [batch_size, num_tokens, emb_size]
         ####################################################
-        #  KV cache-related
+        #  KV önbelleğiyle ilgili
         x = self.att(x, use_cache=use_cache)
         ####################################################
 
@@ -209,7 +209,7 @@ class GPTModel(nn.Module):
         # self.trf_blocks = nn.Sequential(
         #    *[TransformerBlock(cfg) for _ in range(cfg["n_layers"])])
         ####################################################
-        #  KV cache-related
+        #  KV önbelleğiyle ilgili
         self.trf_blocks = nn.ModuleList(
             [TransformerBlock(cfg) for _ in range(cfg["n_layers"])])
 
@@ -226,7 +226,7 @@ class GPTModel(nn.Module):
         # pos_embeds = self.pos_emb(torch.arange(seq_len, device=in_idx.device))
 
         ####################################################
-        #  KV cache-related
+        #  KV önbelleğiyle ilgili
         if use_cache:
             pos_ids = torch.arange(self.current_pos, self.current_pos + seq_len, device=in_idx.device, dtype=torch.long)
             self.current_pos += seq_len
@@ -240,7 +240,7 @@ class GPTModel(nn.Module):
 
         # x = self.trf_blocks(x)
         ####################################################
-        #  KV cache-related
+        #  KV önbelleğiyle ilgili
         for blk in self.trf_blocks:
             x = blk(x, use_cache=use_cache)
         ####################################################
@@ -250,7 +250,7 @@ class GPTModel(nn.Module):
         return logits
 
     ####################################################
-    #  KV cache-related
+    #  KV önbelleğiyle ilgili
     def reset_kv_cache(self):
         for blk in self.trf_blocks:
             blk.att.reset_cache()

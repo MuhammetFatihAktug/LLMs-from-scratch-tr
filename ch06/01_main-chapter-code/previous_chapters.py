@@ -14,7 +14,7 @@ import torch.nn as nn
 from torch.utils.data import Dataset, DataLoader
 
 #####################################
-# Chapter 2
+# Bölüm 2
 #####################################
 
 
@@ -240,7 +240,7 @@ def generate_text_simple(model, idx, max_new_tokens, context_size):
 
 
 #####################################
-# Chapter 5
+# Bölüm 5
 #####################################
 def assign(left, right):
     if left.shape != right.shape:
@@ -311,10 +311,10 @@ def load_weights_into_gpt(gpt, params):
 
 def text_to_token_ids(text, tokenizer):
     encoded = tokenizer.encode(text, allowed_special={"<|endoftext|>"})
-    encoded_tensor = torch.tensor(encoded).unsqueeze(0)  # add batch dimension
+    encoded_tensor = torch.tensor(encoded).unsqueeze(0)  # yığın (batch) boyutunu ekle
     return encoded_tensor
 
 
 def token_ids_to_text(token_ids, tokenizer):
-    flat = token_ids.squeeze(0)  # remove batch dimension
+    flat = token_ids.squeeze(0)  # yığın (batch) boyutunu kaldır
     return tokenizer.decode(flat.tolist())

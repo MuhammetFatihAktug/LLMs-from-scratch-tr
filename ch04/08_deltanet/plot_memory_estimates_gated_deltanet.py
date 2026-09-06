@@ -75,7 +75,7 @@ def main():
         for t in ctx
     ], dtype=float)
 
-    # Convert to GB
+    # GB'a çevir
     mha_gb = convert_to_gb(mha_bytes)
     dnet_gb = convert_to_gb(dnet_bytes)
     mix_gb = convert_to_gb(mix_bytes)

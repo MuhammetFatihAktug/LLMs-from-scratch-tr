@@ -14,7 +14,7 @@ import torch.nn as nn
 from torch.utils.data import Dataset, DataLoader
 
 #####################################
-# Chapter 2
+# Bölüm 2
 #####################################
 
 
@@ -246,7 +246,7 @@ def generate_text_simple(model, idx, max_new_tokens, context_size):
 
 
 #####################################
-# Chapter 5
+# Bölüm 5
 #####################################
 def assign(left, right):
     if left.shape != right.shape:
@@ -348,7 +348,7 @@ def generate(model, idx, max_new_tokens, context_size, temperature=0.0, top_k=No
         else:
             idx_next = torch.argmax(logits, dim=-1, keepdim=True)  # (batch_size, 1)
 
-        if idx_next == eos_id:  # Stop generating early if end-of-sequence token is encountered and eos_id is specified
+        if idx_next == eos_id:  # eos_id belirtilmişse ve dizi-sonu token'ıyla karşılaşılırsa üretimi erken durdur
             break
 
         # Öncekiyle aynı: örneklenen indeksi süregelen diziye ekle

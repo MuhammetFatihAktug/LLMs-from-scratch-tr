@@ -19,7 +19,7 @@ from torch.distributed import init_process_group, destroy_process_group
 
 
 # NEW: function to initialize a distributed process group (1 process / GPU)
-# this allows communication among processes
+# bu, süreçler arası iletişimi sağlar
 def ddp_setup(rank, world_size):
     """
     Arguments:
@@ -32,11 +32,11 @@ def ddp_setup(rank, world_size):
     # any free port on the machine
     os.environ["MASTER_PORT"] = "12345"
 
-    # initialize process group
+    # süreç grubunu başlat
     if platform.system() == "Windows":
-        # Disable libuv because PyTorch for Windows isn't built with support
+        # libuv'yi devre dışı bırak; çünkü Windows için PyTorch bu destekle derlenmiyor
         os.environ["USE_LIBUV"] = "0"
-        # Windows users may have to use "gloo" instead of "nccl" as backend
+        # Windows kullanıcıları arka uç olarak "nccl" yerine "gloo" kullanmak zorunda kalabilir
         # gloo: Facebook Collective Communication Library
         init_process_group(backend="gloo", rank=rank, world_size=world_size)
     else:

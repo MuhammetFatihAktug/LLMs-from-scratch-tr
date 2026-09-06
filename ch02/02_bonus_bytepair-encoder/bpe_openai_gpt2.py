@@ -38,7 +38,7 @@ def bytes_to_unicode():
     """
     Returns list of utf-8 byte and a corresponding list of unicode strings.
     The reversible bpe codes work on unicode strings.
-    This means you need a large # of unicode characters in your vocab if you want to avoid UNKs.
+    This means you need a large # UNK'lerden kaçınmak istiyorsanız sözcük dağarcığınızdaki unicode karakterlerin.
     When you're at something like a 10B token dataset you end up needing around 5K for decent coverage.
     This is a significant percentage of your normal, say, 32K bpe vocab.
     To avoid that, we want lookup tables between utf-8 bytes and unicode strings.
@@ -73,13 +73,13 @@ class Encoder:
     def __init__(self, encoder, bpe_merges, errors="replace"):
         self.encoder = encoder
         self.decoder = {v: k for k, v in self.encoder.items()}
-        self.errors = errors  # how to handle errors in decoding
+        self.errors = errors  # kod çözmedeki hataların nasıl ele alınacağı
         self.byte_encoder = bytes_to_unicode()
         self.byte_decoder = {v: k for k, v in self.byte_encoder.items()}
         self.bpe_ranks = dict(zip(bpe_merges, range(len(bpe_merges))))
         self.cache = {}
 
-        # Should have added re.IGNORECASE so BPE merges can happen for capitalized versions of contractions
+        # re.IGNORECASE eklenmeliydi ki kısaltmaların büyük harfli hâlleri için de BPE birleştirmeleri yapılabilsin
         self.pat = re.compile(r"""'s|'t|'re|'ve|'m|'ll|'d| ?\p{L}+| ?\p{N}+| ?[^\s\p{L}\p{N}]+|\s+(?!\S)|\s+""")
 
     def bpe(self, token):
@@ -146,11 +146,11 @@ def get_encoder(model_name, models_dir):
 
 
 def download_vocab():
-    # Modified code from
+    # Şuradan değiştirilmiş kod:
     subdir = "gpt2_model"
     if not os.path.exists(subdir):
         os.makedirs(subdir)
-    subdir = subdir.replace("\\", "/")  # needed for Windows
+    subdir = subdir.replace("\\", "/")  # Windows için gerekli
 
     for filename in ["encoder.json", "vocab.bpe"]:
         r = requests.get("https://openaipublic.blob.core.windows.net/gpt-2/models/117M/" + filename, stream=True)
@@ -159,7 +159,7 @@ def download_vocab():
             file_size = int(r.headers["content-length"])
             chunk_size = 1000
             with tqdm(ncols=100, desc="Fetching " + filename, total=file_size, unit_scale=True) as pbar:
-                # 1k for chunk_size, since Ethernet packet size is around 1500 bytes
+                # chunk_size için 1k, çünkü Ethernet paket boyutu 1500 bayt civarında
                 for chunk in r.iter_content(chunk_size=chunk_size):
                     f.write(chunk)
                     pbar.update(chunk_size)

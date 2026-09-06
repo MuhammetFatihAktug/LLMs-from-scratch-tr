@@ -281,14 +281,14 @@ def plot_losses(epochs_seen, tokens_seen, train_losses, val_losses, plot_name):
     ax1.set_xlabel("Epochs")
     ax1.set_ylabel("Loss")
     ax1.legend(loc="upper right")
-    ax1.xaxis.set_major_locator(MaxNLocator(integer=True))  # only show integer labels on x-axis
+    ax1.xaxis.set_major_locator(MaxNLocator(integer=True))  # x ekseninde yalnızca tam sayı etiketleri göster
 
     # Görülen token'lar için ikinci bir x ekseni oluştur
-    ax2 = ax1.twiny()  # Create a second x-axis that shares the same y-axis
-    ax2.plot(tokens_seen, train_losses, alpha=0)  # Invisible plot for aligning ticks
+    ax2 = ax1.twiny()  # Aynı y eksenini paylaşan ikinci bir x ekseni oluştur
+    ax2.plot(tokens_seen, train_losses, alpha=0)  # Eksen işaretlerini hizalamak için görünmez çizim
     ax2.set_xlabel("Tokens seen")
 
-    fig.tight_layout()  # Adjust layout to make room
+    fig.tight_layout()  # Yer açmak için yerleşimi ayarla
     print(f"Plot saved as {plot_name}")
     plt.savefig(plot_name)
     # plt.show()
@@ -392,7 +392,7 @@ def main(mask_instructions=False, alpaca52k=False, phi3_prompt=False, lora=False
         "vocab_size": 50257,     # Sözcük dağarcığı boyutu
         "context_length": 1024,  # Bağlam uzunluğu
         "drop_rate": 0.0,        # Dropout oranı
-        "qkv_bias": True         # Query-key-value bias
+        "qkv_bias": True         # Sorgu-anahtar-değer bias'ı
     }
 
     model_configs = {

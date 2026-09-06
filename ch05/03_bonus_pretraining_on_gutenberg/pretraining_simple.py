@@ -179,7 +179,7 @@ if __name__ == "__main__":
             "n_heads": 2,            # Dikkat başlığı sayısı
             "n_layers": 2,           # Katman sayısı
             "drop_rate": 0.0,        # Dropout rate, deactivated via 0.0 as dropout in LLMs is not recommended anymore
-            "qkv_bias": False        # Query-key-value bias
+            "qkv_bias": False        # Sorgu-anahtar-değer bias'ı
         }
 
     else:
@@ -190,7 +190,7 @@ if __name__ == "__main__":
             "n_heads": 12,           # Dikkat başlığı sayısı
             "n_layers": 12,          # Katman sayısı
             "drop_rate": 0.1,        # Dropout oranı
-            "qkv_bias": False        # Query-key-value bias
+            "qkv_bias": False        # Sorgu-anahtar-değer bias'ı
         }
 
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")

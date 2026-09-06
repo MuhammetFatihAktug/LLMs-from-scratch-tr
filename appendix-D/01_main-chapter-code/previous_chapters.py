@@ -15,7 +15,7 @@ import matplotlib.pyplot as plt
 
 
 #####################################
-# Chapter 2
+# Bölüm 2
 #####################################
 
 class GPTDatasetV1(Dataset):
@@ -242,7 +242,7 @@ def generate_text_simple(model, idx, max_new_tokens, context_size):
 
 
 #####################################
-# Chapter 5
+# Bölüm 5
 ####################################
 
 
@@ -288,7 +288,7 @@ def generate_and_print_sample(model, tokenizer, device, start_context):
             model=model, idx=encoded,
             max_new_tokens=50, context_size=context_size)
         decoded_text = token_ids_to_text(token_ids, tokenizer)
-        print(decoded_text.replace("\n", " "))  # Compact print format
+        print(decoded_text.replace("\n", " "))  # Derli toplu yazdırma biçimi
     model.train()
 
 
@@ -303,20 +303,20 @@ def plot_losses(epochs_seen, tokens_seen, train_losses, val_losses):
     ax1.legend(loc="upper right")
 
     # Görülen token'lar için ikinci bir x ekseni oluştur
-    ax2 = ax1.twiny()  # Create a second x-axis that shares the same y-axis
-    ax2.plot(tokens_seen, train_losses, alpha=0)  # Invisible plot for aligning ticks
+    ax2 = ax1.twiny()  # Aynı y eksenini paylaşan ikinci bir x ekseni oluştur
+    ax2.plot(tokens_seen, train_losses, alpha=0)  # Eksen işaretlerini hizalamak için görünmez çizim
     ax2.set_xlabel("Tokens seen")
 
-    fig.tight_layout()  # Adjust layout to make room
+    fig.tight_layout()  # Yer açmak için yerleşimi ayarla
     # plt.show()
 
 
 def text_to_token_ids(text, tokenizer):
     encoded = tokenizer.encode(text)
-    encoded_tensor = torch.tensor(encoded).unsqueeze(0)  # add batch dimension
+    encoded_tensor = torch.tensor(encoded).unsqueeze(0)  # yığın (batch) boyutunu ekle
     return encoded_tensor
 
 
 def token_ids_to_text(token_ids, tokenizer):
-    flat = token_ids.squeeze(0)  # remove batch dimension
+    flat = token_ids.squeeze(0)  # yığın (batch) boyutunu kaldır
     return tokenizer.decode(flat.tolist())

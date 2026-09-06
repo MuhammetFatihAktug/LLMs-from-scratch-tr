@@ -10,18 +10,18 @@ import torch
 import tiktoken
 
 
-# Import from local files
+# Yerel dosyalardan içe aktar
 from previous_chapters import GPTModel, create_dataloader_v1, generate_text_simple
 
 
 def text_to_token_ids(text, tokenizer):
     encoded = tokenizer.encode(text)
-    encoded_tensor = torch.tensor(encoded).unsqueeze(0)  # add batch dimension
+    encoded_tensor = torch.tensor(encoded).unsqueeze(0)  # yığın (batch) boyutunu ekle
     return encoded_tensor
 
 
 def token_ids_to_text(token_ids, tokenizer):
-    flat = token_ids.squeeze(0)  # remove batch dimension
+    flat = token_ids.squeeze(0)  # yığın (batch) boyutunu kaldır
     return tokenizer.decode(flat.tolist())
 
 
@@ -68,7 +68,7 @@ def generate_and_print_sample(model, tokenizer, device, start_context):
             max_new_tokens=50, context_size=context_size
         )
         decoded_text = token_ids_to_text(token_ids, tokenizer)
-        print(decoded_text.replace("\n", " "))  # Compact print format
+        print(decoded_text.replace("\n", " "))  # Derli toplu yazdırma biçimi
     model.train()
 
 
@@ -81,13 +81,13 @@ def train_model_simple(model, train_loader, val_loader, optimizer, device, num_e
 
     # Ana eğitim döngüsü
     for epoch in range(num_epochs):
-        model.train()  # Set model to training mode
+        model.train()  # Modeli eğitim kipine al
 
         for input_batch, target_batch in train_loader:
-            optimizer.zero_grad()  # Reset loss gradients from previous batch iteration
+            optimizer.zero_grad()  # Önceki yığın yinelemesinden kalan kayıp gradyanlarını sıfırla
             loss = calc_loss_batch(input_batch, target_batch, model, device)
-            loss.backward()  # Calculate loss gradients
-            optimizer.step()  # Update model weights using loss gradients
+            loss.backward()  # Kayıp gradyanlarını hesapla
+            optimizer.step()  # Kayıp gradyanlarını kullanarak model ağırlıklarını güncelle
             tokens_seen += input_batch.numel()
             global_step += 1
 
@@ -120,11 +120,11 @@ def plot_losses(epochs_seen, tokens_seen, train_losses, val_losses):
     ax1.legend(loc="upper right")
 
     # Görülen token'lar için ikinci bir x ekseni oluştur
-    ax2 = ax1.twiny()  # Create a second x-axis that shares the same y-axis
-    ax2.plot(tokens_seen, train_losses, alpha=0)  # Invisible plot for aligning ticks
+    ax2 = ax1.twiny()  # Aynı y eksenini paylaşan ikinci bir x ekseni oluştur
+    ax2.plot(tokens_seen, train_losses, alpha=0)  # Eksen işaretlerini hizalamak için görünmez çizim
     ax2.set_xlabel("Tokens seen")
 
-    fig.tight_layout()  # Adjust layout to make room
+    fig.tight_layout()  # Yer açmak için yerleşimi ayarla
     # plt.show()
 
 
@@ -134,7 +134,7 @@ def main(gpt_config, settings):
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
     ##############################
-    # Download data if necessary
+    # Gerekirse veriyi indir
     ##############################
 
     file_path = "the-verdict.txt"
@@ -150,17 +150,17 @@ def main(gpt_config, settings):
         with open(file_path, "r", encoding="utf-8") as file:
             text_data = file.read()
     ##############################
-    # Initialize model
+    # Modeli başlat
     ##############################
 
     model = GPTModel(gpt_config)
-    model.to(device)  # no assignment model = model.to(device) necessary for nn.Module classes
+    model.to(device)  # nn.Module sınıflarında model = model.to(device) ataması gerekmez
     optimizer = torch.optim.AdamW(
         model.parameters(), lr=settings["learning_rate"], weight_decay=settings["weight_decay"]
     )
 
     ##############################
-    # Set up dataloaders
+    # Veri yükleyicileri kur
     ##############################
 
     # Eğitim/doğrulama oranı
@@ -188,7 +188,7 @@ def main(gpt_config, settings):
     )
 
     ##############################
-    # Train model
+    # Modeli eğit
     ##############################
 
     tokenizer = tiktoken.get_encoding("gpt2")
@@ -211,7 +211,7 @@ if __name__ == "__main__":
         "n_heads": 12,          # Dikkat başlığı sayısı
         "n_layers": 12,         # Katman sayısı
         "drop_rate": 0.1,       # Dropout oranı
-        "qkv_bias": False       # Query-key-value bias
+        "qkv_bias": False       # Sorgu-anahtar-değer bias'ı
     }
 
     OTHER_SETTINGS = {
@@ -222,21 +222,21 @@ if __name__ == "__main__":
     }
 
     ###########################
-    # Initiate training
+    # Eğitimi başlat
     ###########################
 
     train_losses, val_losses, tokens_seen, model = main(GPT_CONFIG_124M, OTHER_SETTINGS)
 
     ###########################
-    # After training
+    # Eğitimden sonra
     ###########################
 
-    # Plot results
+    # Sonuçları çizdir
     epochs_tensor = torch.linspace(0, OTHER_SETTINGS["num_epochs"], len(train_losses))
     plot_losses(epochs_tensor, tokens_seen, train_losses, val_losses)
     plt.savefig("loss.pdf")
 
-    # Save and load model
+    # Modeli kaydet ve yükle
     torch.save(model.state_dict(), "model.pth")
     model = GPTModel(GPT_CONFIG_124M)
     model.load_state_dict(torch.load("model.pth", weights_only=True))

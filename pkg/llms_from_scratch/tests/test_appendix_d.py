@@ -24,7 +24,7 @@ def test_train(tmp_path):
         "n_heads": 12,          # Dikkat başlığı sayısı
         "n_layers": 12,         # Katman sayısı
         "drop_rate": 0.1,       # Dropout oranı
-        "qkv_bias": False       # Query-key-value bias
+        "qkv_bias": False       # Sorgu-anahtar-değer bias'ı
     }
 
     OTHER_SETTINGS = {
@@ -38,7 +38,7 @@ def test_train(tmp_path):
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
     ##############################
-    # Download data if necessary
+    # Gerekirse veriyi indir
     ##############################
 
     file_path = tmp_path / "the-verdict.txt"
@@ -54,14 +54,14 @@ def test_train(tmp_path):
             text_data = file.read()
 
     ##############################
-    # Initialize model
+    # Modeli başlat
     ##############################
 
     model = GPTModel(GPT_CONFIG_124M)
-    model.to(device)  # no assignment model = model.to(device) necessary for nn.Module classes
+    model.to(device)  # nn.Module sınıflarında model = model.to(device) ataması gerekmez
 
     ##############################
-    # Set up dataloaders
+    # Veri yükleyicileri kur
     ##############################
 
     # Eğitim/doğrulama oranı
@@ -89,7 +89,7 @@ def test_train(tmp_path):
     )
 
     ##############################
-    # Train model
+    # Modeli eğit
     ##############################
 
     tokenizer = tiktoken.get_encoding("gpt2")
