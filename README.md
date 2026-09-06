@@ -35,11 +35,13 @@ Bu kitapta eğitim amaçlı, küçük ama işlevsel kendi modelinizi eğitmek ve
 <br>
 <br>
 
-Bu deponun bir kopyasını indirmek için [Download ZIP](https://github.com/rasbt/LLMs-from-scratch/archive/refs/heads/main.zip) düğmesine tıklayın veya terminalinizde şu komutu çalıştırın:
+Bu Türkçe sürümün bir kopyasını indirmek için [Download ZIP](https://github.com/MuhammetFatihAktug/LLMs-from-scratch-tr/archive/refs/heads/tr.zip) düğmesine tıklayın veya terminalinizde şu komutu çalıştırın:
 
 ```bash
-git clone --depth 1 https://github.com/rasbt/LLMs-from-scratch.git
+git clone --depth 1 -b tr https://github.com/MuhammetFatihAktug/LLMs-from-scratch-tr.git
 ```
+
+> `-b tr` önemli: Türkçe sürüm bu dalda. İngilizce aslını isterseniz `main` dalı ya da özgün depo: `git clone --depth 1 https://github.com/rasbt/LLMs-from-scratch.git`
 
 <br>
 
@@ -53,7 +55,7 @@ git clone --depth 1 https://github.com/rasbt/LLMs-from-scratch.git
 
 Bu `README.md` dosyasının bir Markdown (`.md`) dosyası olduğunu lütfen unutmayın. Bu kod paketini Manning web sitesinden indirdiyseniz ve yerel bilgisayarınızda görüntülüyorsanız, düzgün görüntüleme için bir Markdown editörü veya önizleyicisi kullanmanızı öneririm. Henüz bir Markdown editörü kurmadıysanız, [Ghostwriter](https://ghostwriter.kde.org) iyi ve ücretsiz bir seçenektir.
 
-Alternatif olarak bu ve diğer dosyaları GitHub'da tarayıcınızdan görüntüleyebilirsiniz ([https://github.com/rasbt/LLMs-from-scratch](https://github.com/rasbt/LLMs-from-scratch)); GitHub Markdown'ı otomatik olarak işler.
+Alternatif olarak bu ve diğer dosyaları GitHub'da tarayıcınızdan görüntüleyebilirsiniz ([https://github.com/MuhammetFatihAktug/LLMs-from-scratch-tr](https://github.com/MuhammetFatihAktug/LLMs-from-scratch-tr)); GitHub Markdown'ı otomatik olarak işler.
 
 <br>
 <br>
@@ -115,7 +117,7 @@ Bu kitap, kodu herhangi bir harici LLM kütüphanesi kullanmadan sıfırdan uygu
 
 ## Donanım Gereksinimleri
 
-Bu kitabın ana bölümlerindeki kod, sıradan dizüstü bilgisayarlarda makul bir sürede çalışacak şekilde tasarlanmıştır ve özel donanım gerektirmez. Bu yaklaşım, geniş bir kitlenin materyalle etkileşim kurabilmesini sağlar. Ayrıca kod, mevcutsa GPU'ları otomatik olarak kullanır. (Ek öneriler için lütfen [setup](https://github.com/rasbt/LLMs-from-scratch/blob/main/setup/README.md) belgesine bakın.)
+Bu kitabın ana bölümlerindeki kod, sıradan dizüstü bilgisayarlarda makul bir sürede çalışacak şekilde tasarlanmıştır ve özel donanım gerektirmez. Bu yaklaşım, geniş bir kitlenin materyalle etkileşim kurabilmesini sağlar. Ayrıca kod, mevcutsa GPU'ları otomatik olarak kullanır. (Ek öneriler için lütfen [setup](setup/README.md) belgesine bakın.)
 
 
 &nbsp;
@@ -221,23 +223,23 @@ Birkaç klasör, ilgilenen okuyucular için bonus niteliğinde isteğe bağlı m
   - [LLM Hizalaması İçin Doğrudan Tercih Optimizasyonu (DPO)](ch07/04_preference-tuning-with-dpo/dpo-from-scratch.ipynb)
   - [Talimat İnce Ayarlı GPT Modeliyle Etkileşim İçin Kullanıcı Arayüzü Oluşturmak](ch07/06_user_interface)
 
-[Reasoning From Scratch](https://github.com/rasbt/reasoning-from-scratch) deposundan daha fazla bonus materyal:
+[Reasoning From Scratch](https://github.com/rasbt/reasoning-from-scratch) deposundan daha fazla bonus materyal (Türkçeleri bu deponun [reasoning-from-scratch/](./reasoning-from-scratch) klasöründe):
 
 - **Qwen3 (Sıfırdan) Temelleri**
-  - [Qwen3 Kaynak Kodu İncelemesi](https://github.com/rasbt/reasoning-from-scratch/blob/main/chC/01_main-chapter-code/chC_main.ipynb)
-  - [Optimize Edilmiş Qwen3](https://github.com/rasbt/reasoning-from-scratch/tree/main/ch02/03_optimized-LLM)
+  - [Qwen3 Kaynak Kodu İncelemesi](./reasoning-from-scratch/chC/01_main-chapter-code/chC_main.ipynb)
+  - [Optimize Edilmiş Qwen3](./reasoning-from-scratch/ch02/03_optimized-LLM)
 
 - **Değerlendirme**
-  - [Doğrulayıcı Temelli Değerlendirme (MATH-500)](https://github.com/rasbt/reasoning-from-scratch/tree/main/ch03)
-  - [Çoktan Seçmeli Değerlendirme (MMLU)](https://github.com/rasbt/reasoning-from-scratch/blob/main/chF/02_mmlu)
-  - [LLM Liderlik Tablosu Değerlendirmesi](https://github.com/rasbt/reasoning-from-scratch/blob/main/chF/03_leaderboards)
-  - [Hakem Olarak LLM (LLM-as-a-Judge) Değerlendirmesi](https://github.com/rasbt/reasoning-from-scratch/blob/main/chF/04_llm-judge)
+  - [Doğrulayıcı Temelli Değerlendirme (MATH-500)](./reasoning-from-scratch/ch03)
+  - [Çoktan Seçmeli Değerlendirme (MMLU)](./reasoning-from-scratch/chF/02_mmlu)
+  - [LLM Liderlik Tablosu Değerlendirmesi](./reasoning-from-scratch/chF/03_leaderboards)
+  - [Hakem Olarak LLM (LLM-as-a-Judge) Değerlendirmesi](./reasoning-from-scratch/chF/04_llm-judge)
 - **Çıkarım Ölçeklendirme**
-  - [Öz Tutarlılık (Self-Consistency)](https://github.com/rasbt/reasoning-from-scratch/blob/main/ch04/01_main-chapter-code/ch04_main.ipynb)
-  - [Öz İyileştirme (Self-Refinement)](https://github.com/rasbt/reasoning-from-scratch/blob/main/ch05/01_main-chapter-code/ch05_main.ipynb)
+  - [Öz Tutarlılık (Self-Consistency)](./reasoning-from-scratch/ch04/01_main-chapter-code/ch04_main.ipynb)
+  - [Öz İyileştirme (Self-Refinement)](./reasoning-from-scratch/ch05/01_main-chapter-code/ch05_main.ipynb)
 
 - **Pekiştirmeli Öğrenme** (RL)
-  - [Sıfırdan GRPO ile RLVR](https://github.com/rasbt/reasoning-from-scratch/blob/main/ch06/01_main-chapter-code/ch06_main.ipynb)
+  - [Sıfırdan GRPO ile RLVR](./reasoning-from-scratch/ch06/01_main-chapter-code/ch06_main.ipynb)
 
 
 <br>
@@ -249,6 +251,8 @@ Birkaç klasör, ilgilenen okuyucular için bonus niteliğinde isteğe bağlı m
 Her türlü geri bildirimi memnuniyetle karşılıyorum; bunu en iyi [Manning Forum](https://livebook.manning.com/forum?product=raschka&page=1) veya [GitHub Discussions](https://github.com/rasbt/LLMs-from-scratch/discussions) üzerinden paylaşabilirsiniz. Aynı şekilde, sorularınız varsa ya da sadece başkalarıyla fikir alışverişi yapmak istiyorsanız, bunları da foruma göndermekten çekinmeyin.
 
 Bu depo basılı bir kitaba karşılık gelen kodu içerdiğinden, şu anda ana bölüm kodunun içeriğini genişletecek katkıları kabul edemediğimi lütfen unutmayın; çünkü bu, basılı kitaptan sapmalara yol açardı. Tutarlılığı korumak herkes için sorunsuz bir deneyim sağlamaya yardımcı oluyor.
+
+> 🇹🇷 **Çevirmen notu:** Yukarıdaki paragraf yazara aittir ve özgün depo içindir. *Çeviriyle ilgili* hata, öneri ve sorular için bu deponun [Discussions](https://github.com/MuhammetFatihAktug/LLMs-from-scratch-tr/discussions) sayfasını ya da bir [issue](https://github.com/MuhammetFatihAktug/LLMs-from-scratch-tr/issues/new/choose) kullanın; katkı kuralları [CONTRIBUTING.md](CONTRIBUTING.md) dosyasında.
 
 
 &nbsp;

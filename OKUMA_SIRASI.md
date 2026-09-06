@@ -43,7 +43,7 @@ setup/  →  ch01  →  ch02  →  ch03  →  ch04  →  ch05  →  ch06  →  c
 | [appendix-D/](appendix-D/) | Eğitim döngüsü iyileştirmeleri (warmup, cosine decay, grad clipping) | 🎯 ch05 sonrası |
 | [appendix-E/](appendix-E/) | LoRA ile parametre-verimli ince ayar | 🎯 ch06 sonrası |
 | [pkg/llms_from_scratch/](pkg/llms_from_scratch/) | Tüm bölüm kodunun `pip` paketi hâli | 🔧 Araç |
-| [reasoning-from-scratch/](reasoning-from-scratch/) | **Devam kitabı** (akıl yürütme modelleri) — ayrı depo, submodule | 🚀 Kitap bitince |
+| [reasoning-from-scratch/](reasoning-from-scratch/) | **Devam kitabı** (akıl yürütme modelleri) — Türkçesi bu depoya gömülü, ayrı indirme gerekmez | 🚀 Kitap bitince |
 
 ---
 
@@ -168,7 +168,7 @@ Kayıp fonksiyonu, eğitim döngüsü, örnekleme stratejileri (temperature, top
 | Klasör | İçerik |
 |---|---|
 | [04_learning_rate_schedulers](ch05/04_learning_rate_schedulers) | appendix-D'ye yönlendirir |
-| [10_llm-training-speed](ch05/10_llm-training-speed) | **Çok değerli.** 12k → 142k token/sn: adım adım optimizasyon |
+| [10_llm-training-speed](ch05/10_llm-training-speed) | **Çok değerli.** Tek GPU'da 12k → 142k token/sn: adım adım optimizasyon (çoklu GPU ile 400k+) |
 | [18_muon](ch05/18_muon) | Muon optimize edici |
 | [03_bonus_pretraining_on_gutenberg](ch05/03_bonus_pretraining_on_gutenberg) | Gerçek büyük derlem üzerinde ön eğitim (uzun sürer) |
 | [05_bonus_hparam_tuning](ch05/05_bonus_hparam_tuning) | Hiperparametre ızgara araması |
@@ -184,7 +184,7 @@ Kayıp fonksiyonu, eğitim döngüsü, örnekleme stratejileri (temperature, top
 | [11_qwen3](ch05/11_qwen3) | Qwen3 (yoğun ve MoE varyantları) |
 | [12_gemma3](ch05/12_gemma3) | Gemma 3 270M — küçük, hızlı deneme için ideal |
 | [13_olmo3](ch05/13_olmo3) | Olmo 3 7B / 32B |
-| [15_tiny-aya](ch05/15_tiny-aya) | Tiny Aya 3.35B — çok dilli (Türkçe dahil) |
+| [15_tiny-aya](ch05/15_tiny-aya) | Tiny Aya 3.35B — çok dilli |
 | [16_qwen3.5](ch05/16_qwen3.5) | Qwen3.5 0.8B (doğrusal dikkat hibriti) |
 | [17_gemma4](ch05/17_gemma4) | Gemma 4 E2B / E4B |
 | [14_ch05_with_other_llms](ch05/14_ch05_with_other_llms) | Bölüm 5'i GPT-2 yerine başka modellerle çalıştırma |
@@ -294,7 +294,7 @@ Yukarıdakiler + `ch06` + `appendix-E` (LoRA) + `ch07` + `ch07/04_preference-tun
 - **Alıştırmaları atlama.** Çözümleri her bölümün `01_main-chapter-code/exercise-solutions.ipynb` dosyasında, listesi [appendix-C](appendix-C/) içinde.
 - **Tensör şekillerini yazdır.** Özellikle ch03'te `print(x.shape)` en iyi arkadaşın.
 - **GPU şart değil.** Ana bölümler dizüstü bilgisayarda çalışır. GPU sadece ch05–ch07'yi hızlandırır.
-- **Takılırsan:** [troubleshooting.md](troubleshooting.md) ve [GitHub Discussions](https://github.com/rasbt/LLMs-from-scratch/discussions).
+- **Takılırsan:** önce [troubleshooting.md](troubleshooting.md). Çeviriyle ilgili sorular için bu deponun [Discussions](https://github.com/MuhammetFatihAktug/LLMs-from-scratch-tr/discussions) sayfası; kodun kendisiyle ilgili sorular için özgün deponun [tartışma forumu](https://github.com/rasbt/LLMs-from-scratch/discussions).
 - **Türkçe veriyle denemek istersen:** [TURKCE_VERI.md](TURKCE_VERI.md) — her bölümün İngilizce veri
   dosyasının yanına Türkçe bir karşılığı eklendi (`karar.txt`, `talimat-verisi.json` vb.). Aynı deneyi
   Türkçe metinle tekrarlamak, tokenizer'ın dile ne kadar bağımlı olduğunu somut olarak gösterir.
