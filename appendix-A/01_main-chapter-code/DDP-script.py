@@ -9,7 +9,7 @@ import torch
 import torch.nn.functional as F
 from torch.utils.data import Dataset, DataLoader
 
-# NEW imports:
+# YENİ içe aktarmalar:
 import os
 import platform
 import torch.multiprocessing as mp
@@ -26,10 +26,10 @@ def ddp_setup(rank, world_size):
         rank: a unique process ID
         world_size: total number of processes in the group
     """
-    # rank of machine running rank:0 process
-    # here, we assume all GPUs are on the same machine
+    # rank:0 sürecini çalıştıran makinenin rank'i
+    # burada tüm GPU'ların aynı makinede olduğunu varsayıyoruz
     os.environ["MASTER_ADDR"] = "localhost"
-    # any free port on the machine
+    # makinedeki herhangi bir boş port
     os.environ["MASTER_PORT"] = "12345"
 
     # süreç grubunu başlat
@@ -98,7 +98,7 @@ def prepare_dataset():
     ])
     y_test = torch.tensor([0, 1])
 
-    # Uncomment these lines to increase the dataset size to run this script on up to 8 GPUs:
+    # Bu betiği 8 GPU'ya kadar çalıştırmak için veri kümesi boyutunu artırmak üzere bu satırları yorumdan çıkarın:
     # factor = 4
     # X_train = torch.cat([X_train + torch.randn_like(X_train) * 0.1 for _ in range(factor)])
     # y_train = y_train.repeat(factor)
@@ -136,7 +136,7 @@ def main(rank, world_size, num_epochs):
     optimizer = torch.optim.SGD(model.parameters(), lr=0.5)
 
     model = DDP(model, device_ids=[rank])  # NEW: wrap model with DDP
-    # the core model is now accessible as model.module
+    # çekirdek modele artık model.module üzerinden erişiliyor
 
     for epoch in range(num_epochs):
         # NEW: Set sampler to ensure each epoch has a different shuffle order
@@ -147,13 +147,13 @@ def main(rank, world_size, num_epochs):
 
             features, labels = features.to(rank), labels.to(rank)  # New: use rank
             logits = model(features)
-            loss = F.cross_entropy(logits, labels)  # Loss function
+            loss = F.cross_entropy(logits, labels)  # Kayıp fonksiyonu
 
             optimizer.zero_grad()
             loss.backward()
             optimizer.step()
 
-            # LOGGING
+            # GÜNLÜKLEME
             print(f"[GPU{rank}] Epoch: {epoch+1:03d}/{num_epochs:03d}"
                   f" | Batchsize {labels.shape[0]:03d}"
                   f" | Train/Val Loss: {loss:.2f}")
@@ -167,7 +167,7 @@ def main(rank, world_size, num_epochs):
         print(f"[GPU{rank}] Test accuracy", test_acc)
 
     ####################################################
-    # NEW (not in the book):
+    # YENİ (kitapta yok):
     except ZeroDivisionError as e:
         raise ZeroDivisionError(
             f"{e}\n\nThis script is designed for 2 GPUs. You can run it as:\n"
@@ -197,15 +197,15 @@ def compute_accuracy(model, dataloader, device):
 
 
 if __name__ == "__main__":
-    # This script may not work for GPUs > 2 due to the small dataset
-    # Run `CUDA_VISIBLE_DEVICES=0,1 python DDP-script.py` if you have GPUs > 2
+    # Veri kümesi küçük olduğu için bu betik 2'den fazla GPU ile çalışmayabilir
+    # 2'den fazla GPU'nuz varsa `CUDA_VISIBLE_DEVICES=0,1 python DDP-script.py` çalıştırın
     print("PyTorch version:", torch.__version__)
     print("CUDA available:", torch.cuda.is_available())
     print("Number of GPUs available:", torch.cuda.device_count())
     torch.manual_seed(123)
 
     # NEW: spawn new processes
-    # note that spawn will automatically pass the rank
+    # spawn'ın rank'i otomatik olarak geçireceğini unutmayın
     num_epochs = 3
     world_size = torch.cuda.device_count()
     mp.spawn(main, args=(world_size, num_epochs), nprocs=world_size)

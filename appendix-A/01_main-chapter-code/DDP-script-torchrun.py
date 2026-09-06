@@ -9,7 +9,7 @@ import torch
 import torch.nn.functional as F
 from torch.utils.data import Dataset, DataLoader
 
-# NEW imports:
+# YENİ içe aktarmalar:
 import os
 import platform
 from torch.utils.data.distributed import DistributedSampler
@@ -97,7 +97,7 @@ def prepare_dataset():
     ])
     y_test = torch.tensor([0, 1])
 
-    # Uncomment these lines to increase the dataset size to run this script on up to 8 GPUs:
+    # Bu betiği 8 GPU'ya kadar çalıştırmak için veri kümesi boyutunu artırmak üzere bu satırları yorumdan çıkarın:
     # factor = 4
     # X_train = torch.cat([X_train + torch.randn_like(X_train) * 0.1 for _ in range(factor)])
     # y_train = y_train.repeat(factor)
@@ -135,7 +135,7 @@ def main(rank, world_size, num_epochs):
     optimizer = torch.optim.SGD(model.parameters(), lr=0.5)
 
     model = DDP(model, device_ids=[rank])  # NEW: wrap model with DDP
-    # the core model is now accessible as model.module
+    # çekirdek modele artık model.module üzerinden erişiliyor
 
     for epoch in range(num_epochs):
         # NEW: Set sampler to ensure each epoch has a different shuffle order
@@ -146,13 +146,13 @@ def main(rank, world_size, num_epochs):
 
             features, labels = features.to(rank), labels.to(rank)  # New: use rank
             logits = model(features)
-            loss = F.cross_entropy(logits, labels)  # Loss function
+            loss = F.cross_entropy(logits, labels)  # Kayıp fonksiyonu
 
             optimizer.zero_grad()
             loss.backward()
             optimizer.step()
 
-            # LOGGING
+            # GÜNLÜKLEME
             print(f"[GPU{rank}] Epoch: {epoch+1:03d}/{num_epochs:03d}"
                   f" | Batchsize {labels.shape[0]:03d}"
                   f" | Train/Val Loss: {loss:.2f}")
@@ -166,7 +166,7 @@ def main(rank, world_size, num_epochs):
         print(f"[GPU{rank}] Test accuracy", test_acc)
 
     ####################################################
-    # NEW (not in the book):
+    # YENİ (kitapta yok):
     except ZeroDivisionError as e:
         raise ZeroDivisionError(
             f"{e}\n\nThis script is designed for 2 GPUs. You can run it as:\n"

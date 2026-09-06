@@ -19,7 +19,7 @@ import torch
 from torch.utils.data import Dataset, DataLoader
 from tqdm import tqdm
 
-# Import from local files in this folder
+# Bu klasördeki yerel dosyalardan içe aktar
 from gpt_download import download_and_load_gpt2
 from previous_chapters import (
     calc_loss_loader,
@@ -72,8 +72,8 @@ def custom_collate_fn(
         new_item += [pad_token_id]
         # Dizileri max_length uzunluğuna doldur
         padded = new_item + [pad_token_id] * (batch_max_length - len(new_item))
-        inputs = torch.tensor(padded[:-1])  # Truncate the last token for inputs
-        targets = torch.tensor(padded[1:])  # Shift +1 to the right for targets
+        inputs = torch.tensor(padded[:-1])  # Girdiler için son token'ı kırp
+        targets = torch.tensor(padded[1:])  # Hedefler için +1 sağa kaydır
 
         # New: Replace all but the first padding tokens in targets by ignore_index
         mask = targets == pad_token_id
@@ -146,35 +146,35 @@ def plot_losses(epochs_seen, tokens_seen, train_losses, val_losses):
 
 def main(test_mode=False):
     #######################################
-    # Print package versions
+    # Paket sürümlerini yazdır
     #######################################
     print()
     pkgs = [
-        "matplotlib",  # Plotting library
+        "matplotlib",  # Çizim kütüphanesi
         "tiktoken",    # Tokenizer
-        "torch",       # Deep learning library
-        "tqdm",        # Progress bar
-        "tensorflow",  # For OpenAI's pretrained weights
+        "torch",       # Derin öğrenme kütüphanesi
+        "tqdm",        # İlerleme çubuğu
+        "tensorflow",  # OpenAI'ın önceden eğitilmiş ağırlıkları için
     ]
     for p in pkgs:
         print(f"{p} version: {version(p)}")
     print(50*"-")
 
     #######################################
-    # Download and prepare dataset
+    # Veri kümesini indir ve hazırla
     #######################################
     file_path = "instruction-data.json"
     url = "https://raw.githubusercontent.com/rasbt/LLMs-from-scratch/main/ch07/01_main-chapter-code/instruction-data.json"
     data = download_and_load_file(file_path, url)
 
-    train_portion = int(len(data) * 0.85)  # 85% for training
-    test_portion = int(len(data) * 0.1)    # 10% for testing
+    train_portion = int(len(data) * 0.85)  # %85 eğitim için
+    test_portion = int(len(data) * 0.1)    # %10 test için
 
     train_data = data[:train_portion]
     test_data = data[train_portion:train_portion + test_portion]
     val_data = data[train_portion + test_portion:]
 
-    # Use very small subset for testing purposes
+    # Test amacıyla çok küçük bir alt küme kullan
     if test_mode:
         train_data = train_data[:10]
         val_data = val_data[:10]
@@ -218,10 +218,10 @@ def main(test_mode=False):
     )
 
     #######################################
-    # Load pretrained model
+    # Önceden eğitilmiş modeli yükle
     #######################################
 
-    # Small GPT model for testing purposes
+    # Test amaçlı küçük GPT modeli
     if args.test_mode:
         BASE_CONFIG = {
             "vocab_size": 50257,
@@ -237,7 +237,7 @@ def main(test_mode=False):
         device = "cpu"
         CHOOSE_MODEL = "Small test model"
 
-    # Code as it is used in the main chapter
+    # Ana bölümde kullanıldığı hâliyle kod
     else:
         BASE_CONFIG = {
             "vocab_size": 50257,     # Sözcük dağarcığı boyutu
@@ -269,7 +269,7 @@ def main(test_mode=False):
     print(50*"-")
 
     #######################################
-    # Finetuning the model
+    # Modele ince ayar yapmak
     #######################################
     print("Initial losses")
     with torch.no_grad():
@@ -300,7 +300,7 @@ def main(test_mode=False):
     print(50*"-")
 
     #######################################
-    # Saving results
+    # Sonuçları kaydetmek
     #######################################
     print("Generating responses")
     for i, entry in tqdm(enumerate(test_data), total=len(test_data)):
@@ -321,7 +321,7 @@ def main(test_mode=False):
 
     test_data_path = "instruction-data-with-response-standalone.json"
     with open(test_data_path, "w") as file:
-        json.dump(test_data, file, indent=4)  # "indent" for pretty-printing
+        json.dump(test_data, file, indent=4)  # Okunaklı yazdırma için "indent"
     print(f"Responses saved as {test_data_path}")
 
     file_name = f"{re.sub(r'[ ()]', '', CHOOSE_MODEL) }-sft-standalone.pth"

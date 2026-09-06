@@ -42,7 +42,7 @@ class Qwen3Model(nn.Module):
         self.register_buffer("cos", cos, persistent=False)
         self.register_buffer("sin", sin, persistent=False)
         self.cfg = cfg
-        self.current_pos = None  # Batched version tracks positions per sample
+        self.current_pos = None  # Yığınlı sürüm, konumları örnek başına izler
 
     def forward(self, in_idx, cache=None, start_pos=None):
         B, num_tokens = in_idx.size()
@@ -178,7 +178,7 @@ class GroupedQueryAttention(nn.Module):
         queries = apply_rope(queries, cos, sin, offset=start_pos)
         keys = apply_rope(keys, cos, sin, offset=start_pos)
 
-        # KV caching
+        # KV önbellekleme
         next_cache = []
         for i in range(b):
             prev = cache[i] if cache else None
@@ -203,7 +203,7 @@ class GroupedQueryAttention(nn.Module):
         attn_scores = attn_scores.masked_fill(mask, -torch.inf)
 
         # attn_weights = torch.softmax(attn_scores / self.head_dim**0.5, dim=-1)
-        # PyTorch fails to do the implicit casting, so we have to be intentional with the types
+        # PyTorch örtük tür dönüşümünü yapamıyor, bu yüzden türleri açıkça belirtmeliyiz
         scale = torch.tensor(self.head_dim**0.5, dtype=queries.dtype, device=queries.device)
         attn_weights = torch.softmax(attn_scores / scale, dim=-1).to(values.dtype)
 
@@ -239,19 +239,19 @@ def apply_rope(x, cos, sin, offset):
     assert head_dim % 2 == 0, "Head dimension must be even"
     assert offset.shape[0] == bsz, "Offset must have one value per batch item"
 
-    # Prepare cos/sin: (seq_len, head_dim)
+    # cos/sin hazırla: (seq_len, head_dim)
     cos = cos[:cos.shape[0], :].unsqueeze(0).unsqueeze(0)  # (1, 1, total_seq_len, head_dim)
     sin = sin[:sin.shape[0], :].unsqueeze(0).unsqueeze(0)
 
-    # Build position indices per batch item
+    # Yığındaki her öğe için konum dizinlerini kur
     position_ids = torch.arange(seq_len, device=offset.device).unsqueeze(0) + offset.unsqueeze(1)  # (bsz, seq_len)
     position_ids = position_ids.clamp(max=cos.shape[2] - 1)
 
-    # Gather cos/sin for each position
+    # Her konum için cos/sin topla
     cos = cos[0, 0, position_ids, :]  # (bsz, seq_len, head_dim)
     sin = sin[0, 0, position_ids, :]
 
-    # Expand for multi-heads
+    # Çok başlıklı kullanım için genişlet
     cos = cos.unsqueeze(1)  # (bsz, 1, seq_len, head_dim)
     sin = sin.unsqueeze(1)
 

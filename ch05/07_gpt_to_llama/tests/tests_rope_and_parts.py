@@ -47,7 +47,7 @@ def litgpt_build_rope_cache(
         Tuple[torch.Tensor, torch.Tensor]: Cosine and sine caches for RoPE.
     """
 
-    # Compute the inverse frequencies theta
+    # theta ters frekanslarını hesapla
     theta = 1.0 / (base ** (torch.arange(0, n_elem, 2, device=device).float() / n_elem))
 
     if extra_config is not None:
@@ -61,14 +61,14 @@ def litgpt_build_rope_cache(
         smooth_factor = (ratio - low_freq_factor) / (high_freq_factor - low_freq_factor)
         smooth_factor = torch.clamp(smooth_factor, min=0.0, max=1.0)
 
-        # Compute adjusted_theta without masked indexing
+        # adjusted_theta değerini maskeli indeksleme olmadan hesapla
         adjusted_theta = (1 - smooth_factor) * (theta / factor) + smooth_factor * theta
         theta = adjusted_theta
 
-    # Create position indices `[0, 1, ..., seq_len - 1]`
+    # `[0, 1, ..., seq_len - 1]` konum dizinlerini oluştur
     seq_idx = torch.arange(seq_len, device=device) / condense_ratio
 
-    # Calculate the product of position index and $\theta_i$
+    # Konum dizini ile $\theta_i$ çarpımını hesapla
     idx_theta = torch.outer(seq_idx, theta).repeat(1, 2)
 
     return torch.cos(idx_theta), torch.sin(idx_theta)
@@ -82,9 +82,9 @@ def litgpt_apply_rope(x: torch.Tensor, cos: torch.Tensor, sin: torch.Tensor) -> 
     x2 = x[..., head_size // 2:]  # (B, nh, T, hs/2)
     rotated = torch.cat((-x2, x1), dim=-1)  # (B, nh, T, hs)
     if cos.dim() > 1:
-        # batch dimensions must align
-        # sin/cos are (B, T, hs) so we unsqeeze -3 for nh
-        # we count from back because all of apply_rope does
+        # yığın (batch) boyutları hizalanmalı
+        # sin/cos (B, T, hs) olduğundan nh için -3 konumunda unsqueeze uyguluyoruz
+        # apply_rope'un tamamı öyle yaptığı için sondan sayıyoruz
         cos = cos.unsqueeze(-3)
         sin = sin.unsqueeze(-3)
 
@@ -98,7 +98,7 @@ def notebook():
         imported_modules = {}
 
         for fullname, names in notebooks.items():
-            # Get the directory of the current test file
+            # Geçerli test dosyasının dizinini al
             current_dir = os.path.dirname(__file__)
             path = os.path.join(current_dir, "..", fullname + ".ipynb")
             path = os.path.normpath(path)
@@ -193,7 +193,7 @@ def test_rope_llama2(notebook):
     torch.testing.assert_close(keys_rot, ref_keys_rot)
     torch.testing.assert_close(queries_rot, ref_queries_rot)
 
-    # Generate reference RoPE via LitGPT
+    # LitGPT üzerinden referans RoPE üret
     litgpt_cos, litgpt_sin = litgpt_build_rope_cache(context_len, n_elem=head_dim, base=10_000)
     litgpt_queries_rot = litgpt_apply_rope(queries, litgpt_cos, litgpt_sin)
     litgpt_keys_rot = litgpt_apply_rope(keys, litgpt_cos, litgpt_sin)
@@ -263,7 +263,7 @@ def test_rope_llama3(notebook):
     torch.testing.assert_close(keys_rot, ref_keys_rot)
     torch.testing.assert_close(queries_rot, ref_queries_rot)
 
-    # Generate reference RoPE via LitGPT
+    # LitGPT üzerinden referans RoPE üret
     litgpt_cos, litgpt_sin = litgpt_build_rope_cache(context_len, n_elem=head_dim, base=theta_base)
     litgpt_queries_rot = litgpt_apply_rope(queries, litgpt_cos, litgpt_sin)
     litgpt_keys_rot = litgpt_apply_rope(keys, litgpt_cos, litgpt_sin)
@@ -345,7 +345,7 @@ def test_rope_llama3_12(notebook):
     torch.testing.assert_close(keys_rot, ref_keys_rot)
     torch.testing.assert_close(queries_rot, ref_queries_rot)
 
-    # Generate reference RoPE via LitGPT
+    # LitGPT üzerinden referans RoPE üret
     litgpt_rope_config = {
         "factor": 8.0,
         "low_freq_factor": 1.0,

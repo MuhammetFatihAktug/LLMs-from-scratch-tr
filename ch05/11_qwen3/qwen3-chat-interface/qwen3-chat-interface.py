@@ -19,13 +19,13 @@ from llms_from_scratch.kv_cache.generate import (
 )
 
 # ============================================================
-# EDIT ME: Simple configuration
+# BURAYI DÜZENLEYİN: Basit yapılandırma
 # ============================================================
 MODEL = "0.6B"            # options: "0.6B","1.7B","4B","8B","14B","32B","30B-A3B"
 REASONING = True          # True = "thinking" chat model, False = Base
 DEVICE = "auto"           # "auto" | "cuda" | "mps" | "cpu"
 MAX_NEW_TOKENS = 38912
-LOCAL_DIR = None          # e.g., "Qwen3-0.6B-Base"; None auto-selects
+LOCAL_DIR = None          # ör. "Qwen3-0.6B-Base"; None otomatik seçer
 # ============================================================
 
 
@@ -81,7 +81,7 @@ def get_model_and_tokenizer(qwen3_config, repo_id, local_dir, device, use_reason
     load_weights_into_qwen(model, qwen3_config, weights_dict)
     del weights_dict
 
-    model.to(device)  # safe for all but required by the MoE model
+    model.to(device)  # hepsi için güvenli, ancak MoE modeli tarafından zorunlu
     model.eval()
 
     tok_filename = "tokenizer.json"
@@ -114,15 +114,15 @@ async def main(message: chainlit.Message):
     """
     The main Chainlit function.
     """
-    # 1) Encode input
+    # 1) Girdiyi kodla
     input_ids = TOKENIZER.encode(message.content)
     input_ids_tensor = torch.tensor(input_ids, device=DEVICE).unsqueeze(0)
 
-    # 2) Start an outgoing message we can stream into
+    # 2) İçine akış yapabileceğimiz bir giden mesaj başlat
     out_msg = chainlit.Message(content="")
     await out_msg.send()
 
-    # 3) Stream generation
+    # 3) Akışlı üretim
     for tok in generate_text_simple_stream(
         model=MODEL,
         token_ids=input_ids_tensor,
@@ -133,5 +133,5 @@ async def main(message: chainlit.Message):
         piece = TOKENIZER.decode(token_id.tolist())
         await out_msg.stream_token(piece)
 
-    # 4) Finalize the streamed message
+    # 4) Akıtılan mesajı sonlandır
     await out_msg.update()

@@ -12,7 +12,7 @@ from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.metrics.pairwise import cosine_similarity
 
 
-# Sample JSON dataset
+# Örnek JSON veri kümesi
 example_data = [
     {"instruction": "What is the capital of Italy?",
      "input": "", "output": "The capital of Italy is Rome."
@@ -31,9 +31,9 @@ example_data = [
 
 
 def preprocess_text(text):
-    # Lowercase the text
+    # Metni küçük harfe çevir
     text = text.lower()
-    # Remove punctuation
+    # Noktalama işaretlerini kaldır
     text = re.sub(r"[^\w\s]", "", text)
     return text
 
@@ -41,7 +41,7 @@ def preprocess_text(text):
 def find_near_duplicates(json_data, threshold=0.75, key="instruction"):
     """The higher the threshold, the more similar the texts have to be to match"""
 
-    # Extract instructions
+    # Talimatları ayıkla
     text = [preprocess_text(item[key]) for item in json_data if item[key]]
     near_duplicates = []
     indices_to_remove = set()
@@ -49,14 +49,14 @@ def find_near_duplicates(json_data, threshold=0.75, key="instruction"):
     if not text:
         return {}, near_duplicates
 
-    # Vectorize the text data
+    # Metin verisini vektörleştir
     vectorizer = TfidfVectorizer(stop_words=None, analyzer="char", ngram_range=(1, 3))
     tfidf_matrix = vectorizer.fit_transform(text)
 
-    # Compute cosine similarity between each pair of entries
+    # Her kayıt çifti arasındaki kosinüs benzerliğini hesapla
     cos_sim_matrix = cosine_similarity(tfidf_matrix)
 
-    # Find pairs of near-duplicate instructions based on the threshold
+    # Eşiğe göre neredeyse yinelenen talimat çiftlerini bul
 
     for i in range(len(cos_sim_matrix)):
         for j in range(i+1, len(cos_sim_matrix)):
@@ -64,10 +64,10 @@ def find_near_duplicates(json_data, threshold=0.75, key="instruction"):
                 if len(json_data[i][key]) <= 1 or len(json_data[j][key]) <= 1:
                     continue
                 near_duplicates.append((json_data[i], json_data[j], cos_sim_matrix[i, j]))
-                if key in ("input", "output"):  # Don't remove duplicates based on the instruction
-                    indices_to_remove.add(j)  # Mark the second entry for removal
+                if key in ("input", "output"):  # Yinelenenleri talimata göre kaldırma
+                    indices_to_remove.add(j)  # İkinci kaydı kaldırılmak üzere işaretle
 
-    # Remove the near-duplicate entries
+    # Neredeyse yinelenen kayıtları kaldır
     filtered_json_data = [item for index, item in enumerate(json_data) if index not in indices_to_remove]
 
     return filtered_json_data, near_duplicates

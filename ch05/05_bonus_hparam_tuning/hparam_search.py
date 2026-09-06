@@ -15,7 +15,7 @@ from llms_from_scratch.ch02 import create_dataloader_v1
 from llms_from_scratch.ch04 import GPTModel
 
 
-# Define a grid of hyperparameters to search over
+# Üzerinde arama yapılacak hiperparametre ızgarasını tanımla
 HPARAM_GRID = {
     "batch_size": [2, 4, 8, 16],
     "drop_rate": [0.0, 0.1, 0.2],
@@ -70,10 +70,10 @@ def train_model(model, train_loader, val_loader, optimizer, device,
 
     max_lr = optimizer.param_groups[0]["lr"]
 
-    # Calculate total number of iterations
+    # Toplam yineleme sayısını hesapla
     total_training_iters = len(train_loader) * n_epochs
 
-    # Calculate the learning rate increment at each step during warmup
+    # Isınma (warmup) sırasında her adımdaki öğrenme oranı artışını hesapla
     lr_increment = (optimizer.param_groups[0]["lr"] - initial_lr) / warmup_iters
 
     for epoch in range(n_epochs):
@@ -81,25 +81,25 @@ def train_model(model, train_loader, val_loader, optimizer, device,
         for input_batch, target_batch in train_loader:
             optimizer.zero_grad()
 
-            # Increment the global step at the beginning of the iteration
+            # Yinelemenin başında küresel adımı artır
             global_step += 1
 
             # Warmup: adjust learning rate linearly
             if global_step <= warmup_iters:
                 lr = initial_lr + global_step * lr_increment
-            # Cosine annealing phase
+            # Kosinüs tavlama (cosine annealing) aşaması
             else:
                 progress = (global_step - warmup_iters) / (total_training_iters - warmup_iters)
                 lr = min_lr + (max_lr - min_lr) * 0.5 * (1 + math.cos(math.pi * progress))
 
-            # Apply the calculated learning rate
+            # Hesaplanan öğrenme oranını uygula
             for param_group in optimizer.param_groups:
                 param_group["lr"] = lr
 
             loss = calc_loss_batch(input_batch, target_batch, model, device)
             loss.backward()
 
-            # Apply gradient clipping
+            # Gradyan kırpmayı uygula
             if global_step >= warmup_iters:
                 torch.nn.utils.clip_grad_norm_(model.parameters(), max_norm=1.0)
 
@@ -112,12 +112,12 @@ def train_model(model, train_loader, val_loader, optimizer, device,
 
 if __name__ == "__main__":
 
-    # Generate all combinations of hyperparameters
+    # Hiperparametrelerin tüm bileşimlerini üret
     hyperparameter_combinations = list(itertools.product(*HPARAM_GRID.values()))
     total_combinations = len(hyperparameter_combinations)
     print(f"Total hyperparameter configurations: {total_combinations}")
 
-    # Placeholder for the best loss and best hyperparameters
+    # En iyi kayıp ve en iyi hiperparametreler için yer tutucu
     best_val_loss = float("inf")
     best_hparams = {}
 
@@ -142,12 +142,12 @@ if __name__ == "__main__":
             current_config += 1
             print(f"Evaluating configuration {current_config} of {total_combinations}")
 
-            # Unpack the current combination of hyperparameters
+            # Geçerli hiperparametre bileşimini aç
             HPARAM_CONFIG = dict(zip(HPARAM_GRID.keys(), combination))
 
             GPT_CONFIG_124M = {
                 "vocab_size": 50257,    # Sözcük dağarcığı boyutu
-                "context_length": 256,  # Context length -- shortened from original 1024 tokens
+                "context_length": 256,  # Bağlam uzunluğu -- özgün 1024 token'dan kısaltıldı
                 "emb_dim": 768,         # Gömme (embedding) boyutu
                 "n_heads": 12,          # Dikkat başlığı sayısı
                 "n_layers": 12,         # Katman sayısı
@@ -197,7 +197,7 @@ if __name__ == "__main__":
                 min_lr=HPARAM_CONFIG["min_lr"]
             )
 
-            # Log the best hyperparameters based on validation loss
+            # Doğrulama kaybına göre en iyi hiperparametreleri kaydet
             if val_loss < best_val_loss:
                 best_val_loss = val_loss
                 best_train_loss = train_loss

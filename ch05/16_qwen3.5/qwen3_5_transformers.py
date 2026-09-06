@@ -12,7 +12,7 @@ import torch.nn as nn
 import torch.nn.functional as F
 
 
-# Notebook shims for optional fast kernels in transformers
+# transformers içindeki isteğe bağlı hızlı çekirdekler için not defteri ara katmanları (shim)
 causal_conv1d_fn = None
 causal_conv1d_update = None
 chunk_gated_delta_rule = None
@@ -36,7 +36,7 @@ class _NotebookLogger:
 logger = _NotebookLogger()
 
 
-# Placeholder types for copied annotations
+# Kopyalanan açıklamalar (annotation) için yer tutucu türler
 class Qwen3_5Config:
     pass
 
@@ -55,7 +55,7 @@ class Qwen3_5RMSNormGated(nn.Module):
         input_dtype = hidden_states.dtype
         hidden_states = hidden_states.to(torch.float32)
         variance = hidden_states.pow(2).mean(-1, keepdim=True)
-        # Norm before gate
+        # Kapıdan (gate) önce normalleştirme
         hidden_states = hidden_states * torch.rsqrt(variance + self.variance_epsilon)
         hidden_states = self.weight * hidden_states.to(input_dtype)
         hidden_states = hidden_states * F.silu(gate.to(torch.float32))
@@ -132,14 +132,14 @@ def torch_chunk_gated_delta_rule(
 
     v_beta = value * beta.unsqueeze(-1)
     k_beta = key * beta.unsqueeze(-1)
-    # reshape to chunks
+    # parçalara yeniden şekillendir
     query, key, value, k_beta, v_beta = [
         x.reshape(x.shape[0], x.shape[1], -1, chunk_size, x.shape[-1]) for x in (query, key, value, k_beta, v_beta)
     ]
     g = g.reshape(g.shape[0], g.shape[1], -1, chunk_size)
     mask = torch.triu(torch.ones(chunk_size, chunk_size, dtype=torch.bool, device=query.device), diagonal=0)
 
-    # chunk decay
+    # parça sönümü (chunk decay)
     g = g.cumsum(dim=-1)
     decay_mask = ((g.unsqueeze(-1) - g.unsqueeze(-2)).tril().exp().float()).tril()
     attn = -((k_beta @ key.transpose(-1, -2)) * decay_mask).masked_fill(mask, 0)
@@ -221,8 +221,8 @@ def torch_recurrent_gated_delta_rule(
     return core_attn_out, last_recurrent_state
 
 
-# Minimal change: enforce config dtype at the end to avoid bf16/fp32 matmul mismatch
-# in a mixed notebook implementation
+# Asgari değişiklik: karışık bir not defteri uygulamasında bf16/fp32 matmul
+# uyuşmazlığını önlemek için sonda config dtype'ını zorunlu kıl
 class Qwen3_5GatedDeltaNet(nn.Module):
     def __init__(self, config, layer_idx):
         super().__init__()
@@ -251,8 +251,8 @@ class Qwen3_5GatedDeltaNet(nn.Module):
             padding=self.conv_kernel_size - 1,
         )
 
-        # time step projection (discretization)
-        # instantiate once and copy inv_dt in init_weights of PretrainedModel
+        # zaman adımı izdüşümü (ayrıklaştırma)
+        # bir kez örnekle ve inv_dt'yi PretrainedModel'in init_weights fonksiyonunda kopyala
         self.dt_bias = nn.Parameter(torch.ones(self.num_v_heads))
 
         A = torch.empty(self.num_v_heads).uniform_(0, 16)
@@ -289,7 +289,7 @@ class Qwen3_5GatedDeltaNet(nn.Module):
         self.in_proj_b = nn.Linear(self.hidden_size, self.num_v_heads, bias=False)
         self.in_proj_a = nn.Linear(self.hidden_size, self.num_v_heads, bias=False)
 
-        # Notebook adaptation for dtype consistency.
+        # dtype tutarlılığı için not defteri uyarlaması.
         if config.dtype is not None:
             self.to(dtype=config.dtype)
 
@@ -302,7 +302,7 @@ class Qwen3_5GatedDeltaNet(nn.Module):
     ):
         hidden_states = apply_mask_to_padding_states(hidden_states, attention_mask)
 
-        # Set up dimensions for reshapes later
+        # Sonraki yeniden şekillendirmeler için boyutları hazırla
         batch_size, seq_len, _ = hidden_states.shape
 
         use_precomputed_states = (
@@ -312,7 +312,7 @@ class Qwen3_5GatedDeltaNet(nn.Module):
             and cache_position is not None
         )
 
-        # getting projected states from cache if it exists
+        # varsa izdüşürülmüş durumları önbellekten al
         if cache_params is not None:
             conv_state = cache_params.conv_states[self.layer_idx]
             recurrent_state = cache_params.recurrent_states[self.layer_idx]
@@ -327,7 +327,7 @@ class Qwen3_5GatedDeltaNet(nn.Module):
         a = self.in_proj_a(hidden_states)
 
         if use_precomputed_states:
-            # 2. Convolution sequence transformation
+            # 2. Evrişim (convolution) dizi dönüşümü
             # NOTE: the conv state is updated in `causal_conv1d_update`
             mixed_qkv = self.causal_conv1d_update(
                 mixed_qkv,
@@ -367,7 +367,7 @@ class Qwen3_5GatedDeltaNet(nn.Module):
         value = value.reshape(batch_size, seq_len, -1, self.head_v_dim)
 
         beta = b.sigmoid()
-        # If the model is loaded in fp16, without the .float() here, A might be -inf
+        # Model fp16 olarak yüklenirse, buradaki .float() olmadan A değeri -inf olabilir
         g = -self.A_log.float().exp() * F.softplus(a.float() + self.dt_bias)
         if self.num_v_heads // self.num_k_heads > 1:
             query = query.repeat_interleave(self.num_v_heads // self.num_k_heads, dim=2)
@@ -397,11 +397,11 @@ class Qwen3_5GatedDeltaNet(nn.Module):
                 use_qk_l2norm_in_kernel=True,
             )
 
-        # Update cache
+        # Önbelleği güncelle
         if cache_params is not None:
             cache_params.recurrent_states[self.layer_idx] = last_recurrent_state
 
-        # reshape input data into 2D tensor
+        # girdi verisini 2B tensöre yeniden şekillendir
         core_attn_out = core_attn_out.reshape(-1, self.head_v_dim)
         z = z.reshape(-1, self.head_v_dim)
         core_attn_out = self.norm(core_attn_out, z)

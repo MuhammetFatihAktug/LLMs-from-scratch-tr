@@ -1,4 +1,4 @@
-# Code to test the GPT model implementation against the KV cache variants
+# GPT model uygulamasını KV önbellek çeşitlerine karşı test eden kod
 
 import pytest
 import torch
@@ -121,13 +121,13 @@ def test_context_overflow_bug():
     """
     GPT_CONFIG_SMALL = {
         "vocab_size": 50257,
-        "context_length": 10,  # Very small context
+        "context_length": 10,  # Çok küçük bağlam
         "emb_dim": 768,
         "n_heads": 12,
         "n_layers": 12,
         "drop_rate": 0.1,
         "qkv_bias": False,
-        "kv_window_size": 20  # Larger than context_length
+        "kv_window_size": 20  # context_length değerinden büyük
     }
 
     torch.manual_seed(123)
@@ -135,7 +135,7 @@ def test_context_overflow_bug():
     model = GPTModelKV2(GPT_CONFIG_SMALL).to(device)
     model.eval()
 
-    # 5 input tokens
+    # 5 girdi token'ı
     input_tokens = torch.randint(0, 50257, (1, 5), device=device)
 
     generate_text_simple_cachedKV2(
@@ -164,17 +164,17 @@ def test_prefill_chunking_basic():
         "n_layers": 12,
         "drop_rate": 0.1,
         "qkv_bias": False,
-        "kv_window_size": 4  # Small window to force chunking
+        "kv_window_size": 4  # Parçalamayı zorlamak için küçük pencere
     }
 
     torch.manual_seed(123)
     model = GPTModelKV2(config).to(device)
     model.eval()
 
-    # 10 input tokens (> kv_window_size of 4)
+    # 10 girdi token'ı (kv_window_size değeri olan 4'ten büyük)
     input_tokens = torch.randint(0, 50257, (1, 10), device=device)
 
-    # Should successfully process all input in chunks
+    # Tüm girdiyi parçalar hâlinde başarıyla işlemeli
     token_ids = generate_text_simple_cachedKV2(
         model=model,
         idx=input_tokens,
@@ -182,8 +182,8 @@ def test_prefill_chunking_basic():
         use_cache=True
     )
 
-    # Should have 10 input + 2 generated = 12 total
+    # 10 girdi + 2 üretilen = toplam 12 olmalı
     assert token_ids.shape[1] == 12, f"Expected 12 tokens, got {token_ids.shape[1]}"
 
-    # First 10 tokens should match input
+    # İlk 10 token girdiyle eşleşmeli
     assert torch.equal(token_ids[:, :10], input_tokens), "Input tokens should be preserved"

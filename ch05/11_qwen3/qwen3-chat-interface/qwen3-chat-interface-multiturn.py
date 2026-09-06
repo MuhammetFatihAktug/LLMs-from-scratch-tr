@@ -20,13 +20,13 @@ from llms_from_scratch.kv_cache.generate import (
 )
 
 # ============================================================
-# EDIT ME: Simple configuration
+# BURAYI DÜZENLEYİN: Basit yapılandırma
 # ============================================================
 MODEL = "0.6B"            # options: "0.6B","1.7B","4B","8B","14B","32B","30B-A3B"
 REASONING = True          # True = "thinking" chat model, False = Base
 DEVICE = "auto"           # "auto" | "cuda" | "mps" | "cpu"
 MAX_NEW_TOKENS = 38912
-LOCAL_DIR = None          # e.g., "Qwen3-0.6B-Base"; None auto-selects
+LOCAL_DIR = None          # ör. "Qwen3-0.6B-Base"; None otomatik seçer
 # ============================================================
 
 
@@ -82,15 +82,15 @@ def get_model_and_tokenizer(qwen3_config, repo_id, local_dir, device, use_reason
     load_weights_into_qwen(model, qwen3_config, weights_dict)
     del weights_dict
 
-    model.to(device)  # safe for all but required by the MoE model
+    model.to(device)  # hepsi için güvenli, ancak MoE modeli tarafından zorunlu
     model.eval()
 
     tok_filename = "tokenizer.json"
     tokenizer = Qwen3Tokenizer(
         tokenizer_file_path=tok_filename,
         repo_id=repo_id,
-        apply_chat_template=False,    # disable to avoid double-wrapping prompts in history
-        add_generation_prompt=False,  # we add the assistant header manually
+        apply_chat_template=False,    # geçmişteki istemlerin iki kez sarmalanmasını önlemek için kapat
+        add_generation_prompt=False,  # asistan başlığını elle ekliyoruz
         add_thinking=use_reasoning
     )
     return model, tokenizer
@@ -116,8 +116,8 @@ REPO_ID, LOCAL_DIR = build_repo_and_local(MODEL, REASONING, LOCAL_DIR)
 DEVICE = get_device(DEVICE)
 MODEL, TOKENIZER = get_model_and_tokenizer(QWEN3_CONFIG, REPO_ID, LOCAL_DIR, DEVICE, REASONING)
 
-# Even though the official TOKENIZER.eos_token_id is either <|im_end|> (reasoning)
-# or <|endoftext|> (base), the reasoning model sometimes emits both.
+# Resmî TOKENIZER.eos_token_id ya <|im_end|> (akıl yürütme) ya da
+# <|endoftext|> (temel) olsa da, akıl yürütme modeli bazen ikisini birden üretir.
 EOS_TOKEN_IDS = (TOKENIZER.encode("<|im_end|>")[0], TOKENIZER.encode("<|endoftext|>")[0])
 
 
@@ -134,11 +134,11 @@ async def main(message: chainlit.Message):
     """
     The main Chainlit function.
     """
-    # 0) Get and track chat history
+    # 0) Sohbet geçmişini al ve izle
     history = chainlit.user_session.get("history")
     history.append({"role": "user", "content": message.content})
 
-    # 1) Encode input
+    # 1) Girdiyi kodla
     prompt = build_prompt_from_history(history, add_assistant_header=True)
     input_ids = TOKENIZER.encode(prompt)
     input_ids_tensor = torch.tensor(input_ids, device=DEVICE).unsqueeze(0)
@@ -148,11 +148,11 @@ async def main(message: chainlit.Message):
         max_new_tokens=MAX_NEW_TOKENS
     )
 
-    # 2) Start an outgoing message we can stream into
+    # 2) İçine akış yapabileceğimiz bir giden mesaj başlat
     out_msg = chainlit.Message(content="")
     await out_msg.send()
 
-    # 3) Stream generation
+    # 3) Akışlı üretim
     for tok in generate_text_simple_stream(
         model=MODEL,
         token_ids=input_ids_tensor,
@@ -165,9 +165,9 @@ async def main(message: chainlit.Message):
         piece = TOKENIZER.decode(token_id.tolist())
         await out_msg.stream_token(piece)
 
-    # 4) Finalize the streamed message
+    # 4) Akıtılan mesajı sonlandır
     await out_msg.update()
 
-    # 5) Update chat history
+    # 5) Sohbet geçmişini güncelle
     history.append({"role": "assistant", "content": out_msg.content})
     chainlit.user_session.set("history", history)

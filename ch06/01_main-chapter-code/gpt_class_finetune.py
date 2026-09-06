@@ -15,8 +15,8 @@ import matplotlib.pyplot as plt
 import pandas as pd
 import tiktoken
 import torch
-# Import Dynamo before TensorFlow is loaded by gpt_download to avoid a native
-# Triton/TensorFlow initialization crash with recent PyTorch nightly builds.
+# Dynamo'yu, gpt_download TensorFlow'u yüklemeden önce içe aktar; böylece güncel PyTorch
+# nightly derlemelerinde yerel Triton/TensorFlow ilklendirme çökmesi yaşanmaz.
 import torch._dynamo  # noqa: F401
 from torch.utils.data import Dataset, DataLoader
 
@@ -254,7 +254,7 @@ if __name__ == "__main__":
     args = parser.parse_args()
 
     ########################################
-    # Download and prepare dataset
+    # Veri kümesini indir ve hazırla
     ########################################
 
     url = "https://archive.ics.uci.edu/static/public/228/sms+spam+collection.zip"
@@ -279,7 +279,7 @@ if __name__ == "__main__":
     test_df.to_csv("test.csv", index=None)
 
     ########################################
-    # Create data loaders
+    # Veri yükleyicileri oluştur
     ########################################
     tokenizer = tiktoken.get_encoding("gpt2")
 
@@ -329,10 +329,10 @@ if __name__ == "__main__":
     )
 
     ########################################
-    # Load pretrained model
+    # Önceden eğitilmiş modeli yükle
     ########################################
 
-    # Small GPT model for testing purposes
+    # Test amaçlı küçük GPT modeli
     if args.test_mode:
         BASE_CONFIG = {
             "vocab_size": 50257,
@@ -347,7 +347,7 @@ if __name__ == "__main__":
         model.eval()
         device = "cpu"
 
-    # Code as it is used in the main chapter
+    # Ana bölümde kullanıldığı hâliyle kod
     else:
         CHOOSE_MODEL = "gpt2-small (124M)"
         INPUT_PROMPT = "Every effort moves"
@@ -384,7 +384,7 @@ if __name__ == "__main__":
         device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
     ########################################
-    # Modify and pretrained model
+    # Önceden eğitilmiş modeli değiştir
     ########################################
 
     for param in model.parameters():
@@ -403,7 +403,7 @@ if __name__ == "__main__":
         param.requires_grad = True
 
     ########################################
-    # Finetune modified model
+    # Değiştirilmiş modele ince ayar yap
     ########################################
 
     start_time = time.time()
@@ -425,12 +425,12 @@ if __name__ == "__main__":
     # Sonuçları çizdir
     ########################################
 
-    # loss plot
+    # kayıp grafiği
     epochs_tensor = torch.linspace(0, num_epochs, len(train_losses))
     examples_seen_tensor = torch.linspace(0, examples_seen, len(train_losses))
     plot_values(epochs_tensor, examples_seen_tensor, train_losses, val_losses)
 
-    # accuracy plot
+    # doğruluk grafiği
     epochs_tensor = torch.linspace(0, num_epochs, len(train_accs))
     examples_seen_tensor = torch.linspace(0, examples_seen, len(train_accs))
     plot_values(epochs_tensor, examples_seen_tensor, train_accs, val_accs, label="accuracy")

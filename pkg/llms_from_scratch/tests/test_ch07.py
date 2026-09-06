@@ -19,20 +19,20 @@ import tiktoken
 def test_instruction_finetune(tmp_path):
 
     #######################################
-    # Download and prepare dataset
+    # Veri kümesini indir ve hazırla
     #######################################
     file_path = tmp_path / "instruction-data.json"
     url = "https://raw.githubusercontent.com/rasbt/LLMs-from-scratch/main/ch07/01_main-chapter-code/instruction-data.json"
     data = download_and_load_file(file_path, url)
 
-    train_portion = int(len(data) * 0.85)  # 85% for training
-    test_portion = int(len(data) * 0.1)    # 10% for testing
+    train_portion = int(len(data) * 0.85)  # %85 eğitim için
+    test_portion = int(len(data) * 0.1)    # %10 test için
 
     train_data = data[:train_portion]
     test_data = data[train_portion:train_portion + test_portion]
     val_data = data[train_portion + test_portion:]
 
-    # Use very small subset for testing purposes
+    # Test amacıyla çok küçük bir alt küme kullan
     train_data = train_data[:15]
     val_data = val_data[:15]
     test_data = test_data[:15]
@@ -68,10 +68,10 @@ def test_instruction_finetune(tmp_path):
     )
 
     #######################################
-    # Load pretrained model
+    # Önceden eğitilmiş modeli yükle
     #######################################
 
-    # Small GPT model for testing purposes
+    # Test amaçlı küçük GPT modeli
     BASE_CONFIG = {
         "vocab_size": 50257,
         "context_length": 120,
@@ -90,7 +90,7 @@ def test_instruction_finetune(tmp_path):
     print(50*"-")
 
     #######################################
-    # Finetuning the model
+    # Modele ince ayar yapmak
     #######################################
 
     num_epochs = 10

@@ -140,8 +140,8 @@ def custom_collate_draft_2(
             new_item + [pad_token_id] *
             (batch_max_length - len(new_item))
         )
-        inputs = torch.tensor(padded[:-1])  # Truncate the last token for inputs
-        targets = torch.tensor(padded[1:])  # Shift +1 to the right for targets
+        inputs = torch.tensor(padded[:-1])  # Girdiler için son token'ı kırp
+        targets = torch.tensor(padded[1:])  # Hedefler için +1 sağa kaydır
         inputs_lst.append(inputs)
         targets_lst.append(targets)
 
@@ -173,8 +173,8 @@ def custom_collate_fn(
             new_item + [pad_token_id] *
             (batch_max_length - len(new_item))
         )
-        inputs = torch.tensor(padded[:-1])  # Truncate the last token for inputs
-        targets = torch.tensor(padded[1:])  # Shift +1 to the right for targets
+        inputs = torch.tensor(padded[:-1])  # Girdiler için son token'ı kırp
+        targets = torch.tensor(padded[1:])  # Hedefler için +1 sağa kaydır
 
         # New: Replace all but the first padding tokens in targets by ignore_index
         mask = targets == pad_token_id

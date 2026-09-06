@@ -21,7 +21,7 @@ import torch
 from torch.utils.data import Dataset, DataLoader
 from tqdm import tqdm
 
-# Import from local files in this folder
+# Bu klasördeki yerel dosyalardan içe aktar
 from gpt_download import download_and_load_gpt2
 from previous_chapters import (
     calc_loss_loader,
@@ -125,7 +125,7 @@ class LoRALayer(torch.nn.Module):
     def __init__(self, in_dim, out_dim, rank, alpha):
         super().__init__()
         self.A = torch.nn.Parameter(torch.empty(in_dim, rank))
-        torch.nn.init.kaiming_uniform_(self.A, a=math.sqrt(5))  # similar to standard weight initialization
+        torch.nn.init.kaiming_uniform_(self.A, a=math.sqrt(5))  # standart ağırlık ilklendirmesine benzer
         self.B = torch.nn.Parameter(torch.zeros(rank, out_dim))
         self.alpha = alpha
 
@@ -163,8 +163,8 @@ def custom_collate_fn(
         new_item += [pad_token_id]
         # Dizileri max_length uzunluğuna doldur
         padded = new_item + [pad_token_id] * (batch_max_length - len(new_item))
-        inputs = torch.tensor(padded[:-1])  # Truncate the last token for inputs
-        targets = torch.tensor(padded[1:])  # Shift +1 to the right for targets
+        inputs = torch.tensor(padded[:-1])  # Girdiler için son token'ı kırp
+        targets = torch.tensor(padded[1:])  # Hedefler için +1 sağa kaydır
 
         # New: Replace all but the first padding tokens in targets by ignore_index
         mask = targets == pad_token_id
@@ -206,8 +206,8 @@ def custom_collate_with_masking_fn(
         new_item += [pad_token_id]
         # Dizileri max_length uzunluğuna doldur
         padded = new_item + [pad_token_id] * (batch_max_length - len(new_item))
-        inputs = torch.tensor(padded[:-1])  # Truncate the last token for inputs
-        targets = torch.tensor(padded[1:])  # Shift +1 to the right for targets
+        inputs = torch.tensor(padded[:-1])  # Girdiler için son token'ı kırp
+        targets = torch.tensor(padded[1:])  # Hedefler için +1 sağa kaydır
 
         # Hedeflerde ilk dolgu token'ı dışındaki tümünü ignore_index ile değiştir
         mask = targets == pad_token_id
@@ -296,22 +296,22 @@ def plot_losses(epochs_seen, tokens_seen, train_losses, val_losses, plot_name):
 
 def main(mask_instructions=False, alpaca52k=False, phi3_prompt=False, lora=False):
     #######################################
-    # Print package versions
+    # Paket sürümlerini yazdır
     #######################################
     print()
     pkgs = [
-        "matplotlib",  # Plotting library
+        "matplotlib",  # Çizim kütüphanesi
         "tiktoken",    # Tokenizer
-        "torch",       # Deep learning library
-        "tqdm",        # Progress bar
-        "tensorflow",  # For OpenAI's pretrained weights
+        "torch",       # Derin öğrenme kütüphanesi
+        "tqdm",        # İlerleme çubuğu
+        "tensorflow",  # OpenAI'ın önceden eğitilmiş ağırlıkları için
     ]
     for p in pkgs:
         print(f"{p} version: {version(p)}")
     print(50*"-")
 
     #######################################
-    # Download and prepare dataset
+    # Veri kümesini indir ve hazırla
     #######################################
     file_path = "instruction-data.json"
 
@@ -321,8 +321,8 @@ def main(mask_instructions=False, alpaca52k=False, phi3_prompt=False, lora=False
         url = "https://raw.githubusercontent.com/rasbt/LLMs-from-scratch/main/ch07/01_main-chapter-code/instruction-data.json"
     data = download_and_load_file(file_path, url)
 
-    train_portion = int(len(data) * 0.85)  # 85% for training
-    test_portion = int(len(data) * 0.1)    # 10% for testing
+    train_portion = int(len(data) * 0.85)  # %85 eğitim için
+    test_portion = int(len(data) * 0.1)    # %10 test için
 
     train_data = data[:train_portion]
     test_data = data[train_portion:train_portion + test_portion]
@@ -386,7 +386,7 @@ def main(mask_instructions=False, alpaca52k=False, phi3_prompt=False, lora=False
     )
 
     #######################################
-    # Load pretrained model
+    # Önceden eğitilmiş modeli yükle
     #######################################
     BASE_CONFIG = {
         "vocab_size": 50257,     # Sözcük dağarcığı boyutu
@@ -433,7 +433,7 @@ def main(mask_instructions=False, alpaca52k=False, phi3_prompt=False, lora=False
         model.to(device)
 
     #######################################
-    # Finetuning the model
+    # Modele ince ayar yapmak
     #######################################
     print("Initial losses")
     with torch.no_grad():
@@ -480,7 +480,7 @@ def main(mask_instructions=False, alpaca52k=False, phi3_prompt=False, lora=False
     print(50*"-")
 
     #######################################
-    # Saving results
+    # Sonuçları kaydetmek
     #######################################
     print("Generating responses")
     for i, entry in tqdm(enumerate(test_data), total=len(test_data)):
@@ -523,7 +523,7 @@ def main(mask_instructions=False, alpaca52k=False, phi3_prompt=False, lora=False
         file_name = file_name.replace(".pth", "-baseline.pth")
 
     with open(test_data_path, "w") as file:
-        json.dump(test_data, file, indent=4)  # "indent" for pretty-printing
+        json.dump(test_data, file, indent=4)  # Okunaklı yazdırma için "indent"
     print(f"Responses saved as {test_data_path}")
 
     torch.save(model.state_dict(), file_name)
