@@ -9,7 +9,7 @@
 > Özgün İngilizce sürüm bu deponun `main` dalında dokunulmadan durur. Bu çeviri `tr` dalındadır.
 > Kitabın yazarı veya Manning tarafından incelenmemiş / onaylanmamıştır.
 >
-> 📖 [Okuma sırası ve depo haritası](OKUMA_SIRASI.md) · 📗 [Terim sözlüğü](SOZLUK.md) · 📊 [Türkçe örnek veriler](TURKCE_VERI.md)
+> 📖 [Okuma sırası ve depo haritası](OKUMA_SIRASI.md) · 📗 [Terim sözlüğü](SOZLUK.md) · 📊 [Türkçe örnek veriler](TURKCE_VERI.md) · 🤝 [Katkı rehberi](CONTRIBUTING.md)
 
 Bu depo, GPT benzeri bir LLM'in geliştirilmesi, ön eğitimi ve ince ayarı için gerekli kodu içerir ve [Build a Large Language Model (From Scratch)](https://amzn.to/4fqvn0D) kitabının resmî kod deposudur.
 

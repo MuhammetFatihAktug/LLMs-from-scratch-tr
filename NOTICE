@@ -36,7 +36,14 @@ yalnızca çeviriden ibarettir:
     satırları (# ile başlayan yorumlar) Türkçeye çevrilmiştir.
   * Depo köküne bu NOTICE dosyası, OKUMA_SIRASI.md (okuma rehberi),
     SOZLUK.md (terim karşılıkları) ve TURKCE_VERI.md (Türkçe örnek veri
-    rehberi) eklenmiştir.
+    rehberi), CONTRIBUTING.md (katkı rehberi) ve GitHub şablonları
+    (.github/PULL_REQUEST_TEMPLATE.md, .github/ISSUE_TEMPLATE/ceviri-hatasi.yaml)
+    eklenmiştir.
+  * .gitignore dosyasına, yalnızca EK dosya yok sayan bir güvenlik bloğu
+    eklenmiştir (model ağırlıkları ve gizli bilgi taşıyabilecek dosyalar);
+    upstream kuralları değiştirilmemiştir.
+  * .github/ISSUE_TEMPLATE/ask-a-question.md içindeki tartışma bağlantısı bu
+    çeviri deposuna yönlendirilmiştir.
   * Bölüm klasörlerine, özgün İngilizce veri dosyalarının YANINA Türkçe
     örnek veri dosyaları eklenmiştir (karar.txt, kucuk-metin-ornegi.txt,
     talimat-verisi.json, talimat-ornekleri.json,

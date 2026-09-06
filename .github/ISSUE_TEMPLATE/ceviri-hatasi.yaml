@@ -1,0 +1,48 @@
+name: Çeviri hatası bildir
+description: Yanlış, eksik veya kafa karıştırıcı bir çeviri gördüyseniz
+title: "[çeviri] "
+labels: [çeviri]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Teşekkürler! Bu form **yalnızca çeviriyle ilgili** sorunlar içindir.
+        Kodun kendisiyle ilgili bir hata bulduysanız (orijinalde de var olan bir sorun),
+        lütfen [upstream depoya](https://github.com/rasbt/LLMs-from-scratch/issues) bildirin.
+  - type: input
+    id: dosya
+    attributes:
+      label: Dosya ve konum
+      description: Hangi dosya, hangi bölüm/hücre?
+      placeholder: "ch03/01_main-chapter-code/ch03.ipynb — MD14"
+    validations:
+      required: true
+  - type: textarea
+    id: mevcut
+    attributes:
+      label: Şu anki Türkçe metin
+    validations:
+      required: true
+  - type: textarea
+    id: onerilen
+    attributes:
+      label: Önerdiğiniz düzeltme
+    validations:
+      required: true
+  - type: textarea
+    id: ingilizce
+    attributes:
+      label: Orijinal İngilizce metin (varsa)
+      description: "`git show main:<dosya>` ile bulabilirsiniz."
+  - type: dropdown
+    id: tur
+    attributes:
+      label: Sorunun türü
+      options:
+        - Anlam hatası (yanlış çeviri)
+        - Terim tutarsızlığı (SOZLUK.md ile uyumsuz)
+        - Yazım / dilbilgisi
+        - Eksik çeviri (İngilizce kalmış)
+        - Bozuk bağlantı veya biçimlendirme
+    validations:
+      required: true

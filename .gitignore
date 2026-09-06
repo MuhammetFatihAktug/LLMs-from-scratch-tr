@@ -351,3 +351,28 @@ cython_debug/
 .pixi
 *.egg-info
 
+# ── Türkçe çeviri sürümü: ek güvenlik ağı ────────────────────────────────
+# Bu blok yalnızca EKSTRA dosya yok sayar; upstream kurallarını değiştirmez.
+# Amaç: bu depoyu klonlayan birinin yanlışlıkla model ağırlığı (yüzlerce MB)
+# veya gerçek API anahtarı içeren bir dosya commit'lemesini engellemek.
+
+# Model ağırlıkları / kontrol noktaları (upstream yalnızca belirli yolları
+# sayıyordu; bu, yeni bir konuma kaydedilenleri de kapsar)
+*.pth
+*.pt
+*.ckpt
+*.safetensors
+*.gguf
+*.onnx
+checkpoints/
+
+# Gizli bilgi taşıyabilecek dosyalar
+.env
+.env.*
+*.pem
+*.key
+secrets.json
+credentials.json
+
+# Yerel çalışma artıkları
+.ipynb_checkpoints/

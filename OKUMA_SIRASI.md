@@ -328,6 +328,10 @@ git diff main tr -- ch03/README.md  # yan yana fark
 - **Terim tutarlılığı:** aynı İngilizce terim depo genelinde aynı Türkçe karşılığı alır. Karşılık listesi: [SOZLUK.md](SOZLUK.md). Bir terim bir bölümde ilk geçtiğinde İngilizcesi parantez içinde verilir — "dikkat (attention)" gibi.
 - **Yapı korunur:** madde sayısı, mantıksal sıra ve şekil/bağlantı yerleşimi orijinaldeki gibidir; bunlar öğretim sırasını taşır.
 
+**Katkı:** Çeviri hatası, terim tutarsızlığı ya da eksik bir yer görürsen
+[CONTRIBUTING.md](CONTRIBUTING.md) dosyasına göz at — hangi değişikliklerin kabul edildiğini ve
+PR açmadan önce nasıl doğrulama yapman gerektiğini anlatıyor.
+
 **Lisans ve atıf:**
 
 Orijinal eser Sebastian Raschka'ya aittir ve Apache License 2.0 ile lisanslanmıştır (`Copyright 2023-2026 Sebastian Raschka`). Bu çeviri de aynı lisans altındadır; [LICENSE.txt](LICENSE.txt) ve telif bildirimi korunmuştur. Apache 2.0 §4(b) gereği yapılan değişiklikler [NOTICE](NOTICE) dosyasında belirtilmiştir. Notebook'ların başındaki özgün atıf tablosu her dosyada olduğu gibi bırakılmıştır.
