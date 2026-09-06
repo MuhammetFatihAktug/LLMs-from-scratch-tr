@@ -49,7 +49,7 @@ def pytest_configure(config):
                 if not should_retry:
                     raise
 
-                # Retries smooth over transient CI/network blips without masking real 4xx/5xx failures.
+                # Yeniden denemeler, gerçek 4xx/5xx hatalarını gizlemeden geçici CI/ağ dalgalanmalarını yumuşatır.
                 if retry_backoff:
                     time.sleep(retry_backoff * (attempt + 1))
 

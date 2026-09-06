@@ -18,7 +18,7 @@ def query_model(prompt, model="llama3", url="http://localhost:11434/api/chat"):
         "messages": [
             {"role": "user", "content": prompt}
         ],
-        "options": {     # Settings below are required for deterministic responses
+        "options": {     # Aşağıdaki ayarlar belirlenimci yanıtlar için gereklidir
             "seed": 123,
             "temperature": 0,
             "num_ctx": 2048

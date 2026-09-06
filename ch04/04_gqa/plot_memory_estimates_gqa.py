@@ -7,7 +7,7 @@
 
 import matplotlib.pyplot as plt
 
-# Import from ./memory_estimator.py
+# ./memory_estimator.py dosyasından içe aktar
 from memory_estimator_gqa import calc_kv_bytes_total, DTYPE_BYTES
 
 
@@ -28,7 +28,7 @@ def plot_abs_kv_vs_context_multi_groups():
     dtype = "bf16"
     bytes_per_elem = DTYPE_BYTES[dtype]
 
-    # x-axis (log scale)
+    # x ekseni (logaritmik ölçek)
     context_lengths = [
         256, 512, 1024, 2048, 4096, 8192,
         16384, 32768, 65536, 131072
@@ -46,7 +46,7 @@ def plot_abs_kv_vs_context_multi_groups():
     plt.figure()
     plt.plot(context_lengths, mha_gb, marker="o", label="MHA (KV total)")
 
-    # GQA curves for selected n_kv_groups
+    # Seçilen n_kv_groups değerleri için GQA eğrileri
     groups_list = [4, 8, 12, 24]
     for g in groups_list:
         n_kv_heads = n_heads // g
@@ -58,7 +58,7 @@ def plot_abs_kv_vs_context_multi_groups():
             )
             gqa_gb.append(float(bytes_convert(total_gqa)))
 
-        # Compression rate relative to MHA
+        # MHA'ya göre sıkıştırma oranı
         comp = (n_heads / n_kv_heads) if n_kv_heads > 0 else float("inf")
         plt.plot(context_lengths, gqa_gb, marker="o",
                  label=f"GQA (n_kv_groups={g}, {comp:,.1f}× compression)")

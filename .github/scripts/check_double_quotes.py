@@ -57,13 +57,13 @@ def collect_fstring_expr_string_positions(source):
             for value in node.values:
                 if isinstance(value, ast.FormattedValue):
                     self._collect_from_expr(value.value)
-            # Continue walking to catch nested f-strings within expressions
+            # İfadelerin içindeki iç içe f-string'leri yakalamak için dolaşmayı sürdür
             self.generic_visit(node)
 
         def _collect_from_expr(self, node):
             if isinstance(node, ast.Constant) and isinstance(node.value, str):
                 positions.add((node.lineno, node.col_offset))
-            elif isinstance(node, ast.Str):  # Python <3.8 compatibility
+            elif isinstance(node, ast.Str):  # Python <3.8 uyumluluğu
                 positions.add((node.lineno, node.col_offset))
             else:
                 for child in ast.iter_child_nodes(node):
@@ -82,11 +82,11 @@ def check_quotes_in_source(source, path):
             if start in ignored_positions:
                 continue
             lowered = tok_str.lower()
-            # ignore triple-quoted strings
+            # üç tırnaklı dizeleri yok say
             if lowered.startswith((TRIPLE_DOUBLE, TRIPLE_SINGLE)):
                 continue
 
-            # find the prefix and quote type
+            # öneki ve tırnak türünü bul
             # prefix = ""
             for c in PREFIX_CHARS:
                 if lowered.startswith(c):
@@ -94,7 +94,7 @@ def check_quotes_in_source(source, path):
                     lowered = lowered[1:]
                     break
 
-            # report if not using double quotes
+            # çift tırnak kullanılmıyorsa bildir
             if lowered.startswith(SINGLE_QUOTE):
                 line, col = start
                 violations.append(f"{path}:{line}:{col}: uses single quotes")

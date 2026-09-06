@@ -80,7 +80,7 @@ def download_file(url, destination, backup_url=None):
             except requests.exceptions.RequestException:
                 pass
 
-        # If we reach here, both attempts have failed
+        # Buraya ulaştıysak her iki deneme de başarısız olmuştur
         error_message = (
             f"Failed to download from both primary URL ({url})"
             f"{' and backup URL (' + backup_url + ')' if backup_url else ''}."

@@ -5,7 +5,7 @@
 
 import matplotlib.pyplot as plt
 
-# Bytes per element
+# Öğe başına bayt
 DTYPE_BYTES = {
     "fp32": 4,
     "bf16": 2,

@@ -77,7 +77,7 @@ class MultiHeadAttention(nn.Module):
         attn_scores = queries @ keys.transpose(2, 3)  # Her başlık için iç çarpım
 
         ####################################################
-        # causal mask
+        # nedensel maske
         num_tokens_Q = queries.shape[-2]
         num_tokens_K = keys.shape[-2]
         device = queries.device
@@ -364,7 +364,7 @@ def generate_text_simple_cached(model, idx, max_new_tokens,
             for _ in range(max_new_tokens):
                 # a) en yüksek log-olasılıklı token'ı seç (açgözlü örnekleme)
                 next_idx = logits[:, -1].argmax(dim=-1)
-                # b) append it to the running sequence (in-place)
+                # b) onu mevcut diziye ekle (yerinde)
                 generated[:, cur_len] = next_idx
                 cur_len += 1
                 # c) modele yalnızca yeni token'ı ver
@@ -436,7 +436,7 @@ def main():
         "vocab_size": 50257,            # Sözcük dağarcığı boyutu
         "context_length": args.max_new_tokens + len(encoded),
         "emb_dim": args.emb_dim,        # Gömme (embedding) boyutu
-        "hidden_dim": args.hidden_dim,  # Intermediate size
+        "hidden_dim": args.hidden_dim,  # Ara boyut
         "n_heads": args.n_heads,        # Dikkat başlığı sayısı
         "n_layers": args.n_layers,      # Katman sayısı
         "drop_rate": 0.0,               # Dropout oranı

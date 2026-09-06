@@ -55,7 +55,7 @@ def train_model(model, train_loader, val_loader, optimizer, device,
             # Hesaplanan öğrenme oranını optimize ediciye uygula
             for param_group in optimizer.param_groups:
                 param_group["lr"] = lr
-            track_lrs.append(lr)  # Store the current learning rate
+            track_lrs.append(lr)  # Geçerli öğrenme oranını sakla
 
             # Kaybı hesapla ve geri yay
             loss = calc_loss_batch(input_batch, target_batch, model, device)
@@ -66,7 +66,7 @@ def train_model(model, train_loader, val_loader, optimizer, device,
                 if global_step > warmup_steps:
                     torch.nn.utils.clip_grad_norm_(model.parameters(), max_norm=1.0)
             else:
-                if global_step >= warmup_steps:  # the book originally used global_step > warmup_steps, which led to a skipped clipping step after warmup
+                if global_step >= warmup_steps:  # kitapta özgün olarak global_step > warmup_steps kullanılmıştı; bu, ısınmadan sonra bir kırpma adımının atlanmasına yol açıyordu
                     torch.nn.utils.clip_grad_norm_(model.parameters(), max_norm=1.0)
 
             optimizer.step()

@@ -26,7 +26,7 @@ def get_packages(pkgs):
     }
     result = {}
     for p in pkgs:
-        # Determine possible module names to try.
+        # Denenecek olası modül adlarını belirle.
         module_names = PACKAGE_MODULE_OVERRIDES.get(p.lower(), [p])
         version_found = None
         for module_name in module_names:
@@ -39,9 +39,9 @@ def get_packages(pkgs):
                     except PackageNotFoundError:
                         version_found = None
                 if version_found is not None:
-                    break  # Stop if we successfully got a version.
+                    break  # Sürümü başarıyla aldıysak dur.
             except ImportError:
-                # Also try replacing hyphens with underscores as a fallback.
+                # Yedek olarak tireleri alt çizgiyle değiştirmeyi de dene.
                 alt_module = module_name.replace("-", "_")
                 if alt_module != module_name:
                     try:
@@ -80,8 +80,8 @@ def get_requirements_dict():
     reqs = {}
     with open(REQUIREMENTS_FILE) as f:
         for line in f:
-            # Remove inline comments and trailing whitespace.
-            # This splits on the first '#' and takes the part before it.
+            # Satır içi yorumları ve sondaki boşlukları kaldır.
+            # Bu, ilk '#' işaretinden böler ve öncesindeki kısmı alır.
             line = line.split("#", 1)[0].strip()
             if not line:
                 continue
@@ -90,10 +90,10 @@ def get_requirements_dict():
             except Exception as e:
                 print(f"Skipping line due to parsing error: {line} ({e})")
                 continue
-            # Evaluate the marker if present.
+            # Varsa işaretleyiciyi (marker) değerlendir.
             if req.marker is not None and not req.marker.evaluate():
                 continue
-            # Store the package name and its version specifier.
+            # Paket adını ve sürüm belirtecini sakla.
             spec = str(req.specifier) if req.specifier else ">=0"
             reqs[req.name.lower()] = spec
     return reqs
@@ -110,7 +110,7 @@ def check_packages(reqs):
         if actual_ver == "N/A":
             continue
         actual_ver_parsed = version_parse(actual_ver)
-        # If the installed version is a pre-release, allow pre-releases in the specifier.
+        # Kurulu sürüm bir ön sürümse, belirteçte ön sürümlere izin ver.
         if actual_ver_parsed.is_prerelease:
             spec_set.prereleases = True
         if actual_ver_parsed not in spec_set:

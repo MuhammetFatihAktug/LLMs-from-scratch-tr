@@ -24,15 +24,15 @@ def convert_bytes(n):
 
 def calc_kv_bytes_total(batch, context_length, emb_dim, n_heads,
                              n_kv_heads, n_layers, bytes_per_elem):
-    # Generic KV-cache: per-head dim is embed_dim / n_heads, times 2 for K and V
+    # Genel KV önbelleği: başlık başına boyut embed_dim / n_heads, K ve V için 2 ile çarpılır
     head_dim = math.ceil(emb_dim / n_heads)
     per_layer = batch * context_length * head_dim * n_kv_heads * 2 * bytes_per_elem
     return per_layer * n_layers
 
 
 def calc_mla_bytes_total(batch, context_length, n_layers, latent_dim, bytes_per_elem):
-    # Simple MLA (per-token compressed latent)
-    # bytes ≈ batch × seqlen × n_layers × latent_dim × bytes_per_elem
+    # Basit MLA (token başına sıkıştırılmış gizil)
+    # bayt ≈ yığın × dizi_uzunluğu × n_layers × latent_dim × öğe_başına_bayt
     return batch * context_length * n_layers * latent_dim * bytes_per_elem
 
 

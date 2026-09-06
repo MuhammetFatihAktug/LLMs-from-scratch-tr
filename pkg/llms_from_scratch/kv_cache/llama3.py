@@ -24,7 +24,7 @@ LLAMA32_CONFIG_1B = {
     "n_kv_groups": 8,                # Gruplanmış sorgu dikkati (GQA) için anahtar-değer grupları
     "rope_base": 500_000.0,          # RoPE'nin "theta" değerindeki taban
     "dtype": torch.bfloat16,         # Bellek kullanımını azaltmak için daha düşük duyarlıklı dtype
-    "rope_freq": {                   # RoPE frequency scaling
+    "rope_freq": {                   # RoPE frekans ölçekleme
         "factor": 32.0,
         "low_freq_factor": 1.0,
         "high_freq_factor": 4.0,
@@ -42,7 +42,7 @@ LLAMA32_CONFIG_3B = {
     "n_kv_groups": 8,                # Gruplanmış sorgu dikkati (GQA) için anahtar-değer grupları
     "rope_base": 500_000.0,          # RoPE'nin "theta" değerindeki taban
     "dtype": torch.bfloat16,         # Bellek kullanımını azaltmak için daha düşük duyarlıklı dtype
-    "rope_freq": {                   # RoPE frequency scaling
+    "rope_freq": {                   # RoPE frekans ölçekleme
         "factor": 32.0,
         "low_freq_factor": 1.0,
         "high_freq_factor": 4.0,
@@ -58,7 +58,7 @@ class Llama3Model(nn.Module):
         # Ana model parametreleri
         self.tok_emb = nn.Embedding(cfg["vocab_size"], cfg["emb_dim"], dtype=cfg["dtype"])
 
-        self.trf_blocks = nn.ModuleList(  # ModuleList since Sequential can only accept one input, and we need `x, mask, cos, sin`
+        self.trf_blocks = nn.ModuleList(  # Sequential yalnızca tek girdi alabildiği ve bize `x, mask, cos, sin` gerektiği için ModuleList
             [TransformerBlock(cfg) for _ in range(cfg["n_layers"])]
         )
 
@@ -75,7 +75,7 @@ class Llama3Model(nn.Module):
         self.register_buffer("cos", cos, persistent=False)
         self.register_buffer("sin", sin, persistent=False)
         self.cfg = cfg
-        self.current_pos = 0  # Track current position in KV cache
+        self.current_pos = 0  # KV önbelleğindeki geçerli konumu izle
 
     def forward(self, in_idx, cache=None):
         tok_embeds = self.tok_emb(in_idx)
@@ -90,7 +90,7 @@ class Llama3Model(nn.Module):
                 torch.ones(pos_end, pos_end, device=x.device, dtype=torch.bool), diagonal=1
             )[pos_start:pos_end, :pos_end]
         else:
-            pos_start = 0  # Not strictly necessary but helps torch.compile
+            pos_start = 0  # Kesinlikle gerekli değil ama torch.compile'a yardımcı olur
             mask = torch.triu(
                 torch.ones(num_tokens, num_tokens, device=x.device, dtype=torch.bool), diagonal=1
             )
@@ -200,7 +200,7 @@ class GroupedQueryAttention(nn.Module):
             values = torch.cat([prev_v, values_new], dim=2)
             next_cache = (keys, values)
         else:
-            start_pos = 0  # reset RoPE
+            start_pos = 0  # RoPE'yi sıfırla
             keys, values = keys_new, values_new
             next_cache = (keys, values)
 
@@ -501,7 +501,7 @@ class Llama3ModelFast(nn.Module):
         # Ana model parametreleri
         self.tok_emb = nn.Embedding(cfg["vocab_size"], cfg["emb_dim"], dtype=cfg["dtype"])
 
-        self.trf_blocks = nn.ModuleList(  # ModuleList since Sequential can only accept one input, and we need `x, cos, sin`
+        self.trf_blocks = nn.ModuleList(  # Sequential yalnızca tek girdi alabildiği ve bize `x, cos, sin` gerektiği için ModuleList
             [TransformerBlockFast(cfg) for _ in range(cfg["n_layers"])]
         )
 

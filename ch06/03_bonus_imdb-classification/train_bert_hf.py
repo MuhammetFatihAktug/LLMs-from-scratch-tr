@@ -22,7 +22,7 @@ class IMDbDataset(Dataset):
         self.pad_token_id = pad_token_id
         self.use_attention_mask = use_attention_mask
 
-        # Pre-tokenize texts and create attention masks if required
+        # Gerekirse metinleri önceden token'lara ayır ve dikkat maskeleri oluştur
         self.encoded_texts = [
             tokenizer.encode(text, truncation=True, max_length=self.max_length)
             for text in self.data["text"]

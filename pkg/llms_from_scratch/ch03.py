@@ -72,7 +72,7 @@ class CausalAttention(nn.Module):
         values = self.W_value(x)
 
         attn_scores = queries @ keys.transpose(1, 2)  # Değiştirilmiş devrik (transpose)
-        attn_scores.masked_fill_(  # New, _ ops are in-place
+        attn_scores.masked_fill_(  # Yeni, _ ile biten işlemler yerinde (in-place) çalışır
             self.mask.bool()[:num_tokens, :num_tokens], -torch.inf)  # Yığındaki token sayısının desteklenen context_size değerinden küçük olduğu durumları hesaba katmak için `:num_tokens`
         attn_weights = torch.softmax(
             attn_scores / keys.shape[-1]**0.5, dim=-1

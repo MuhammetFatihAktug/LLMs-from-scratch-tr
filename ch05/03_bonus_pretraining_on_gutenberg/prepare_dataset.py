@@ -32,7 +32,7 @@ def combine_files(file_paths, target_dir, max_size_mb=500, separator="<|endoftex
             with open(file_path, "r", encoding="utf-8") as file:
                 content = file.read()
         except UnicodeDecodeError:
-            # Attempt to read the file with a fallback encoding
+            # Dosyayı yedek bir kodlamayla okumayı dene
             tqdm.write(f"Warning: UnicodeDecodeError encountered. Trying fallback encoding for {file_path}")
             with open(file_path, "r", encoding=fallback_encoding) as file:
                 content = file.read()
@@ -42,7 +42,7 @@ def combine_files(file_paths, target_dir, max_size_mb=500, separator="<|endoftex
             continue
         content = strip_headers(content)
 
-        # Regular expression to replace multiple blank lines with a single blank line
+        # Birden çok boş satırı tek boş satırla değiştiren düzenli ifade
         content = re.sub(r"\n\s*\n", "\n\n", content)
         estimated_size = len(content.encode("utf-8"))
 

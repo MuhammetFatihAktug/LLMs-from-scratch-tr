@@ -14,7 +14,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 
 
-# Bytes per element
+# Öğe başına bayt
 DTYPE_BYTES = {
     "fp32": 4,
     "bf16": 2,
@@ -29,7 +29,7 @@ def convert_bytes_to_gb(n_bytes):
 
 
 def parse_ratio(ratio_str):
-    # "--swa_ratio a:b" means a SWA layers for every b full layers within a block
+    # "--swa_ratio a:b", bir blok içindeki her b tam katman için a SWA katmanı demektir
     try:
         a_str, b_str = ratio_str.split(":")
         a, b = int(a_str), int(b_str)
@@ -40,7 +40,7 @@ def parse_ratio(ratio_str):
 
 
 def calc_kv_bytes_total_mha(batch, context_length, emb_dim, n_layers, bytes_per_elem):
-    # For MHA, n_kv_heads = n_heads, which cancels out:
+    # MHA'da n_kv_heads = n_heads olduğundan bu sadeleşir:
     # total = B * L * E * 2 (K,V) * bytes * n_layers
     return batch * context_length * emb_dim * 2 * bytes_per_elem * n_layers
 
@@ -48,8 +48,8 @@ def calc_kv_bytes_total_mha(batch, context_length, emb_dim, n_layers, bytes_per_
 def calc_kv_bytes_total_gqa(
     batch, context_length, emb_dim, n_layers, bytes_per_elem, n_kv_groups
 ):
-    # For GQA, n_kv_heads = n_heads / n_kv_groups
-    # => scale the MHA total by 1 / n_kv_groups
+    # GQA'da n_kv_heads = n_heads / n_kv_groups
+    # => MHA toplamını 1 / n_kv_groups ile ölçekle
     base = calc_kv_bytes_total_mha(batch, context_length, emb_dim, n_layers, bytes_per_elem)
     return base / n_kv_groups
 
@@ -57,7 +57,7 @@ def calc_kv_bytes_total_gqa(
 def calc_kv_bytes_total_mha_swa(
     batch, context_length, emb_dim, n_layers, bytes_per_elem, window, swa_ratio
 ):
-    # Split layers into SWA vs Full
+    # Katmanları SWA ve Tam olarak ayır
     a, b = parse_ratio(swa_ratio)
     total_blocks = a + b
     n_swa_layers = int(round(n_layers * (a / total_blocks)))

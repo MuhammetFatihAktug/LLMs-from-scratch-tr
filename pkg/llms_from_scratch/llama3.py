@@ -23,7 +23,7 @@ LLAMA32_CONFIG_1B = {
     "n_kv_groups": 8,                # Gruplanmış sorgu dikkati (GQA) için anahtar-değer grupları
     "rope_base": 500_000.0,          # RoPE'nin "theta" değerindeki taban
     "dtype": torch.bfloat16,         # Bellek kullanımını azaltmak için daha düşük duyarlıklı dtype
-    "rope_freq": {                   # RoPE frequency scaling
+    "rope_freq": {                   # RoPE frekans ölçekleme
         "factor": 32.0,
         "low_freq_factor": 1.0,
         "high_freq_factor": 4.0,
@@ -41,7 +41,7 @@ LLAMA32_CONFIG_3B = {
     "n_kv_groups": 8,                # Gruplanmış sorgu dikkati (GQA) için anahtar-değer grupları
     "rope_base": 500_000.0,          # RoPE'nin "theta" değerindeki taban
     "dtype": torch.bfloat16,         # Bellek kullanımını azaltmak için daha düşük duyarlıklı dtype
-    "rope_freq": {                   # RoPE frequency scaling
+    "rope_freq": {                   # RoPE frekans ölçekleme
         "factor": 32.0,
         "low_freq_factor": 1.0,
         "high_freq_factor": 4.0,
@@ -57,7 +57,7 @@ class Llama3Model(nn.Module):
         # Ana model parametreleri
         self.tok_emb = nn.Embedding(cfg["vocab_size"], cfg["emb_dim"], dtype=cfg["dtype"])
 
-        self.trf_blocks = nn.ModuleList(  # ModuleList since Sequential can only accept one input, and we need `x, mask, cos, sin`
+        self.trf_blocks = nn.ModuleList(  # Sequential yalnızca tek girdi alabildiği ve bize `x, mask, cos, sin` gerektiği için ModuleList
             [TransformerBlock(cfg) for _ in range(cfg["n_layers"])]
         )
 
@@ -523,7 +523,7 @@ class Llama3ModelFast(nn.Module):
         # Ana model parametreleri
         self.tok_emb = nn.Embedding(cfg["vocab_size"], cfg["emb_dim"], dtype=cfg["dtype"])
 
-        self.trf_blocks = nn.ModuleList(  # ModuleList since Sequential can only accept one input, and we need `x, cos, sin`
+        self.trf_blocks = nn.ModuleList(  # Sequential yalnızca tek girdi alabildiği ve bize `x, cos, sin` gerektiği için ModuleList
             [TransformerBlockFast(cfg) for _ in range(cfg["n_layers"])]
         )
 

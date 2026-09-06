@@ -74,7 +74,7 @@ class MultiHeadAttention(nn.Module):
         attn_scores = queries @ keys.transpose(2, 3)  # Her başlık için iç çarpım
 
         ####################################################
-        # causal mask
+        # nedensel maske
         num_tokens_Q = queries.shape[-2]
         num_tokens_K = keys.shape[-2]
         device = queries.device

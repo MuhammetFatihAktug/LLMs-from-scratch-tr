@@ -209,7 +209,7 @@ if __name__ == "__main__":
     else:
         rank = 0
 
-    # Only print on rank 0 to avoid duplicate prints from each GPU process
+    # Her GPU sürecinden yinelenen çıktıları önlemek için yalnızca rank 0'da yazdır
     if rank == 0:
         print("PyTorch version:", torch.__version__)
         print("CUDA available:", torch.cuda.is_available())

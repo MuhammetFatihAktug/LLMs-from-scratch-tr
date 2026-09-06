@@ -22,12 +22,12 @@ def import_definitions_from_notebook(fullname, names):
     mod = types.ModuleType(fullname)
     sys.modules[fullname] = mod
 
-    # Execute all code cells to capture dependencies
+    # Bağımlılıkları yakalamak için tüm kod hücrelerini çalıştır
     for cell in nb.cells:
         if cell.cell_type == "code":
             exec(cell.source, mod.__dict__)
 
-    # Ensure required names are in module
+    # Gerekli adların modülde bulunduğundan emin ol
     missing_names = [name for name in names if name not in mod.__dict__]
     if missing_names:
         raise ImportError(f"Missing definitions in notebook: {missing_names}")
@@ -80,7 +80,7 @@ def test_tokenizer_training(imported_module, verdict_file):
     BPETokenizerSimple = getattr(imported_module, "BPETokenizerSimple", None)
     tokenizer = BPETokenizerSimple()
 
-    with open(verdict_file, "r", encoding="utf-8") as f:  # added ../01_main-chapter-code/
+    with open(verdict_file, "r", encoding="utf-8") as f:  # ../01_main-chapter-code/ eklendi
         text = f.read()
 
     tokenizer.train(text, vocab_size=1000, allowed_special={"<|endoftext|>"})
@@ -191,11 +191,11 @@ def test_no_eot_aliasing_and_disallowed_logic(imported_module, gpt2_files):
     tik = tiktoken.get_encoding("gpt2")
 
     text = "Hello<|endoftext|>\nworld"
-    # When not allowed, our encode should raise ValueError like tiktoken
+    # İzin verilmediğinde, bizim encode'umuz da tiktoken gibi ValueError fırlatmalı
     with pytest.raises(ValueError):
         tok.encode(text)
 
-    # When allowed, both tokenizers should match
+    # İzin verildiğinde, iki tokenizer da eşleşmeli
     ids_ours = tok.encode(text, allowed_special={"<|endoftext|>"})
     ids_tik = tik.encode(text, allowed_special={"<|endoftext|>"})
     assert ids_ours == ids_tik, "Mismatch vs tiktoken with EOT allowed"
@@ -223,7 +223,7 @@ def test_newline_roundtrip_and_equivalence(imported_module, gpt2_files, text):
     ids_tik = tik.encode(text)
 
     assert ids_ours == ids_tik, f"Mismatch vs tiktoken for: {repr(text)}"
-    # Each "\n" should correspond to id 198
+    # Her "\n" 198 kimliğine karşılık gelmeli
     expected_lf_count = text.count("\n")
     assert ids_ours.count(198) == expected_lf_count
 

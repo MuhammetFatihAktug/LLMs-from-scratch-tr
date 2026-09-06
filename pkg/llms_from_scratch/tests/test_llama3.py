@@ -121,7 +121,7 @@ def test_rope():
                 params["rope_type"] = getattr(self, "rope_type", "default")
             if "rope_theta" not in params:
                 params["rope_theta"] = getattr(self, "rope_theta")
-            # Handle older key name used in this repo.
+            # Bu depoda kullanılan eski anahtar adını ele al.
             if (
                 "original_max_position_embeddings" not in params
                 and "original_context_length" in params
@@ -171,20 +171,20 @@ def test_grouped_query_attention_equivalence():
         }
     )
 
-    # Causal mask for the slow version
+    # Yavaş sürüm için nedensel maske
     mask = torch.triu(torch.ones(t, t, dtype=torch.bool), diagonal=1)
 
     attn1 = GroupedQueryAttention(d_in, d_out, num_heads, num_kv_groups)
     attn2 = GroupedQueryAttentionFast(d_in, d_out, num_heads, num_kv_groups)
 
-    # Copy weights to make both models identical
+    # İki modeli özdeş kılmak için ağırlıkları kopyala
     attn2.load_state_dict(attn1.state_dict())
 
-    # Run both
+    # İkisini de çalıştır
     y1 = attn1(x, mask, cos, sin)
     y2 = attn2(x, cos, sin)
 
-    # Compare outputs
+    # Çıktıları karşılaştır
     max_diff = (y1 - y2).abs().max().item()
     print(f"Max difference between slow and fast outputs: {max_diff:.4e}")
     assert torch.allclose(y1, y2, atol=1e-4)
@@ -211,7 +211,7 @@ def llama3_weights_path(tmp_path_factory):
 @pytest.mark.parametrize("generate_fn", [generate_text_simple, generate_text_simple_cached])
 def test_model_variants(ModelClass, generate_fn, llama3_weights_path):
 
-    # Skip incompatible combinations
+    # Uyumsuz bileşimleri atla
     if generate_fn is generate_text_simple and getattr(ModelClass, "reset_kv_cache", False):
         return
     if generate_fn is generate_text_simple_cached and not getattr(ModelClass, "reset_kv_cache", False):

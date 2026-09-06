@@ -21,7 +21,7 @@ def test_mha():
 
     context_vecs.shape == torch.Size([8, 6, d_out])
 
-    # Test bonus class
+    # Bonus sınıfı test et
     mha = PyTorchMultiHeadAttention(d_in, d_out, num_heads=2)
 
     batch = torch.rand(8, 6, d_in)

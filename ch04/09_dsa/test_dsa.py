@@ -47,7 +47,7 @@ def test_causal_property():
     x = torch.randn(b, T, d)
     out_full = attn(x)
 
-    # Replace tokens at positions 6+ with random noise
+    # 6 ve sonrasındaki konumlardaki token'ları rastgele gürültüyle değiştir
     x_noisy = x.clone()
     x_noisy[:, 6:, :] = torch.randn(b, T - 6, d)
     out_noisy = attn(x_noisy)
@@ -66,7 +66,7 @@ def test_sparsity():
     )
     x = torch.randn(b, T, d)
 
-    # Reconstruct the combined (causal + sparse) mask
+    # Birleşik (nedensel + seyrek) maskeyi yeniden kur
     q_pos = torch.arange(T)
     k_pos = torch.arange(T)
     causal_bool = q_pos.unsqueeze(-1) < k_pos.unsqueeze(0)
@@ -149,7 +149,7 @@ def test_cache_consistency():
         "qkv_bias": False,
         "index_n_heads": 2,
         "index_head_dim": 32,
-        "topk": 200,   # large topk == full attention, so both modes match exactly
+        "topk": 200,   # büyük topk == tam dikkat, dolayısıyla iki kip tam olarak eşleşir
     }
     torch.manual_seed(42)
     model = GPTModel(cfg)

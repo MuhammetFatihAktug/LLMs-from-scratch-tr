@@ -206,7 +206,7 @@ if __name__ == "__main__":
 
     GPT_CONFIG_124M = {
         "vocab_size": 50257,    # Sözcük dağarcığı boyutu
-        "context_length": 256,  # Shortened context length (orig: 1024)
+        "context_length": 256,  # Kısaltılmış bağlam uzunluğu (özgün: 1024)
         "emb_dim": 768,         # Gömme (embedding) boyutu
         "n_heads": 12,          # Dikkat başlığı sayısı
         "n_layers": 12,         # Katman sayısı

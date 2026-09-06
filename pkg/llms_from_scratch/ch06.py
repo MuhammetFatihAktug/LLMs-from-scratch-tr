@@ -250,7 +250,7 @@ def classify_review(text, model, tokenizer, device, max_length=None, pad_token_i
 
     # Model çıkarımı
     with torch.no_grad():
-        logits = model(input_tensor)[:, -1, :]  # Logits of the last output token
+        logits = model(input_tensor)[:, -1, :]  # Son çıktı token'ının logit'leri
     predicted_label = torch.argmax(logits, dim=-1).item()
 
     # Sınıflandırma sonucunu döndür

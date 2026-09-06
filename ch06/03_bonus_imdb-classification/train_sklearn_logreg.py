@@ -49,7 +49,7 @@ if __name__ == "__main__":
     df_train, df_val, df_test = load_dataframes()
 
     #########################################
-    # Convert text into bag-of-words model
+    # Metni kelime torbası (bag-of-words) modeline dönüştür
     vectorizer = CountVectorizer()
     #########################################
 
@@ -59,7 +59,7 @@ if __name__ == "__main__":
     y_train, y_val, y_test = df_train["label"], df_val["label"], df_test["label"]
 
     #####################################
-    # Model training and evaluation
+    # Model eğitimi ve değerlendirmesi
     #####################################
 
     # En sık geçen sınıfı tahmin etme stratejisiyle yapay bir sınıflandırıcı oluştur

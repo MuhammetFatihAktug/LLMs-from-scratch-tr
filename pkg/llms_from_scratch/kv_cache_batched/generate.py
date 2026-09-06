@@ -15,11 +15,11 @@ def generate_text_simple(model, idx, max_new_tokens, context_size=None, use_cach
 
     with torch.no_grad():
         if use_cache:
-            # initialize cache and positions
+            # önbelleği ve konumları başlat
             cache = KVCache(n_layers=model.cfg["n_layers"], batch_size=batch_size)
             model.reset_kv_cache(batch_size=batch_size, device=idx.device)
 
-            # initial full-context pass
+            # başlangıçtaki tam bağlam geçişi
             input_ids = idx[:, -ctx_len:]
             seq_len = input_ids.size(1)
             start_pos = model.current_pos.clone()
@@ -30,7 +30,7 @@ def generate_text_simple(model, idx, max_new_tokens, context_size=None, use_cach
             )
             model.current_pos += seq_len
 
-            # iterative generation
+            # yinelemeli üretim
             for _ in range(max_new_tokens):
                 next_token = logits[:, -1].argmax(dim=-1, keepdim=True)  # (B, 1)
                 logits = model(
@@ -41,7 +41,7 @@ def generate_text_simple(model, idx, max_new_tokens, context_size=None, use_cach
                 model.current_pos += 1
                 idx = torch.cat([idx, next_token], dim=1)
         else:
-            # no cache
+            # önbellek yok
             for _ in range(max_new_tokens):
                 input_ids = idx[:, -ctx_len:]
                 logits = model(input_ids, cache=None, start_pos=None)

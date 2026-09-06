@@ -61,7 +61,7 @@ def convert_time(seconds):
 
 
 def print_eta(start_time, book_start_time, index, total_files):
-    book_end_time = time.time()  # End time of processing this book
+    book_end_time = time.time()  # Bu kitabın işlenmesinin bitiş zamanı
     elapsed_time = book_end_time - book_start_time
     total_elapsed_time = book_end_time - start_time
     books_remaining = total_files - index
@@ -90,13 +90,13 @@ def train_model_simple(model, optimizer, device, n_epochs,
     try:
         for epoch in range(n_epochs):
 
-            # Iterate over the books in the training corpus
+            # Eğitim derlemindeki kitapları dolaş
             for index, file_path in enumerate(all_files, 1):
                 book_start_time = time.time()
                 text_data = read_text_file(file_path) + " <|endoftext|> "
                 print(f"Tokenizing file {index} of {total_files}: {file_path}")
 
-                # Initialize new data loaders for each book
+                # Her kitap için yeni veri yükleyiciler başlat
                 train_loader, val_loader = create_dataloaders(
                     text_data,
                     train_ratio=train_ratio,
@@ -125,7 +125,7 @@ def train_model_simple(model, optimizer, device, n_epochs,
                         print(f"Ep {epoch+1} (Step {global_step}): "
                               f"Train loss {train_loss:.3f}, Val loss {val_loss:.3f}")
 
-                    # Generate text passage
+                    # Metin parçası üret
                     if global_step % print_sample_iter == 0:
                         generate_and_print_sample(
                             model, tokenizer, device, start_context
@@ -178,7 +178,7 @@ if __name__ == "__main__":
             "emb_dim": 12,           # Gömme (embedding) boyutu
             "n_heads": 2,            # Dikkat başlığı sayısı
             "n_layers": 2,           # Katman sayısı
-            "drop_rate": 0.0,        # Dropout rate, deactivated via 0.0 as dropout in LLMs is not recommended anymore
+            "drop_rate": 0.0,        # Dropout oranı; LLM'lerde dropout artık önerilmediği için 0.0 ile devre dışı
             "qkv_bias": False        # Sorgu-anahtar-değer bias'ı
         }
 

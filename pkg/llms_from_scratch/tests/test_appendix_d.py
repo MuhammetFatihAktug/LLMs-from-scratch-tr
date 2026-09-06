@@ -19,7 +19,7 @@ def test_train(tmp_path):
 
     GPT_CONFIG_124M = {
         "vocab_size": 50257,    # Sözcük dağarcığı boyutu
-        "context_length": 256,  # Shortened context length (orig: 1024)
+        "context_length": 256,  # Kısaltılmış bağlam uzunluğu (özgün: 1024)
         "emb_dim": 768,         # Gömme (embedding) boyutu
         "n_heads": 12,          # Dikkat başlığı sayısı
         "n_layers": 12,         # Katman sayısı
@@ -99,8 +99,8 @@ def test_train(tmp_path):
     val_subset = Subset(val_loader.dataset, range(1))
     one_batch_val_loader = DataLoader(val_subset, batch_size=1)
 
-    peak_lr = 0.001  # this was originally set to 5e-4 in the book by mistake
-    optimizer = torch.optim.AdamW(model.parameters(), lr=peak_lr, weight_decay=0.1)  # the book accidentally omitted the lr assignment
+    peak_lr = 0.001  # bu, kitapta yanlışlıkla 5e-4 olarak ayarlanmıştı
+    optimizer = torch.optim.AdamW(model.parameters(), lr=peak_lr, weight_decay=0.1)  # kitapta lr ataması yanlışlıkla atlanmıştı
     tokenizer = tiktoken.get_encoding("gpt2")
 
     n_epochs = 6

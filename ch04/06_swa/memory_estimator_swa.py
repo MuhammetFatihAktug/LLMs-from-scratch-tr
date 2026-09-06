@@ -28,7 +28,7 @@ def calc_kv_bytes_per_layer(batch, context_length, head_dim, n_kv_heads, bytes_p
 
 
 def parse_ratio(ratio_str):
-    # "--swa_ratio a:b" means a SWA layers for every b full layers within a block
+    # "--swa_ratio a:b", bir blok içindeki her b tam katman için a SWA katmanı demektir
     try:
         a_str, b_str = ratio_str.split(":")
         a, b = int(a_str), int(b_str)
@@ -63,7 +63,7 @@ def estimate_totals(context_length, sliding_window_size, emb_dim, n_heads, n_lay
     eff_W = min(context_length, sliding_window_size)
     L = context_length
 
-    # Per-layer costs
+    # Katman başına maliyetler
     per_mha_full = calc_kv_bytes_per_layer(batch_size, L, head_dim, n_kv_heads_mha, bytes_per_elem)
     per_gqa_full = calc_kv_bytes_per_layer(batch_size, L, head_dim, n_kv_heads_gqa, bytes_per_elem)
     per_mha_swa = calc_kv_bytes_per_layer(batch_size, eff_W, head_dim, n_kv_heads_mha, bytes_per_elem)

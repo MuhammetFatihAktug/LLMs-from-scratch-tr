@@ -217,7 +217,7 @@ def query_model(
         "messages": [
             {"role": "user", "content": prompt}
         ],
-        "options": {     # Settings below are required for deterministic responses
+        "options": {     # Aşağıdaki ayarlar belirlenimci yanıtlar için gereklidir
             "seed": 123,
             "temperature": 0,
             "num_ctx": 2048

@@ -28,7 +28,7 @@ def get_model_and_tokenizer():
     The model will be downloaded automatically if it doesn't exist in the current folder, yet.
     """
 
-    CHOOSE_MODEL = "gpt2-small (124M)"  # Optionally replace with another model from the model_configs dir below
+    CHOOSE_MODEL = "gpt2-small (124M)"  # İsteğe bağlı olarak aşağıdaki model_configs dizinindeki başka bir modelle değiştirin
 
     BASE_CONFIG = {
         "vocab_size": 50257,     # Sözcük dağarcığı boyutu
@@ -60,7 +60,7 @@ def get_model_and_tokenizer():
     return tokenizer, gpt, BASE_CONFIG
 
 
-# Obtain the necessary tokenizer and model files for the chainlit function below
+# Aşağıdaki chainlit fonksiyonu için gerekli tokenizer ve model dosyalarını edin
 tokenizer, model, model_config = get_model_and_tokenizer()
 
 
@@ -69,9 +69,9 @@ async def main(message: chainlit.Message):
     """
     The main Chainlit function.
     """
-    token_ids = generate(  # function uses `with torch.no_grad()` internally already
+    token_ids = generate(  # fonksiyon zaten içeride `with torch.no_grad()` kullanıyor
         model=model,
-        idx=text_to_token_ids(message.content, tokenizer).to(device),  # The user text is provided via as `message.content`
+        idx=text_to_token_ids(message.content, tokenizer).to(device),  # Kullanıcı metni `message.content` üzerinden sağlanır
         max_new_tokens=50,
         context_size=model_config["context_length"],
         top_k=1,
@@ -81,5 +81,5 @@ async def main(message: chainlit.Message):
     text = token_ids_to_text(token_ids, tokenizer)
 
     await chainlit.Message(
-        content=f"{text}",  # This returns the model response to the interface
+        content=f"{text}",  # Bu, model yanıtını arayüze döndürür
     ).send()

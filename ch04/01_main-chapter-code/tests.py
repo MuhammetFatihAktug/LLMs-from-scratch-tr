@@ -32,9 +32,9 @@ def test_main(capsys):
     main()
     captured = capsys.readouterr()
 
-    # Normalize line endings and strip trailing whitespace from each line
+    # Satır sonlarını normalleştir ve her satırın sonundaki boşlukları ayıkla
     normalized_expected = "\n".join(line.rstrip() for line in expected.splitlines())
     normalized_output = "\n".join(line.rstrip() for line in captured.out.splitlines())
 
-    # Compare normalized strings
+    # Normalleştirilmiş dizeleri karşılaştır
     assert normalized_output == normalized_expected

@@ -10,8 +10,8 @@ import time
 import pandas as pd
 import tiktoken
 import torch
-# Import Dynamo before TensorFlow is loaded by gpt_download to avoid
-# Triton/TensorFlow initialization crash on Linux aarch64
+# Dynamo'yu, gpt_download TensorFlow'u yüklemeden önce içe aktar; böylece Linux
+# aarch64 üzerinde Triton/TensorFlow ilklendirme çökmesi yaşanmaz
 import torch._dynamo  # noqa: F401
 from torch.utils.data import DataLoader
 from torch.utils.data import Dataset

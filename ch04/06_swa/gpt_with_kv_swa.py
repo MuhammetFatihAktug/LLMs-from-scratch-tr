@@ -66,9 +66,9 @@ class MultiHeadAttentionWithSWA(nn.Module):
 
             keys, values = combined_k, combined_v
             if self.sliding_window_size is not None:
-                # During chunked prefill we need up to W-1 older keys plus the whole
-                # current chunk (so the earliest queries in the chunk keep their full
-                # sliding-window context)
+                # Parçalı ön doldurma sırasında W-1 kadar eski anahtara artı geçerli parçanın
+                # tamamına ihtiyacımız var (böylece parçadaki en erken sorgular tam kayan
+                # pencere bağlamlarını korur)
                 attn_keep = min(keys.size(1), self.sliding_window_size + num_tokens - 1)
                 keys = keys[:, -attn_keep:, :, :]
                 values = values[:, -attn_keep:, :, :]
@@ -95,11 +95,11 @@ class MultiHeadAttentionWithSWA(nn.Module):
         attn_scores = queries @ keys.transpose(2, 3)  # Her başlık için iç çarpım
 
         ####################################################
-        # causal + sliding-window mask
+        # nedensel + kayan pencere maskesi
         num_tokens_Q = queries.shape[-2]
         num_tokens_K = keys.shape[-2]
         device = queries.device
-        # Determine absolute positions for q and k
+        # q ve k için mutlak konumları belirle
         if use_cache:
             q_start = q_start_pos_abs
             k_start = k_start_pos_abs
@@ -108,7 +108,7 @@ class MultiHeadAttentionWithSWA(nn.Module):
             k_start = 0
         q_positions = torch.arange(q_start, q_start + num_tokens_Q, device=device, dtype=torch.long)
         k_positions = torch.arange(k_start, k_start + num_tokens_K, device=device, dtype=torch.long)
-        # Sliding window width
+        # Kayan pencere genişliği
         W = num_tokens_K + 1 if self.sliding_window_size is None else int(self.sliding_window_size)
         diff = q_positions.unsqueeze(-1) - k_positions.unsqueeze(0)
         mask_bool = (diff < 0) | (diff >= W)

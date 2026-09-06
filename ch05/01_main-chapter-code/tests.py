@@ -13,10 +13,10 @@ import requests
 def gpt_config():
     return {
         "vocab_size": 50257,
-        "context_length": 12,  # small for testing efficiency
-        "emb_dim": 32,         # small for testing efficiency
-        "n_heads": 4,          # small for testing efficiency
-        "n_layers": 2,         # small for testing efficiency
+        "context_length": 12,  # test verimliliği için küçük
+        "emb_dim": 32,         # test verimliliği için küçük
+        "n_heads": 4,          # test verimliliği için küçük
+        "n_layers": 2,         # test verimliliği için küçük
         "drop_rate": 0.1,
         "qkv_bias": False
     }
@@ -26,7 +26,7 @@ def gpt_config():
 def other_settings():
     return {
         "learning_rate": 5e-4,
-        "num_epochs": 1,    # small for testing efficiency
+        "num_epochs": 1,    # test verimliliği için küçük
         "batch_size": 2,
         "weight_decay": 0.1
     }

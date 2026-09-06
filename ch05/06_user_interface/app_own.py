@@ -31,7 +31,7 @@ def get_model_and_tokenizer():
 
     GPT_CONFIG_124M = {
         "vocab_size": 50257,    # Sözcük dağarcığı boyutu
-        "context_length": 256,  # Shortened context length (orig: 1024)
+        "context_length": 256,  # Kısaltılmış bağlam uzunluğu (özgün: 1024)
         "emb_dim": 768,         # Gömme (embedding) boyutu
         "n_heads": 12,          # Dikkat başlığı sayısı
         "n_layers": 12,         # Katman sayısı
@@ -54,7 +54,7 @@ def get_model_and_tokenizer():
     return tokenizer, model, GPT_CONFIG_124M
 
 
-# Obtain the necessary tokenizer and model files for the chainlit function below
+# Aşağıdaki chainlit fonksiyonu için gerekli tokenizer ve model dosyalarını edin
 tokenizer, model, model_config = get_model_and_tokenizer()
 
 
@@ -63,9 +63,9 @@ async def main(message: chainlit.Message):
     """
     The main Chainlit function.
     """
-    token_ids = generate(  # function uses `with torch.no_grad()` internally already
+    token_ids = generate(  # fonksiyon zaten içeride `with torch.no_grad()` kullanıyor
         model=model,
-        idx=text_to_token_ids(message.content, tokenizer).to(device),  # The user text is provided via as `message.content`
+        idx=text_to_token_ids(message.content, tokenizer).to(device),  # Kullanıcı metni `message.content` üzerinden sağlanır
         max_new_tokens=50,
         context_size=model_config["context_length"],
         top_k=1,
@@ -75,5 +75,5 @@ async def main(message: chainlit.Message):
     text = token_ids_to_text(token_ids, tokenizer)
 
     await chainlit.Message(
-        content=f"{text}",  # This returns the model response to the interface
+        content=f"{text}",  # Bu, model yanıtını arayüze döndürür
     ).send()

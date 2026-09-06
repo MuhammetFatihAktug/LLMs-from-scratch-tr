@@ -45,14 +45,14 @@ def get_model_and_tokenizer():
         )
         sys.exit()
 
-    # Instantiate model
+    # Modeli örnekle
     model = GPTModel(GPT_CONFIG_124M)
 
     # ch06.ipynb içindeki 6.5 kısmındaki gibi modeli sınıflandırıcıya dönüştür
     num_classes = 2
     model.out_head = torch.nn.Linear(in_features=GPT_CONFIG_124M["emb_dim"], out_features=num_classes)
 
-    # Then load model weights
+    # Ardından model ağırlıklarını yükle
     checkpoint = torch.load(model_path, map_location=device, weights_only=True)
     model.load_state_dict(checkpoint)
     model.to(device)
@@ -61,7 +61,7 @@ def get_model_and_tokenizer():
     return tokenizer, model
 
 
-# Obtain the necessary tokenizer and model files for the chainlit function below
+# Aşağıdaki chainlit fonksiyonu için gerekli tokenizer ve model dosyalarını edin
 tokenizer, model = get_model_and_tokenizer()
 
 
@@ -75,5 +75,5 @@ async def main(message: chainlit.Message):
     label = classify_review(user_input, model, tokenizer, device, max_length=120)
 
     await chainlit.Message(
-        content=f"{label}",  # This returns the model response to the interface
+        content=f"{label}",  # Bu, model yanıtını arayüze döndürür
     ).send()

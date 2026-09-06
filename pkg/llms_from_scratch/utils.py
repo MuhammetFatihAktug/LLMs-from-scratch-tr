@@ -42,8 +42,8 @@ def _extract_defs_and_classes_from_code(src):
         if not header.endswith(":"):
             return False
 
-        # Track bracket balance for multiline signatures
-        # like:
+        # Çok satırlı imzalar için parantez dengesini izle
+        # örneğin:
         # def fn(
         #     arg,
         # ):
@@ -73,7 +73,7 @@ def _extract_defs_and_classes_from_code(src):
             base_indent = len(line) - len(stripped)
             i += 1
 
-            # Handle multiline signatures before consuming the function/class body.
+            # Fonksiyon/sınıf gövdesini işlemeden önce çok satırlı imzaları ele al.
             header_lines = [line]
             while i < len(lines) and not _is_header_complete(header_lines):
                 header_lines.append(lines[i])
@@ -96,8 +96,8 @@ def _extract_defs_and_classes_from_code(src):
 
     code = "\n".join(kept)
 
-    # General rule:
-    # replace functions defined like `def load_weights_into_xxx(ClassName, ...`
+    # Genel kural:
+    # `def load_weights_into_xxx(ClassName, ...` biçiminde tanımlı fonksiyonları değiştir
     # with `def load_weights_into_xxx(model, ...`
     code = re.sub(
         r"(def\s+load_weights_into_\w+\s*\()\s*\w+\s*,",

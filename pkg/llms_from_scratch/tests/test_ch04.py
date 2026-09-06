@@ -28,7 +28,7 @@ GPT_CONFIG_124M = {
 @pytest.mark.parametrize("generate_fn", [generate_text_simple, generate_text_simple_cached])
 def test_gpt_model_variants(ModelClass, generate_fn):
 
-    # Skip incompatible combinations
+    # Uyumsuz bileşimleri atla
     if generate_fn is generate_text_simple and getattr(ModelClass, "reset_kv_cache", False):
         return
     if generate_fn is generate_text_simple_cached and not getattr(ModelClass, "reset_kv_cache", False):

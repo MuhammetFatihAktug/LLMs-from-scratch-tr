@@ -38,10 +38,10 @@ def dummy_cfg_base():
         "n_heads": 4,
         "head_dim": 8,
         "n_kv_groups": 1,
-        "qk_norm": True,                # Gemma3 uses q/k RMSNorm
+        "qk_norm": True,                # Gemma3, q/k RMSNorm kullanır
         "dtype": torch.float32,
-        "rope_base": 1_000_000.0,       # global RoPE base
-        "rope_local_base": 10_000.0,    # local RoPE base (unused in these tests)
+        "rope_base": 1_000_000.0,       # küresel RoPE tabanı
+        "rope_local_base": 10_000.0,    # yerel RoPE tabanı (bu testlerde kullanılmıyor)
         "context_length": 64,
         "sliding_window": 16,
         "layer_types": ["full_attention", "full_attention"],

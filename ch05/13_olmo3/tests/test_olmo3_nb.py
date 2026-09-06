@@ -38,13 +38,13 @@ def dummy_cfg_base():
         "n_layers": 2,
         "hidden_dim": 64,
         "head_dim": 8,
-        "n_kv_heads": 1,  # 4 query heads, 1 KV groups -> group_size = 4
+        "n_kv_heads": 1,  # 4 sorgu başlığı, 1 KV grubu -> group_size = 4
         "attention_bias": False,
         "attention_dropout": 0.0,
         "sliding_window": 4,
         "layer_types": ["full_attention"] * 2,
 
-        # RoPE config
+        # RoPE yapılandırması
         "rope_base": 10_000.0,
         "rope_attention_factor": 1.0,
         "rope_type": "default",
@@ -84,10 +84,10 @@ def test_olmo3_base_equivalence_with_transformers(import_notebook_defs):
         "dtype": torch.float32,
         "query_pre_attn_scalar": 256,
 
-        # required by TransformerBlock
+        # TransformerBlock tarafından zorunlu
         "attention_bias": False,
 
-        # required by RMSNorm and RoPE setup in Olmo3Model
+        # Olmo3Model içindeki RMSNorm ve RoPE kurulumu tarafından zorunlu
         "rms_norm_eps": 1e-6,
         "rope_base": 1_000_000.0,
         "rope_attention_factor": 1.0,
@@ -95,7 +95,7 @@ def test_olmo3_base_equivalence_with_transformers(import_notebook_defs):
         "rope_factor": 1.0,
         "rope_orig_max": 8,
 
-        # extra HF-only stuff
+        # yalnızca HF'ye özgü ek şeyler
         "rope_local_base": 10_000.0,
     }
 

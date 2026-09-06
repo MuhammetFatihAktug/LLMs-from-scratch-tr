@@ -49,25 +49,25 @@ def download_and_extract_dataset(dataset_url, target_file, directory):
 
 
 def load_dataset_to_dataframe(basepath="aclImdb", labels={"pos": 1, "neg": 0}):
-    data_frames = []  # List to store each chunk of DataFrame
+    data_frames = []  # Her DataFrame parçasını saklayacak liste
     for subset in ("test", "train"):
         for label in ("pos", "neg"):
             path = os.path.join(basepath, subset, label)
             for file in sorted(os.listdir(path)):
                 with open(os.path.join(path, file), "r", encoding="utf-8") as infile:
-                    # Create a DataFrame for each file and add it to the list
+                    # Her dosya için bir DataFrame oluştur ve listeye ekle
                     data_frames.append(pd.DataFrame({"text": [infile.read()], "label": [labels[label]]}))
-    # Concatenate all DataFrame chunks together
+    # Tüm DataFrame parçalarını birleştir
     df = pd.concat(data_frames, ignore_index=True)
-    df = df.sample(frac=1, random_state=123).reset_index(drop=True)  # Shuffle the DataFrame
+    df = df.sample(frac=1, random_state=123).reset_index(drop=True)  # DataFrame'i karıştır
     return df
 
 
 def partition_and_save(df, sizes=(35000, 5000, 10000)):
-    # Shuffle the DataFrame
+    # DataFrame'i karıştır
     df_shuffled = df.sample(frac=1, random_state=123).reset_index(drop=True)
 
-    # Get indices for where to split the data
+    # Verinin nerede bölüneceğine dair dizinleri al
     train_end = sizes[0]
     val_end = sizes[0] + sizes[1]
 
@@ -76,7 +76,7 @@ def partition_and_save(df, sizes=(35000, 5000, 10000)):
     val = df_shuffled.iloc[train_end:val_end]
     test = df_shuffled.iloc[val_end:]
 
-    # Save to CSV files
+    # CSV dosyalarına kaydet
     train.to_csv("train.csv", index=False)
     val.to_csv("validation.csv", index=False)
     test.to_csv("test.csv", index=False)

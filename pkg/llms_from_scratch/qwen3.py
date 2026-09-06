@@ -127,7 +127,7 @@ class Qwen3Model(nn.Module):
         # Ana model parametreleri
         self.tok_emb = nn.Embedding(cfg["vocab_size"], cfg["emb_dim"], dtype=cfg["dtype"])
 
-        self.trf_blocks = nn.ModuleList(  # ModuleList since Sequential can only accept one input, and we need `x, mask, cos, sin`
+        self.trf_blocks = nn.ModuleList(  # Sequential yalnızca tek girdi alabildiği ve bize `x, mask, cos, sin` gerektiği için ModuleList
             [TransformerBlock(cfg) for _ in range(cfg["n_layers"])]
         )
         self.final_norm = RMSNorm(cfg["emb_dim"])

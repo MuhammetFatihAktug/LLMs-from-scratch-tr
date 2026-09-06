@@ -357,7 +357,7 @@ def evaluate_model(model, train_loader, val_loader, device, eval_iter):
 
 
 #####################################
-# Chapter 6
+# Bölüm 6
 #####################################
 
 
@@ -389,7 +389,7 @@ def create_balanced_dataset(df):
     # "spam" örneklerini say
     num_spam = df[df["Label"] == "spam"].shape[0]
 
-    # Randomly sample "ham' instances to match the number of 'spam' instances
+    # 'spam' örneklerinin sayısına eşitlemek için rastgele 'ham' örnekleri seç
     ham_subset = df[df["Label"] == "ham"].sample(num_spam, random_state=123)
 
     # "ham" alt kümesini "spam" ile birleştir

@@ -18,7 +18,7 @@ from torch.utils.data import Subset, DataLoader
 
 GPT_CONFIG_124M = {
     "vocab_size": 50257,
-    "context_length": 256,  # Shortened for test speed
+    "context_length": 256,  # Test hızı için kısaltıldı
     "emb_dim": 768,
     "n_heads": 12,
     "n_layers": 12,
@@ -81,7 +81,7 @@ def test_train_simple(tmp_path, ModelClass):
         num_workers=0
     )
 
-    # Limit to 1 batch for speed
+    # Hız için 1 yığınla sınırla
     train_subset = Subset(train_loader.dataset, range(1))
     one_batch_train_loader = DataLoader(train_subset, batch_size=1)
     val_subset = Subset(val_loader.dataset, range(1))
