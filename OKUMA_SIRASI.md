@@ -70,6 +70,7 @@ PyTorch'ta tensör, `nn.Module`, eğitim döngüsü ve `DataLoader` kavramları 
 1. [appendix-A/01_main-chapter-code/code-part1.ipynb](appendix-A/01_main-chapter-code/code-part1.ipynb) — A.1–A.8: tensörler, autograd, eğitim döngüsü
 2. [appendix-A/01_main-chapter-code/code-part2.ipynb](appendix-A/01_main-chapter-code/code-part2.ipynb) — A.9: GPU kullanımı
 3. `DDP-script.py` — çok GPU'lu eğitim *(şimdilik atlanabilir)*
+4. [appendix-A/02_setup-recommendations/](appendix-A/02_setup-recommendations/) — donanım ve ortam önerileri *(referans)*
 
 &nbsp;
 
@@ -245,18 +246,30 @@ Klasör boş görünüyorsa şu komutla doldur:
 git submodule update --init --recursive reasoning-from-scratch
 ```
 
+Bu komut alt modülü doğrudan **Türkçe** sürümde açar: `tr` dalında kayıtlı submodule işaretçisi,
+alt deponun çevrilmiş commit'ini gösterir. (Alt deponun da kendi `main` ve `tr` dalları vardır;
+İngilizce aslı için `cd reasoning-from-scratch && git show main:<dosya>`.)
+
 Önerilen sıra (o depo içinde):
 
 | Sıra | Klasör | Konu |
 |---|---|---|
-| 1 | `chC/` | Qwen3 kaynak kodu incelemesi (LLMs-from-scratch ch05/11_qwen3'ün devamı) |
-| 2 | `ch02/` | Optimize edilmiş LLM, çıkarım hızlandırma |
-| 3 | `ch03/` | Doğrulayıcı temelli değerlendirme (MATH-500) |
-| 4 | `ch04/` | Öz tutarlılık (self-consistency) ile çıkarım ölçeklendirme |
-| 5 | `ch05/` | Öz iyileştirme (self-refinement) |
-| 6 | `ch06/` | **RLVR + GRPO** — pekiştirmeli öğrenme ile akıl yürütme |
-| 7 | `ch07/`, `ch08/` | Damıtma (distillation) ve ileri konular |
-| — | `chF/` | Değerlendirme: MMLU, liderlik tabloları, LLM-as-a-judge |
+| 1 | `ch01/` | Akıl yürütme modellerini anlamak (kod yok) |
+| 2 | `ch02/` | Önceden eğitilmiş bir LLM ile metin üretmek — Qwen3 yükleme, KV önbelleği, `torch.compile` |
+| 3 | `ch03/` | Akıl yürütme modellerini değerlendirmek — MATH-500 doğrulayıcısı |
+| 4 | `ch04/` | Çıkarım anında ölçekleme — düşünce zinciri, sıcaklık/top-p, öz tutarlılık |
+| 5 | `ch05/` | Öz iyileştirme (self-refinement) ve log-olasılık ile puanlama |
+| 6 | `ch06/` | **RLVR + GRPO** — pekiştirmeli öğrenme ile akıl yürütme eğitimi |
+| 7 | `ch07/` | GRPO'yu iyileştirmek — kırpılmış politika oranı, KL terimi, biçim ödülü |
+| 8 | `ch08/` | Damıtma (distillation) ile verimli akıl yürütme |
+| — | `chC/` | **Ek C:** Qwen3 kaynak kodu (LLMs-from-scratch `ch05/11_qwen3` devamı) |
+| — | `chD/` | **Ek D:** Daha büyük Qwen3 modellerini kullanmak (1.7B–32B) |
+| — | `chE/` | **Ek E:** Yığınlama (batching) ve verim odaklı çalıştırma |
+| — | `chF/` | **Ek F:** Değerlendirme yöntemleri — MMLU, liderlik tabloları, LLM-as-a-judge |
+| — | `chG/` | **Ek G:** Sohbet arayüzü oluşturmak (chainlit) |
+
+> `chC/` istersen `ch02/` ile birlikte okunabilir: `ch02` modeli *kullanmayı*, `chC` ise o modelin
+> kodunun içini anlatır. Diğer ekler (D–G) ilgili bölümü bitirdikten sonra istediğin sırada okunabilir.
 
 ---
 
@@ -307,8 +320,9 @@ git diff main tr -- ch03/README.md  # yan yana fark
 
 **Çeviri kuralları:**
 
-- **Çevrilen:** markdown metinleri, başlıklar, tablo başlıkları, kod hücrelerindeki `#` yorumları.
-- **Çevrilmeyen (bilinçli):** kod içindeki string'ler ve promptlar (ör. `"Every effort moves you"` — çevrilirse model çıktısı değişir), chat template'ler, değişken ve fonksiyon adları, kütüphane API'leri, kayıtlı hücre çıktıları, eğitim günlükleri, ölçüm tabloları. Bunlar kopyalayıp çalıştıracağın komutlarla ve kitabın basılı koduyla eşleşmeli.
+- **Çevrilen:** markdown metinleri, başlıklar, tablo başlıkları, kod hücrelerindeki `#` yorumları ve
+  Python (`.py`) kaynak dosyalarındaki `#` yorumları.
+- **Çevrilmeyen (bilinçli):** kod içindeki string'ler ve promptlar (ör. `"Every effort moves you"` — çevrilirse model çıktısı değişir), chat template'ler, değişken ve fonksiyon adları, kütüphane API'leri, kayıtlı hücre çıktıları, eğitim günlükleri, ölçüm tabloları, markdown içindeki ``` kod blokları, lisans/atıf metinleri. Bunlar kopyalayıp çalıştıracağın komutlarla ve kitabın basılı koduyla eşleşmeli.
 - **Terim tutarlılığı:** aynı İngilizce terim depo genelinde aynı Türkçe karşılığı alır. Karşılık listesi: [SOZLUK.md](SOZLUK.md). Bir terim bir bölümde ilk geçtiğinde İngilizcesi parantez içinde verilir — "dikkat (attention)" gibi.
 - **Yapı korunur:** madde sayısı, mantıksal sıra ve şekil/bağlantı yerleşimi orijinaldeki gibidir; bunlar öğretim sırasını taşır.
 
